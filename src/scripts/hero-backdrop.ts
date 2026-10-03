@@ -101,7 +101,7 @@ const FIRST_PAINT_DEADLINE = 1200;
  *
  * Returns a cleanup function that stops the loop and detaches every listener.
  */
-export function initHeroBackdrop(
+function initLabelBackdrop(
   root: HTMLElement,
   canvas: HTMLCanvasElement,
   options: HeroBackdropOptions = {},
@@ -684,5 +684,55 @@ export function initHeroBackdrop(
     root.removeEventListener('pointerleave', onPointerLeave);
     window.removeEventListener('resize', scheduleRebuild);
     drift?.style.removeProperty('animation-play-state');
+  };
+}
+
+/** CSS supplies the touch halos even without JS. Allocate the two canvas
+ * buffers only when the primary input supports the interactive label field. */
+export function initHeroBackdrop(
+  root: HTMLElement,
+  canvas: HTMLCanvasElement,
+  options: HeroBackdropOptions = {},
+): () => void {
+  const touchQuery = window.matchMedia('(hover: none), (pointer: coarse)');
+  let cleanupLabels: (() => void) | undefined;
+  let visible = true;
+
+  function syncInput() {
+    if (touchQuery.matches) {
+      cleanupLabels?.();
+      cleanupLabels = undefined;
+      // Release an existing bitmap when the input changes to touch.
+      canvas.width = 300;
+      canvas.height = 150;
+      delete canvas.dataset.ready;
+    } else {
+      cleanupLabels ??= initLabelBackdrop(root, canvas, options);
+    }
+  }
+
+  function syncVisibility() {
+    root.toggleAttribute('data-hero-paused', !visible || document.hidden);
+  }
+
+  const observer =
+    typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver((entries) => {
+          visible = entries.some((entry) => entry.isIntersecting);
+          syncVisibility();
+        })
+      : null;
+  observer?.observe(root);
+  touchQuery.addEventListener('change', syncInput);
+  document.addEventListener('visibilitychange', syncVisibility);
+  syncVisibility();
+  syncInput();
+
+  return () => {
+    cleanupLabels?.();
+    observer?.disconnect();
+    touchQuery.removeEventListener('change', syncInput);
+    document.removeEventListener('visibilitychange', syncVisibility);
+    root.removeAttribute('data-hero-paused');
   };
 }
