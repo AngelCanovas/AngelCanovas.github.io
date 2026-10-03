@@ -6,14 +6,30 @@ export interface Quote {
 }
 
 export interface QuoteRotatorOptions {
-  interval?: number;
-  changeDelay?: number;
   reducedMotion?: boolean;
   pauseButton?: HTMLButtonElement | null;
 }
 
+function readQuotes(root: HTMLElement): Quote[] {
+  try {
+    const value: unknown = JSON.parse(root.dataset.quotes ?? '[]');
+    if (!Array.isArray(value)) return [];
+    return value.filter(
+      (quote: unknown): quote is Quote =>
+        typeof quote === 'object' &&
+        quote !== null &&
+        'text' in quote &&
+        typeof quote.text === 'string' &&
+        'author' in quote &&
+        typeof quote.author === 'string',
+    );
+  } catch {
+    return [];
+  }
+}
+
 /**
- * Rotate a quote card every `interval` ms with a fade transition, pausing while
+ * Rotate a quote card at its `data-interval` with a fade transition, pausing while
  * the pointer hovers it, the keyboard focus is inside it or the user toggles the
  * pause button. Quotes are read from the card's `data-quotes` JSON. With
  * `prefers-reduced-motion` the rotator stays still and the button is hidden.
@@ -27,24 +43,22 @@ export function initQuoteRotator(root: HTMLElement, options: QuoteRotatorOptions
   const textNode: HTMLElement = textEl;
   const authorNode: HTMLElement = authorEl;
 
-  let quotes: Quote[] = [];
-  try {
-    quotes = JSON.parse(root.dataset.quotes ?? '[]') as Quote[];
-  } catch {
-    return () => {};
-  }
+  const quotes = readQuotes(root);
   if (quotes.length < 2) return () => {};
 
-  const interval = options.interval ?? (Number(root.dataset.interval) || 30000);
-  const changeDelay = options.changeDelay ?? 320;
+  const interval = Number(root.dataset.interval) || 30000;
   const pauseButton = options.pauseButton ?? null;
-  const reducedMotion = options.reducedMotion ?? prefersReducedMotion();
+  if (options.reducedMotion ?? prefersReducedMotion()) {
+    if (pauseButton) pauseButton.hidden = true;
+    return () => {};
+  }
 
   let index = Math.max(
     0,
     quotes.findIndex((quote) => quote.text === textEl.textContent),
   );
   let hovering = false;
+  let focused = false;
   let userPaused = false;
   let pendingTimer = 0;
 
@@ -57,17 +71,13 @@ export function initQuoteRotator(root: HTMLElement, options: QuoteRotatorOptions
       authorNode.textContent = `— ${quote.author}`;
       root.classList.remove('is-changing');
     };
-    if (reducedMotion) {
-      update();
-      return;
-    }
     root.classList.add('is-changing');
     window.clearTimeout(pendingTimer);
-    pendingTimer = window.setTimeout(update, changeDelay);
+    pendingTimer = window.setTimeout(update, 320);
   }
 
   function nextQuote() {
-    if (hovering || userPaused) return;
+    if (hovering || focused || userPaused) return;
     const offset = 1 + Math.floor(Math.random() * (quotes.length - 1));
     show((index + offset) % quotes.length);
   }
@@ -84,32 +94,35 @@ export function initQuoteRotator(root: HTMLElement, options: QuoteRotatorOptions
     syncPauseButton();
   };
 
-  if (reducedMotion) {
-    if (pauseButton) pauseButton.hidden = true;
-  } else {
-    pauseButton?.addEventListener('click', onPauseClick);
-    syncPauseButton();
-  }
+  pauseButton?.addEventListener('click', onPauseClick);
+  syncPauseButton();
 
-  const timer = reducedMotion ? 0 : window.setInterval(nextQuote, interval);
+  const timer = window.setInterval(nextQuote, interval);
   const onEnter = () => {
     hovering = true;
   };
   const onLeave = () => {
     hovering = false;
   };
+  const onFocusIn = () => {
+    focused = true;
+  };
+  const onFocusOut = (event: FocusEvent) => {
+    focused = event.relatedTarget instanceof Node && root.contains(event.relatedTarget);
+  };
   root.addEventListener('mouseenter', onEnter);
   root.addEventListener('mouseleave', onLeave);
-  root.addEventListener('focusin', onEnter);
-  root.addEventListener('focusout', onLeave);
+  root.addEventListener('focusin', onFocusIn);
+  root.addEventListener('focusout', onFocusOut);
 
   return () => {
-    if (timer) window.clearInterval(timer);
+    window.clearInterval(timer);
     window.clearTimeout(pendingTimer);
     pauseButton?.removeEventListener('click', onPauseClick);
     root.removeEventListener('mouseenter', onEnter);
     root.removeEventListener('mouseleave', onLeave);
-    root.removeEventListener('focusin', onEnter);
-    root.removeEventListener('focusout', onLeave);
+    root.removeEventListener('focusin', onFocusIn);
+    root.removeEventListener('focusout', onFocusOut);
+    root.classList.remove('is-changing');
   };
 }

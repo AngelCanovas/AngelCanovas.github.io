@@ -116,4 +116,50 @@ describe('initQuoteRotator', () => {
     vi.advanceTimersByTime(5000);
     expect(root.querySelector('[data-quote-text]')?.textContent).toBe('First quote');
   });
+
+  it('keeps paused under the pointer when keyboard focus leaves', () => {
+    const { root } = setup();
+    const cleanup = initQuoteRotator(root);
+    root.dispatchEvent(new Event('mouseenter'));
+    root.dispatchEvent(new Event('focusin'));
+    root.dispatchEvent(new FocusEvent('focusout'));
+    vi.advanceTimersByTime(5000);
+    expect(root.querySelector('[data-quote-text]')?.textContent).toBe('First quote');
+    root.dispatchEvent(new Event('mouseleave'));
+    vi.advanceTimersByTime(1000 + 320);
+    expect(root.querySelector('[data-quote-text]')?.textContent).not.toBe('First quote');
+    cleanup();
+  });
+
+  it('keeps paused while focus moves between controls within the card', () => {
+    const { root, button } = setup();
+    const cleanup = initQuoteRotator(root);
+    root.dispatchEvent(new Event('focusin'));
+    root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: button }));
+    vi.advanceTimersByTime(5000);
+    expect(root.querySelector('[data-quote-text]')?.textContent).toBe('First quote');
+    cleanup();
+  });
+
+  it.each(['null', '{}', '[null, 42]', '[{"text": "Missing author"}]'])(
+    'ignores a valid JSON payload with an invalid quote shape: %s',
+    (payload) => {
+      const { root } = setup(payload);
+      const cleanup = initQuoteRotator(root);
+      vi.advanceTimersByTime(5000);
+      expect(root.querySelector('[data-quote-text]')?.textContent).toBe('First quote');
+      cleanup();
+    },
+  );
+
+  it('restores visibility when disposed during a fade', () => {
+    const { root } = setup();
+    const cleanup = initQuoteRotator(root);
+    vi.advanceTimersByTime(1000);
+    expect(root.classList.contains('is-changing')).toBe(true);
+    cleanup();
+    expect(root.classList.contains('is-changing')).toBe(false);
+    vi.advanceTimersByTime(320);
+    expect(root.querySelector('[data-quote-text]')?.textContent).toBe('First quote');
+  });
 });

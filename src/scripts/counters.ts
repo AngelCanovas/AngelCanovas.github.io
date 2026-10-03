@@ -1,9 +1,9 @@
 import { easeOutCubic, formatNumber } from '../lib/format';
+import { localeTag } from '../lib/routes';
+import { resolveLang } from '../lib/types';
 import { prefersReducedMotion } from './scroll-utils';
 
 export interface CounterOptions {
-  duration?: number;
-  threshold?: number;
   locale?: string;
   reducedMotion?: boolean;
 }
@@ -19,9 +19,8 @@ export function initCounters(options: CounterOptions = {}): () => void {
   const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-count-to]'));
   if (nodes.length === 0) return () => {};
 
-  const locale = options.locale ?? (document.documentElement.lang === 'es' ? 'es-ES' : 'en-US');
-  const duration = options.duration ?? 1600;
-  const threshold = options.threshold ?? 0.4;
+  const locale = options.locale ?? localeTag(resolveLang(document.documentElement.lang));
+  const duration = 1600;
   const reducedMotion = options.reducedMotion ?? prefersReducedMotion();
 
   const frames = new Set<number>();
@@ -73,7 +72,7 @@ export function initCounters(options: CounterOptions = {}): () => void {
         observer.unobserve(entry.target);
       }
     },
-    { threshold },
+    { threshold: 0.4 },
   );
   nodes.forEach((node) => observer.observe(node));
   return () => {

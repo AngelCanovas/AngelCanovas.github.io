@@ -1,12 +1,10 @@
 import { prefersReducedMotion } from './scroll-utils';
 
-export interface TypedTextOptions {
-  typeDelay?: number;
-  deleteDelay?: number;
-  holdDelay?: number;
-  initialDelay?: number;
-  reducedMotion?: boolean;
-}
+const TYPE_DELAY = 85;
+const DELETE_DELAY = 40;
+const HOLD_DELAY = 1800;
+const INITIAL_DELAY = 1400;
+const NEXT_ITEM_DELAY = 350;
 
 /**
  * Lightweight "typewriter" effect: types each item, holds, deletes it and moves
@@ -25,17 +23,9 @@ function readItems(element: HTMLElement): string[] {
   return [];
 }
 
-export function initTypedText(element: HTMLElement, options: TypedTextOptions = {}): () => void {
+export function initTypedText(element: HTMLElement): () => void {
   const items = readItems(element);
-  if (items.length < 2) return () => {};
-
-  const reducedMotion = options.reducedMotion ?? prefersReducedMotion();
-  if (reducedMotion) return () => {};
-
-  const typeDelay = options.typeDelay ?? 85;
-  const deleteDelay = options.deleteDelay ?? 40;
-  const holdDelay = options.holdDelay ?? 1800;
-  const initialDelay = options.initialDelay ?? 1400;
+  if (items.length < 2 || prefersReducedMotion()) return () => {};
 
   let itemIndex = 0;
   let charIndex = items[0].length;
@@ -47,18 +37,18 @@ export function initTypedText(element: HTMLElement, options: TypedTextOptions = 
     charIndex += deleting ? -1 : 1;
     element.textContent = current.slice(0, Math.max(0, charIndex));
 
-    let delay = deleting ? deleteDelay : typeDelay;
+    let delay = deleting ? DELETE_DELAY : TYPE_DELAY;
     if (!deleting && charIndex >= current.length) {
-      delay = holdDelay;
+      delay = HOLD_DELAY;
       deleting = true;
     } else if (deleting && charIndex <= 0) {
       deleting = false;
       itemIndex = (itemIndex + 1) % items.length;
-      delay = 350;
+      delay = NEXT_ITEM_DELAY;
     }
     timer = window.setTimeout(tick, delay);
   }
 
-  timer = window.setTimeout(tick, initialDelay);
+  timer = window.setTimeout(tick, INITIAL_DELAY);
   return () => window.clearTimeout(timer);
 }
