@@ -30,6 +30,8 @@ See [deployment](docs/deployment.md), [security policy](SECURITY.md),
 [dependency patches](docs/dependency-security.md) and [UI contracts](docs/ui-provenance.md).
 Pushes to `main` validate and publish the same tested build through GitHub Actions.
 QA reports and traces are kept out of public workflow artifacts.
+Use the [published-update checklist](docs/verification.md) to compare the served
+revision, routes and canonical PDF hashes with the successful CI run.
 
 ## Rights
 
