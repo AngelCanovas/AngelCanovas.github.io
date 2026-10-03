@@ -50,6 +50,8 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run test:e2e
+        env:
+          FONTCONFIG_FILE: ${{ github.workspace }}/e2e/fontconfig.conf
       - run: node scripts/check-report-privacy.mjs
       - run: node --test scripts/serve-dist.test.mjs
       - name: Lighthouse desktop

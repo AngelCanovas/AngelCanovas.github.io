@@ -15,3 +15,9 @@ Linux visual references compare with zero differing pixels. Preserve the 158
 reference images; review only deliberate URL changes in the online CV footer.
 Windows browser tests capture review images and validate geometry and behavior.
 Neither visual agreement nor a new Git history establishes resource ownership.
+
+The recorded Linux canvas fallback is DejaVu Sans Mono. CI provides
+`e2e/fontconfig.conf` to reproduce that fallback when a runner also has Liberation
+Mono installed. This affects the browser test environment only, preserves the
+production CSS font stack and does not relax pixel tolerances. Visual tests wait
+for the canvas paint signal before capturing.

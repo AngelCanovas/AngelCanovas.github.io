@@ -236,7 +236,7 @@ test('fonts are self-hosted: no request leaves the origin', async ({ page }) => 
   const woff2Requests: string[] = [];
   page.on('request', (request) => {
     const url = request.url();
-    if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
+    if (['fonts.googleapis.com', 'fonts.gstatic.com'].includes(new URL(url).hostname)) {
       externalFontRequests.push(url);
     }
     if (url.endsWith('.woff2')) woff2Requests.push(url);

@@ -5,22 +5,22 @@ import { buildPersonSchema, buildWebSiteSchema, currentEmployer } from './struct
 
 const base = buildPersonSchema({
   lang: 'en',
-  url: 'https://acanovas.dev/',
-  image: 'https://acanovas.dev/profile.webp',
+  url: 'https://angelcanovas.github.io/CV/',
+  image: 'https://angelcanovas.github.io/CV/profile.webp',
 });
 
 describe('buildPersonSchema', () => {
   it('builds a schema.org Person node with the canonical url and image', () => {
     expect(base['@context']).toBe('https://schema.org');
     expect(base['@type']).toBe('Person');
-    expect(base.url).toBe('https://acanovas.dev/');
-    expect(base.image).toBe('https://acanovas.dev/profile.webp');
+    expect(base.url).toBe('https://angelcanovas.github.io/CV/');
+    expect(base.image).toBe('https://angelcanovas.github.io/CV/profile.webp');
   });
 
   it('links the public professional profiles', () => {
     expect(base.sameAs).toHaveLength(2);
-    expect(base.sameAs.some((url) => url.includes('github.com'))).toBe(true);
-    expect(base.sameAs.some((url) => url.includes('linkedin.com'))).toBe(true);
+    expect(base.sameAs.some((url) => new URL(url).hostname === 'github.com')).toBe(true);
+    expect(base.sameAs.some((url) => new URL(url).hostname === 'www.linkedin.com')).toBe(true);
   });
 
   it('localizes the job title', () => {
@@ -34,7 +34,7 @@ describe('buildPersonSchema', () => {
   });
 
   it('describes the person, employer, education and credentials', () => {
-    expect(base['@id']).toBe('https://acanovas.dev/#person');
+    expect(base['@id']).toBe('https://angelcanovas.github.io/CV/#person');
     expect(base.description.length).toBeGreaterThan(80);
     expect(base.worksFor?.name).toBe('Capgemini');
     expect(base.alumniOf.map((entry) => entry.name)).toContain('IES Ingeniero de la Cierva');
@@ -116,12 +116,12 @@ describe('currentEmployer', () => {
 describe('buildWebSiteSchema', () => {
   it('builds a WebSite node declared in both site languages', () => {
     const site = buildWebSiteSchema({
-      url: 'https://acanovas.dev/',
+      url: 'https://angelcanovas.github.io/CV/',
       name: 'Angel Cánovas Mula',
     });
     expect(site['@context']).toBe('https://schema.org');
     expect(site['@type']).toBe('WebSite');
-    expect(site.url).toBe('https://acanovas.dev/');
+    expect(site.url).toBe('https://angelcanovas.github.io/CV/');
     expect(site.inLanguage).toEqual(['en', 'es']);
   });
 });

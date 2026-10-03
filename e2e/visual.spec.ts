@@ -9,6 +9,10 @@ const viewports = [
 ];
 
 async function ready(page: Page) {
+  // The canvas is painted in an idle callback. Its ready signal, rather than
+  // machine speed, determines when the visual reference is meaningful.
+  const canvas = page.locator('#hero-canvas');
+  if (await canvas.count()) await expect(canvas).toHaveAttribute('data-ready', 'true');
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(
