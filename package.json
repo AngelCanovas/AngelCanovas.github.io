@@ -1,0 +1,53 @@
+{
+  "name": "cv",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/generate-og-image.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lighthouse": "npx --yes @lhci/cli@0.15.1 autorun",
+    "lighthouse:mobile": "npx --yes @lhci/cli@0.15.1 autorun --config=lighthouserc.mobile.json",
+    "cv:pdf": "node scripts/generate-cv-pdf.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource-variable/roboto": "^5.3.0",
+    "@fontsource/raleway": "^5.3.0",
+    "astro": "^7.3.2",
+    "bootstrap": "^5.3.3",
+    "http-cache-semantics": "file:vendor/http-cache-semantics"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.10.2",
+    "astro-purgecss": "^7.0.0",
+    "braces": "file:vendor/braces",
+    "eslint": "^10.10.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "globals": "^17.12.0",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.7",
+    "prettier-plugin-astro": "^1.0.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.1"
+  }
+}

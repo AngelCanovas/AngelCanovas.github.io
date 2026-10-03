@@ -1,0 +1,59 @@
+/* Public design contract, measured at afc0cae. Values are shared by pages,
+   component styles and the Hero canvas. See docs/ui-provenance.md. */
+:root {
+  color-scheme: light dark;
+  --default-font:
+    'Roboto Variable', 'Roboto', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --heading-font: 'Raleway', sans-serif;
+  --nav-font: var(--heading-font);
+  --mono-font:
+    ui-monospace, 'SFMono-Regular', 'Cascadia Mono', 'Segoe UI Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+  --background-color: light-dark(#fff, #0b1219);
+  --default-color: light-dark(#272829, #c9d1d9);
+  --heading-color: light-dark(#050d18, #f0f4f8);
+  --surface-color: light-dark(#fff, #151f2b);
+  --panel-color: light-dark(#f4fafd, #101c28);
+  --contrast-color: #fff;
+  --accent-color: #149ddd;
+  --accent-ink: light-dark(#0d74a4, #5ac8f5);
+  --accent-fill: #0d74a4;
+  --hero-labels-ink: light-dark(#8f9dae, #59626e);
+  --nav-color: light-dark(#5c6470, #a8a9b4);
+  --nav-hover-color: light-dark(#10161f, #fff);
+  --radius-card: 1rem;
+  --radius-pill: 50rem;
+  --sidebar-width: 300px;
+  --section-space: 60px;
+  --title-space: 60px;
+  --title-size: 32px;
+  --title-gap: 20px;
+  --control-size: 40px;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+.light-background {
+  --background-color: var(--panel-color);
+}
+.cv-page {
+  color-scheme: light;
+  --background-color: #fff;
+  --default-color: #272829;
+  --heading-color: #050d18;
+  --surface-color: #fff;
+  --accent-ink: #0d74a4;
+}
+@media (max-width: 768px) {
+  :root {
+    --section-space: 48px;
+    --title-space: 36px;
+    --title-size: 26px;
+    --title-gap: 14px;
+  }
+}

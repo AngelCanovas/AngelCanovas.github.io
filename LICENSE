@@ -1,0 +1,16 @@
+Copyright (c) 2026 Angel Cánovas Mula. All rights reserved.
+
+Original code, text, CV data, translations and photographs are reserved and may
+not be reused without permission. No open-source license is granted to them.
+
+Third-party components retain their respective licenses:
+- Bootstrap 5 and Bootstrap Icons 1.11.3: MIT.
+- Roboto and Raleway fonts: SIL Open Font License 1.1.
+- Astro and npm dependencies: the licenses of their respective packages.
+- Locally patched braces: MIT, preserved in vendor/braces/LICENSE.
+- Locally patched http-cache-semantics: BSD-2-Clause, preserved in
+  vendor/http-cache-semantics/LICENSE.
+
+Full Bootstrap, icon and font notices are in public/third-party-notices.txt.
+The photograph and its derived icons are owner-provided assets; documentary
+confirmation of photographic authorship remains outstanding.

@@ -1,0 +1,13 @@
+---
+interface Props {
+  title: string;
+  summary: string;
+}
+const { title, summary } = Astro.props;
+---
+
+<header class="container section-title" data-aos="fade-up">
+  <h2>{title}</h2>
+  <p>{summary}</p>
+  <slot />
+</header>

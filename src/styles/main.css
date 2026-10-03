@@ -1,0 +1,209 @@
+/* Portfolio style entry. Original implementations and DOM contracts are
+   documented in docs/ui-provenance.md. No legacy stylesheet is imported. */
+@import './tokens.css';
+@import './base.css';
+@import './chrome.css';
+
+/* Shared surface recipe: one radius, one neutral border, no shadow. The big
+   shadow is reserved for the quote card (#quote); everything else separates
+   itself from the background with the border alone. */
+.card {
+  --bs-card-bg: var(--surface-color);
+  --bs-card-border-color: color-mix(in srgb, var(--default-color), transparent 90%);
+  --bs-card-border-radius: var(--radius-card);
+  --bs-card-color: var(--default-color);
+  background-color: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-radius: var(--radius-card);
+  color: var(--default-color);
+}
+
+/* Shared chip recipe: the single skin for technology tags across Skills,
+   Portfolio and Resume. Static by design — a chip is data, not a control, so
+   it carries no hover affordance. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--default-color);
+  background-color: color-mix(in srgb, var(--default-color), transparent 95%);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+  border-radius: var(--radius-pill);
+}
+
+/* The only accent-filled chip set: the stack of the current role in Resume
+   (first experience entry). Nothing else uses the solid accent fill. */
+.chip--accent {
+  color: var(--contrast-color);
+  background-color: var(--accent-fill);
+  border-color: var(--accent-fill);
+}
+
+/* Visible keyboard focus indicator (AA: at least 3:1 against the background) */
+:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Bootstrap zeroes the outline on buttons; restore it with enough specificity. */
+.btn:focus-visible,
+.filter-btn:focus-visible,
+.quote-pause:focus-visible,
+.contact-copy:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+.header :focus-visible,
+.scroll-top:focus-visible {
+  outline-color: light-dark(#0d74a4, var(--contrast-color));
+}
+
+/* The skip link must paint above the fixed sidebar header (z-index 997) and
+   uses the house tokens instead of Bootstrap's primary blue. */
+.skip-link {
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: var(--contrast-color);
+  background-color: var(--accent-fill);
+  border-radius: 0.5rem;
+}
+
+.skip-link:hover,
+.skip-link:focus {
+  color: var(--contrast-color);
+  background-color: color-mix(in srgb, var(--accent-fill), black 15%);
+}
+
+/* Project-owned Hero box and reveal behavior. */
+.hero {
+  min-block-size: 100vh;
+  position: relative;
+  padding-block: 80px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  /* Background and overflow live here (global) so the print override below and
+     the responsive tweaks keep their usual cascade weight; `Hero.astro` only
+     styles the hero's own children. */
+  background:
+    radial-gradient(ellipse at 20% 20%, light-dark(#d9ecfa, #0b2233) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030) 0%, transparent 60%),
+    light-dark(#f2f7fc, #040b14);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hidden only once the module opted in, so no-JS keeps the content visible. */
+  .aos-ready {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+
+  .aos-ready.aos-preload {
+    transition: none;
+  }
+
+  .aos-ready.aos-animate {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* No stagger on small screens, where the reveal is already immediate. */
+@media screen and (max-width: 768px) {
+  [data-aos-delay] {
+    transition-delay: 0 !important;
+  }
+}
+
+/* Project-owned print and small-screen enhancements. */
+@media print {
+  .header,
+  .scroll-top,
+  .mobile-nav-overlay,
+  .header-toggle,
+  .hero-backdrop,
+  .hero-glow,
+  .hero-availability,
+  .hero-actions,
+  .portfolio-filters,
+  #quote,
+  .stats,
+  .footer .credits {
+    display: none !important;
+  }
+
+  .header ~ main,
+  .header ~ #footer {
+    margin-left: 0 !important;
+  }
+
+  [data-aos],
+  .aos-ready {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  section,
+  .section {
+    padding: 12px 0;
+    overflow: visible;
+    background: #fff !important;
+  }
+
+  .hero {
+    min-height: auto;
+    background: #fff !important;
+    overflow: hidden;
+  }
+
+  .hero h1,
+  .hero .hero-role,
+  .hero .hero-subtitle {
+    color: #000 !important;
+  }
+
+  .resume-item,
+  .service-card,
+  .portfolio-card,
+  .skill-group,
+  .contact-card,
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  .section-title h2 {
+    background-image: linear-gradient(#000, #000);
+  }
+}
+
+@media (max-width: 400px) {
+  .hero .container {
+    padding-inline: 1.25rem;
+  }
+  .hero-btn {
+    width: 100%;
+    margin-right: 0 !important;
+    justify-content: center;
+  }
+}

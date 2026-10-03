@@ -1,0 +1,68 @@
+---
+import Layout from './Layout.astro';
+import Icon from '../components/Icon.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Stats from '../components/Stats.astro';
+import Skills from '../components/Skills.astro';
+import Resume from '../components/Resume.astro';
+import Portfolio from '../components/Portfolio.astro';
+import Services from '../components/Services.astro';
+import Notes from '../components/Notes.astro';
+import Contact from '../components/Contact.astro';
+import Quote from '../components/Quote.astro';
+import Footer from '../components/Footer.astro';
+import { personal } from '../data/site';
+import { buildWebSiteSchema } from '../lib/structured-data';
+import { safeJson } from '../lib/security';
+import { siteUrl } from '../lib/site-url';
+import { getContent, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ui = getContent(lang).ui;
+const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fullName });
+---
+
+<Layout lang={lang}>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={safeJson(websiteSchema)}
+  ></script>
+  <script>
+    import { initLanguageDetection } from '../scripts/language-detection';
+
+    initLanguageDetection();
+  </script>
+  <Header lang={lang} />
+  <div id="mobile-nav-overlay" class="mobile-nav-overlay d-xl-none" aria-hidden="true"></div>
+  <main id="main-content" class="main" tabindex="-1">
+    <Hero lang={lang} />
+    <About lang={lang} />
+    <Stats lang={lang} />
+    <Skills lang={lang} />
+    <Resume lang={lang} />
+    <Portfolio lang={lang} />
+    <Services lang={lang} />
+    <Notes lang={lang} />
+    <Contact lang={lang} />
+    <Quote lang={lang} />
+  </main>
+
+  <Footer lang={lang} />
+
+  <!-- Scroll Top -->
+  <a
+    href="#"
+    id="scroll-top"
+    class="scroll-top d-flex align-items-center justify-content-center"
+    aria-label={ui.scrollTop}
+  >
+    <Icon name="arrow-up-short" />
+  </a>
+</Layout>

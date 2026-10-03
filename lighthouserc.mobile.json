@@ -1,0 +1,111 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://127.0.0.1:4322/CV/",
+        "http://127.0.0.1:4322/CV/es/",
+        "http://127.0.0.1:4322/CV/cv/",
+        "http://127.0.0.1:4322/CV/cv/es/"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "formFactor": "mobile",
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36 Chrome-Lighthouse"
+      },
+      "startServerCommand": "node scripts/serve-dist.mjs --port 4322",
+      "startServerReadyPattern": "serving"
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": [
+          "warn",
+          {
+            "minScore": 0.8
+          }
+        ],
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "categories:best-practices": [
+          "warn",
+          {
+            "minScore": 0.9
+          }
+        ],
+        "categories:seo": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "largest-contentful-paint": [
+          "error",
+          {
+            "maxNumericValue": 4500
+          }
+        ],
+        "cumulative-layout-shift": [
+          "error",
+          {
+            "maxNumericValue": 0.05
+          }
+        ],
+        "total-blocking-time": [
+          "warn",
+          {
+            "maxNumericValue": 150
+          }
+        ],
+        "speed-index": [
+          "warn",
+          {
+            "maxNumericValue": 4500
+          }
+        ],
+        "resource-summary:document:size": [
+          "warn",
+          {
+            "maxNumericValue": 175000
+          }
+        ],
+        "resource-summary:stylesheet:size": [
+          "warn",
+          {
+            "maxNumericValue": 62000
+          }
+        ],
+        "resource-summary:script:size": [
+          "warn",
+          {
+            "maxNumericValue": 38000
+          }
+        ],
+        "resource-summary:font:size": [
+          "warn",
+          {
+            "maxNumericValue": 78000
+          }
+        ],
+        "resource-summary:total:size": [
+          "warn",
+          {
+            "maxNumericValue": 400000
+          }
+        ],
+        "resource-summary:total:count": [
+          "warn",
+          {
+            "maxNumericValue": 52
+          }
+        ]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}

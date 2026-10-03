@@ -1,0 +1,61 @@
+/* Document, shared heading composition and surfaces. Bootstrap supplies its
+   reset, container/grid and utility classes; page components own their internals. */
+body {
+  font-family: var(--default-font);
+  background: var(--background-color);
+  color: var(--default-color);
+}
+:is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--heading-font);
+  color: var(--heading-color);
+}
+a {
+  text-decoration: none;
+  color: var(--accent-ink);
+  transition:
+    color 0.3s,
+    background-color 0.3s,
+    border-color 0.3s;
+}
+a:hover {
+  text-decoration: none;
+  color: color-mix(in srgb, var(--accent-ink) 80%, black);
+}
+::selection {
+  background: color-mix(in srgb, var(--accent-color), transparent 75%);
+}
+section,
+.section {
+  padding-block: var(--section-space);
+  color: var(--default-color);
+  background-color: var(--background-color);
+  overflow: clip;
+}
+.section-title {
+  padding-bottom: var(--title-space);
+  position: relative;
+}
+.section-title h2 {
+  font-size: var(--title-size);
+  font-weight: 700;
+  margin-bottom: var(--title-gap);
+  padding-bottom: var(--title-gap);
+  background-image: linear-gradient(var(--accent-color), var(--accent-color));
+  background-size: 50px 3px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+}
+.section-title p {
+  margin-bottom: 0;
+  max-width: 62ch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+@media (max-width: 1199px) {
+  section[id] {
+    scroll-margin-top: 72px;
+  }
+}

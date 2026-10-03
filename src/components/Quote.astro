@@ -1,0 +1,167 @@
+---
+import Icon from './Icon.astro';
+import { quotes } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+import { safeJson } from '../lib/security';
+
+interface Props {
+  lang?: Lang;
+  interval?: number;
+}
+const { lang = 'en', interval = 30000 } = Astro.props;
+const t = getContent(lang);
+const items = quotes.map((quote) => ({ text: quote.text[lang], author: quote.author }));
+const first = items[Math.floor(Math.random() * items.length)];
+---
+
+<section id="quote" class="quote-section section" aria-label={t.quote.ariaLabel}>
+  <h2 class="visually-hidden">{t.quote.heading}</h2>
+  <div class="container">
+    <figure
+      class="quote-card"
+      data-quote
+      data-interval={interval}
+      data-quotes={safeJson(items)}
+      data-aos="fade-up"
+    >
+      <Icon name="quote" class="quote-mark" />
+      <blockquote class="quote-text" data-quote-text>
+        {first.text}
+      </blockquote>
+      <figcaption class="quote-author" data-quote-author>
+        — {first.author}
+      </figcaption>
+      <button
+        type="button"
+        class="quote-pause"
+        data-quote-pause
+        aria-pressed="false"
+        aria-label={t.quote.pause}
+        data-label-pause={t.quote.pause}
+        data-label-resume={t.quote.resume}
+      >
+        <Icon name="pause" class="quote-pause-icon quote-pause-icon--pause" />
+        <Icon name="play" class="quote-pause-icon quote-pause-icon--resume" />
+      </button>
+    </figure>
+  </div>
+</section>
+
+<script>
+  import { initQuoteRotator } from '../scripts/quote-rotator';
+  import { safeInit } from '../scripts/safe-init';
+
+  const card = document.querySelector<HTMLElement>('[data-quote]');
+  const pauseButton = document.querySelector<HTMLButtonElement>('[data-quote-pause]');
+  safeInit(() => {
+    if (card) initQuoteRotator(card, { pauseButton });
+  });
+</script>
+
+<style>
+  .quote-card {
+    position: relative;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    background: var(--surface-color);
+    border-radius: var(--radius-card);
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 82%);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+  .quote-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--accent-color), transparent 88%),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  :global(.quote-mark) {
+    position: relative;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--accent-color);
+  }
+  .quote-text {
+    position: relative;
+    font-family: var(--heading-font);
+    font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--heading-color);
+    margin: 1rem 0 1.25rem;
+    min-height: 3em;
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s ease;
+  }
+  .quote-author {
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: color-mix(in srgb, var(--default-color), transparent 25%);
+    transition: opacity 0.32s ease;
+  }
+  .is-changing .quote-text,
+  .is-changing .quote-author {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .quote-pause {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--accent-ink), transparent 65%);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--accent-ink);
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+  .quote-pause:hover {
+    background: color-mix(in srgb, var(--accent-ink), transparent 90%);
+    border-color: var(--accent-ink);
+  }
+  .quote-pause[hidden] {
+    display: none;
+  }
+  :global(.quote-pause .quote-pause-icon--resume) {
+    display: none;
+  }
+  :global(.quote-pause[aria-pressed='true'] .quote-pause-icon--pause) {
+    display: none;
+  }
+  :global(.quote-pause[aria-pressed='true'] .quote-pause-icon--resume) {
+    display: inline;
+  }
+  @media (max-width: 575px) {
+    .quote-card {
+      padding: 2.25rem 1.5rem;
+    }
+    .quote-text {
+      min-height: 4.5em;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quote-text,
+    .quote-author {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import { withBase } from '../lib/base-path';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  lang="en"
+  title="404 — Angel Cánovas Mula"
+  description="Page not found. La página que buscas no existe o se ha movido."
+  path="/404.html"
+  robots="noindex, follow"
+>
+  <main id="main-content" class="error-page" tabindex="-1">
+    <div class="container text-center">
+      <p class="error-code">404</p>
+      <h1 class="error-title">Page not found</h1>
+      <p class="error-text">The page you are looking for doesn't exist or has been moved.</p>
+      <p class="error-text" lang="es">
+        La página que buscas no existe o se ha movido.
+      </p>
+      <div class="error-actions">
+        <a href={withBase('/')} class="btn btn-primary error-btn">
+          Back to home
+        </a>
+        <a href={withBase('/es/')} class="btn btn-primary error-btn" lang="es">
+          Volver al inicio
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .error-code {
+    font-family: var(--heading-font);
+    font-size: clamp(5rem, 18vw, 10rem);
+    font-weight: 700;
+    line-height: 1;
+    margin: 0;
+    color: var(--accent-color);
+  }
+  .error-title {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin: 0.5rem 0 1rem;
+  }
+  .error-text {
+    max-width: 32rem;
+    margin: 0 auto 0.5rem;
+    color: color-mix(in srgb, var(--default-color), transparent 25%);
+  }
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  .error-btn {
+    background-color: var(--accent-fill);
+    border-color: var(--accent-fill);
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 50px;
+  }
+  .error-btn:hover {
+    background-color: color-mix(in srgb, var(--accent-fill), black 15%);
+    border-color: color-mix(in srgb, var(--accent-fill), black 15%);
+  }
+</style>

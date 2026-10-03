@@ -1,0 +1,378 @@
+﻿---
+import Icon from './Icon.astro';
+import { personal } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+import { cvPdfHref } from '../lib/routes';
+import { safeJson } from '../lib/security';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = getContent(lang);
+---
+
+<section id="hero" class="hero section">
+  <div class="hero-backdrop" aria-hidden="true">
+    <div class="hero-backdrop-drift" data-hero-drift>
+      <canvas id="hero-canvas" class="hero-canvas"></canvas>
+    </div>
+  </div>
+  <div class="hero-glow" aria-hidden="true"></div>
+
+  <div class="container hero-content">
+    <div class="hero-availability">
+      <span class="hero-availability-dot" aria-hidden="true"></span>
+      <span>{t.hero.availability}</span>
+    </div>
+    <p class="hero-eyebrow">{t.hero.eyebrow}</p>
+    <h1 class="hero-name">{personal.fullName}</h1>
+    <p class="hero-role">
+      <span class="hero-role-stack" aria-hidden="true">
+        <span class="hero-role-active">
+          <span class="typed" data-typed-items={safeJson(t.hero.roles)}>
+            {t.hero.roles[0]}
+          </span>
+          <span class="typed-cursor typed-cursor--blink"></span>
+        </span>
+        {t.hero.roles.map((role) => (
+          <span class="hero-role-size">
+            {role}
+            <span class="typed-cursor" />
+          </span>
+        ))}
+      </span>
+      <span class="visually-hidden">{t.hero.roles.join(' · ')}</span>
+    </p>
+    <p class="hero-subtitle mt-3">{t.hero.headline}</p>
+    <div class="hero-actions mt-4">
+      <a href="#contact" class="hero-btn hero-btn--primary me-2 mb-2">
+        {t.hero.ctaContact}
+      </a>
+      <a href="#resume" class="hero-btn hero-btn--ghost me-2 mb-2">
+        {t.hero.ctaResume}
+      </a>
+      <a href={cvPdfHref(lang)} class="hero-btn hero-btn--ghost mb-2" download>
+        <Icon name="download" class="me-1" />
+        {t.hero.ctaCv}
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initHeroBackdrop } from '../scripts/hero-backdrop';
+  import { safeInit } from '../scripts/safe-init';
+  import { initTypedText } from '../scripts/typed-text';
+
+  safeInit(() => {
+    const root = document.getElementById('hero');
+    const canvas = document.getElementById('hero-canvas');
+    if (root && canvas instanceof HTMLCanvasElement) {
+      initHeroBackdrop(root, canvas);
+    }
+  });
+
+  safeInit(() => {
+    const typed = document.querySelector<HTMLElement>('.typed');
+    if (typed) initTypedText(typed);
+  });
+</script>
+
+<style>
+  /* `.hero` box, background and overflow live in `main.css` (global) so the
+     print/responsive overrides there keep winning; this block only styles the
+     hero's own children. */
+  /* Backdrop of masked monospaced labels, after Cloudflare's Registrar landing
+     page: the grid drifts with the container and the canvas lights the labels
+     around the pointer. The canvas reads its tokens from this CSS â€” `color`
+     (resting ink), `outline-color` (lit glyphs), font, line-height,
+     letter-spacing, column-gap and row-gap â€” so keep both in sync. */
+  .hero-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+    /* Text safe zone: the field lives on the right so the headline keeps the
+       left half. The radial and the horizontal ramp intersect, so the grid
+       fades out before it ever reaches the copy. */
+    mask-image:
+      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
+      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
+      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
+    -webkit-mask-image:
+      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
+      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
+      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+  }
+  .hero-backdrop-drift {
+    position: absolute;
+    /* Overscan for the drift below: at least 48px / 80px, more on big screens. */
+    inset: min(-14%, -48px) min(-10%, -80px);
+    animation: hero-backdrop-drift 48s ease-in-out infinite;
+    will-change: transform;
+  }
+  @keyframes hero-backdrop-drift {
+    0%,
+    100% {
+      transform: translate3d(-66px, 0, 0);
+    }
+    25% {
+      transform: translate3d(0, -40px, 0);
+    }
+    50% {
+      transform: translate3d(66px, 0, 0);
+    }
+    75% {
+      transform: translate3d(0, 40px, 0);
+    }
+  }
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    color: var(--hero-labels-ink);
+    outline-color: var(--accent-ink);
+    font-family: var(--mono-font);
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    column-gap: 14px;
+    row-gap: 3px;
+  }
+  .hero-canvas[data-ready] {
+    opacity: 1;
+  }
+  @media (min-width: 768px) {
+    .hero-canvas {
+      font-size: 12px;
+      column-gap: 16px;
+      row-gap: 4px;
+    }
+  }
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: light-dark(
+      linear-gradient(
+        100deg,
+        rgba(242, 247, 252, 0.68) 0%,
+        rgba(242, 247, 252, 0.26) 45%,
+        rgba(242, 247, 252, 0) 100%
+      ),
+      linear-gradient(
+        100deg,
+        rgba(4, 11, 20, 0.88) 0%,
+        rgba(4, 11, 20, 0.44) 45%,
+        rgba(4, 11, 20, 0.08) 100%
+      )
+    );
+  }
+  .hero .container {
+    position: relative;
+    z-index: 3;
+  }
+  .hero-availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 50rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: light-dark(#0f4a66, #d7f2ff);
+    background: color-mix(in srgb, var(--accent-color), transparent 88%);
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 55%);
+  }
+  .hero-availability-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38ef7d;
+    box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.5);
+    animation: hero-pulse 2s infinite;
+  }
+  @keyframes hero-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(56, 239, 125, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 239, 125, 0);
+    }
+  }
+  .hero-eyebrow {
+    margin: 0 0 6px;
+    font-family: var(--nav-font);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+  .hero-role {
+    font-size: 1.6rem;
+    margin: 0.75rem 0 0;
+  }
+  /* Every role shares a grid cell so deleting or wrapping the animated text
+     cannot move the headline and buttons. Hidden copies reserve the maximum
+     height at each viewport, including before JavaScript or fonts load. */
+  .hero-role-stack {
+    display: grid;
+  }
+  .hero-role-active,
+  .hero-role-size {
+    grid-area: 1 / 1;
+  }
+  .hero-role-size {
+    visibility: hidden;
+  }
+  .typed-cursor {
+    display: inline-block;
+    width: 0.6ch;
+    color: var(--accent-ink);
+    font-weight: 400;
+  }
+  .typed-cursor::after {
+    content: '|';
+  }
+  .typed-cursor--blink {
+    animation: typed-blink 1s step-end infinite;
+  }
+  @keyframes typed-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  .hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--default-color);
+    max-width: 640px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease;
+  }
+  .hero-btn:hover,
+  .hero-btn:focus-visible {
+    transform: translateY(-2px);
+  }
+  .hero-btn--primary {
+    background-color: light-dark(var(--accent-fill), #ffffff);
+    border-color: light-dark(var(--accent-fill), #ffffff);
+    color: light-dark(#ffffff, #040b14);
+  }
+  .hero-btn--primary:hover,
+  .hero-btn--primary:focus-visible {
+    background-color: light-dark(
+      color-mix(in srgb, var(--accent-fill), black 15%),
+      color-mix(in srgb, #ffffff, var(--accent-color) 15%)
+    );
+    border-color: light-dark(
+      color-mix(in srgb, var(--accent-fill), black 15%),
+      color-mix(in srgb, #ffffff, var(--accent-color) 15%)
+    );
+    color: light-dark(#ffffff, #040b14);
+  }
+  .hero-btn--ghost {
+    color: light-dark(var(--heading-color), #ffffff);
+    border-color: light-dark(
+      color-mix(in srgb, var(--heading-color), transparent 55%),
+      rgba(255, 255, 255, 0.45)
+    );
+  }
+  .hero-btn--ghost:hover,
+  .hero-btn--ghost:focus-visible {
+    color: light-dark(var(--heading-color), #ffffff);
+    background-color: light-dark(
+      color-mix(in srgb, var(--heading-color), transparent 94%),
+      rgba(255, 255, 255, 0.12)
+    );
+    border-color: light-dark(
+      color-mix(in srgb, var(--heading-color), transparent 35%),
+      rgba(255, 255, 255, 0.7)
+    );
+  }
+  @media (max-width: 768px) {
+    /* Mobile: the grid only lives in the band below the buttons, never behind
+       the name or the actions. */
+    .hero-backdrop {
+      mask-image:
+        radial-gradient(150% 42% at 60% 100%, #000 42%, transparent 84%),
+        linear-gradient(to bottom, transparent 0%, transparent 66%, #000 84%, #000 100%);
+      -webkit-mask-image:
+        radial-gradient(150% 42% at 60% 100%, #000 42%, transparent 84%),
+        linear-gradient(to bottom, transparent 0%, transparent 66%, #000 84%, #000 100%);
+    }
+    .hero-role {
+      font-size: 1.2rem;
+    }
+    .hero-subtitle {
+      font-size: 0.95rem;
+    }
+    .hero-glow {
+      background: light-dark(
+        linear-gradient(
+          180deg,
+          rgba(242, 247, 252, 0.5) 0%,
+          rgba(242, 247, 252, 0.72) 70%,
+          rgba(242, 247, 252, 0.85) 100%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(4, 11, 20, 0.55) 0%,
+          rgba(4, 11, 20, 0.82) 70%,
+          rgba(4, 11, 20, 0.95) 100%
+        )
+      );
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-backdrop-drift {
+      animation: none;
+    }
+    .hero-glow {
+      background: light-dark(rgba(242, 247, 252, 0.7), rgba(4, 11, 20, 0.72));
+    }
+    .hero-availability-dot {
+      animation: none;
+    }
+    .typed-cursor--blink {
+      animation: none;
+    }
+  }
+</style>

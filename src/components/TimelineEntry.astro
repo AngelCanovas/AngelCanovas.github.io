@@ -1,0 +1,62 @@
+---
+// Entries share a visual timeline, while their content remains in Resume.
+interface Props {
+  end?: boolean;
+}
+const { end = false } = Astro.props;
+---
+
+<article class:list={['resume-item', 'timeline-entry', { 'timeline-entry--end': end }]}>
+  <slot />
+</article>
+
+<style>
+  .timeline-entry {
+    position: relative;
+    margin-top: -2px;
+    padding-inline-start: 20px;
+    padding-bottom: 20px;
+    /* A painted rail keeps the document's measured 2px inset without coupling
+       list content to a border. The marker is a separate ring at the rail. */
+    border-inline-start: 2px solid transparent;
+    background-image: linear-gradient(var(--accent-color), var(--accent-color));
+    background-size: 2px 100%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-origin: border-box;
+    background-clip: border-box;
+  }
+  .timeline-entry::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto auto -9px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--background-color);
+    box-shadow: inset 0 0 0 2px var(--accent-color);
+  }
+  .timeline-entry--end {
+    padding-bottom: 0;
+  }
+  .timeline-entry :global(h4) {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: color-mix(in srgb, var(--default-color), transparent 20%);
+  }
+  .timeline-entry :global(.resume-period) {
+    display: inline-block;
+    padding: 5px 15px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .timeline-entry :global(ul) {
+    padding-left: 20px;
+  }
+  .timeline-entry :global(li) {
+    padding-bottom: 10px;
+  }
+</style>

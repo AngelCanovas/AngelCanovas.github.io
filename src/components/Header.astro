@@ -1,0 +1,247 @@
+﻿---
+import { withBase } from '../lib/base-path';
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import myProfileImg from '../assets/my-profile-img.webp';
+import { personal } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+import { cvPdfHref, homeHref } from '../lib/routes';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = getContent(lang);
+const ui = t.ui;
+
+const allNavItems = [
+  { href: '#hero', icon: 'house', key: 'home' },
+  { href: '#about', icon: 'person', key: 'about' },
+  { href: '#skills', icon: 'hdd-stack', key: 'skills' },
+  { href: '#resume', icon: 'file-earmark-text', key: 'resume' },
+  { href: '#portfolio', icon: 'images', key: 'portfolio' },
+  { href: '#services', icon: 'briefcase', key: 'services' },
+  { href: '#notes', icon: 'list', key: 'notes' },
+  { href: '#contact', icon: 'envelope', key: 'contact' },
+] as const;
+
+const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.enabled);
+---
+
+<header id="header" class="header">
+  <button
+    type="button"
+    class="header-toggle d-xl-none"
+    aria-label={t.nav.toggleLabel}
+    aria-controls="navmenu"
+    aria-expanded="false"
+  >
+    <Icon name="list" class="header-toggle-icon header-toggle-icon--open" />
+    <Icon name="x-lg" class="header-toggle-icon header-toggle-icon--close" />
+  </button>
+
+  <div class="sidebar-identity">
+    <Image
+      src={myProfileImg}
+      alt={`${personal.fullName} — ${ui.avatarAlt}`}
+      class="sidebar-avatar"
+      width={120}
+      height={120}
+      fit="cover"
+      loading="eager"
+      decoding="async"
+    />
+    <a href={homeHref(lang)} class="sidebar-name">
+      <span class="sitename">{personal.fullName}</span>
+    </a>
+  </div>
+
+  <ul class="sidebar-social social-links" role="list">
+    {personal.linkedin && (
+      <li>
+        <a
+          href={personal.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`LinkedIn ${ui.newTab}`}
+        >
+          <Icon name="linkedin" />
+        </a>
+      </li>
+    )}
+    {personal.github && (
+      <li>
+        <a
+          href={personal.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`GitHub ${ui.newTab}`}
+        >
+          <Icon name="github" />
+        </a>
+      </li>
+    )}
+  </ul>
+
+  <a class="sidebar-cv" href={cvPdfHref(lang)} download>
+    <Icon name="download" />
+    {t.hero.ctaCv}
+  </a>
+
+  <div class="sidebar-controls">
+    <div class="lang-switch" role="group" aria-label={t.nav.languageLabel}>
+      <a
+        href={withBase('/')}
+        class:list={['lang-option', { active: lang === 'en' }]}
+        data-set-lang="en"
+        data-astro-prefetch
+        hreflang="en"
+        aria-current={lang === 'en' ? 'page' : undefined}
+      >
+        EN
+      </a>
+      <a
+        href={withBase('/es/')}
+        class:list={['lang-option', { active: lang === 'es' }]}
+        data-set-lang="es"
+        data-astro-prefetch
+        hreflang="es"
+        aria-current={lang === 'es' ? 'page' : undefined}
+      >
+        ES
+      </a>
+    </div>
+    <button
+      type="button"
+      class="theme-toggle"
+      data-theme-toggle
+      data-label-light={t.nav.themeToLight}
+      data-label-dark={t.nav.themeToDark}
+      aria-pressed="false"
+      aria-label={t.nav.themeToDark}
+    >
+      <Icon name="moon-stars" class="theme-icon theme-icon--moon" />
+      <Icon name="sun" class="theme-icon theme-icon--sun" />
+    </button>
+  </div>
+
+  <nav id="navmenu" class="navmenu">
+    <ul class="sidebar-sections" role="list">
+      {navItems.map((item, idx) => (
+        <li>
+          <a href={item.href} class:list={['sidebar-section', { active: idx === 0 }]}>
+            <Icon name={item.icon} class="navicon" /> {t.nav[item.key]}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<script>
+  import { initLanguageSwitch, initScrollRestore } from '../scripts/navigation';
+  import { safeInit } from '../scripts/safe-init';
+
+  safeInit(initLanguageSwitch);
+  safeInit(initScrollRestore);
+</script>
+
+<style>
+  .sidebar-cv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin: 0 0 16px 0;
+    padding: 0.55rem 1rem;
+    border-radius: 50rem;
+    font-family: var(--nav-font);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--contrast-color);
+    background: var(--accent-fill);
+    transition:
+      background-color 0.3s ease,
+      transform 0.3s ease;
+  }
+  .sidebar-cv:hover,
+  .sidebar-cv:focus-visible {
+    color: var(--contrast-color);
+    background: color-mix(in srgb, var(--accent-fill), black 15%);
+    transform: translateY(-1px);
+  }
+  .sidebar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 0 16px 0;
+  }
+  .lang-switch {
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--nav-color), transparent 70%);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--nav-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition:
+      color 0.3s,
+      border-color 0.3s,
+      background-color 0.3s;
+  }
+  .theme-toggle:hover {
+    color: var(--nav-hover-color);
+    border-color: var(--accent-color);
+  }
+  .theme-toggle :global(.theme-icon--sun) {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.theme-icon--sun) {
+    display: inline-block;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.theme-icon--moon) {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.theme-icon--sun) {
+      display: inline-block;
+    }
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.theme-icon--moon) {
+      display: none;
+    }
+  }
+  .lang-switch .lang-option {
+    font-family: var(--nav-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.7rem;
+    border-radius: 50rem;
+    color: var(--nav-color);
+    border: 1px solid color-mix(in srgb, var(--nav-color), transparent 70%);
+    transition:
+      color 0.3s,
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+  .lang-switch .lang-option:hover {
+    color: var(--nav-hover-color);
+    border-color: var(--accent-color);
+  }
+  .lang-switch .lang-option.active {
+    color: var(--contrast-color);
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+  }
+</style>

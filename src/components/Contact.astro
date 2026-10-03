@@ -1,0 +1,294 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Icon from './Icon.astro';
+import { personal } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+import type { IconName } from '../lib/icons';
+import { emailParts, obfuscateEmail } from '../lib/security';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const content = getContent(lang);
+const t = content.contact;
+const ui = content.ui;
+const { user: emailUser, domain: emailDomain } = emailParts();
+const emailHtml = obfuscateEmail();
+
+interface Channel {
+  icon: IconName;
+  label: string;
+  isEmail: boolean;
+  valueHtml: string;
+  href: string;
+  external: boolean;
+}
+
+const channels: Channel[] = [
+  {
+    icon: 'envelope',
+    label: t.channels.email,
+    isEmail: true,
+    valueHtml: emailHtml,
+    href: '#contact',
+    external: false,
+  },
+  {
+    icon: 'linkedin',
+    label: t.channels.linkedin,
+    isEmail: false,
+    valueHtml: personal.fullName,
+    href: personal.linkedin,
+    external: true,
+  },
+  {
+    icon: 'github',
+    label: t.channels.github,
+    isEmail: false,
+    valueHtml: `github.com/${personal.githubHandle}`,
+    href: personal.github,
+    external: true,
+  },
+  {
+    icon: 'geo-alt',
+    label: t.channels.location,
+    isEmail: false,
+    valueHtml: t.channels.locationValue,
+    href: '',
+    external: false,
+  },
+];
+---
+
+<section id="contact" class="contact section light-background" data-toast-copied={ui.toastCopied}>
+  <SectionHeading title={t.title} summary={t.subtitle} />
+
+  <div class="container">
+    <div class="row gy-4 justify-content-center">
+      {channels.map((channel) => (
+        <div class="col-lg-6 col-md-6">
+          {channel.isEmail ? (
+            <div class="contact-card card h-100">
+              <span class="contact-icon">
+                <Icon name={channel.icon} />
+              </span>
+              <span class="contact-body">
+                <span class="contact-label">{channel.label}</span>
+                <a
+                  class="contact-value"
+                  href="#contact"
+                  data-email-link
+                  data-email-user={emailUser}
+                  data-email-domain={emailDomain}
+                  set:html={emailHtml}
+                />
+              </span>
+              <button
+                type="button"
+                class="contact-copy"
+                data-email-copy
+                data-email-user={emailUser}
+                data-email-domain={emailDomain}
+                aria-label={t.copyEmail}
+              >
+                <Icon name="clipboard" />
+              </button>
+            </div>
+          ) : channel.href ? (
+            <a
+              class="contact-card card h-100"
+              href={channel.href}
+              target={channel.external ? '_blank' : undefined}
+              rel={channel.external ? 'noopener noreferrer' : undefined}
+            >
+              <span class="contact-icon">
+                <Icon name={channel.icon} />
+              </span>
+              <span class="contact-body">
+                <span class="contact-label">{channel.label}</span>
+                <span class="contact-value" set:html={channel.valueHtml} />
+              </span>
+              {channel.external && <span class="visually-hidden"> {ui.newTab}</span>}
+            </a>
+          ) : (
+            <div class="contact-card card h-100">
+              <span class="contact-icon">
+                <Icon name={channel.icon} />
+              </span>
+              <span class="contact-body">
+                <span class="contact-label">{channel.label}</span>
+                <span class="contact-value" set:html={channel.valueHtml} />
+              </span>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <div class="contact-cta text-center mt-4">
+      <a
+        href="#contact"
+        class="btn btn-primary contact-btn"
+        data-email-link
+        data-email-user={emailUser}
+        data-email-domain={emailDomain}
+      >
+        <Icon name="send" class="me-2" />
+        {t.cta}
+      </a>
+    </div>
+
+    <div class="contact-toast" data-contact-toast role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<script>
+  import { initEmailCopyFeedback } from '../scripts/email-feedback';
+  import { safeInit } from '../scripts/safe-init';
+
+  const section = document.querySelector<HTMLElement>('#contact');
+  const toast = section?.querySelector<HTMLElement>('[data-contact-toast]');
+  safeInit(() => {
+    if (section && toast) {
+      const template = section.dataset.toastCopied ?? 'Email copied: {email}';
+      initEmailCopyFeedback(section, toast, {
+        message: (email) => template.replace('{email}', email),
+      });
+    }
+  });
+</script>
+
+<style>
+  .contact-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    color: var(--default-color);
+    transition:
+      transform 0.3s ease,
+      border-color 0.3s ease;
+  }
+  a.contact-card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent-color), transparent 60%);
+    color: var(--default-color);
+  }
+  .contact-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 1.35rem;
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 90%);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  a.contact-card:hover .contact-icon {
+    background: var(--accent-color);
+    color: var(--contrast-color);
+  }
+  .contact-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .contact-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--default-color), transparent 20%);
+  }
+  .contact-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--heading-color);
+    overflow-wrap: anywhere;
+  }
+  a.contact-value:hover {
+    color: var(--accent-ink);
+    text-decoration: underline;
+  }
+  .contact-copy {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--accent-ink), transparent 65%);
+    background: transparent;
+    color: var(--accent-ink);
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .contact-copy:hover {
+    background: color-mix(in srgb, var(--accent-ink), transparent 90%);
+    border-color: var(--accent-ink);
+  }
+  .contact-btn {
+    background-color: var(--accent-fill);
+    border-color: var(--accent-fill);
+    padding: 0.7rem 1.75rem;
+    font-weight: 600;
+    border-radius: 50px;
+  }
+  .contact-btn:hover {
+    background-color: color-mix(in srgb, var(--accent-fill), black 15%);
+    border-color: color-mix(in srgb, var(--accent-fill), black 15%);
+  }
+  .contact-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    max-width: calc(100vw - 2rem);
+    padding: 0;
+    border-radius: var(--radius-pill);
+    /* Fixed dark surface: --heading-color would turn near-white in dark mode. */
+    background: #050d18;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    transform: translateX(-50%) translateY(10px);
+    opacity: 0;
+    pointer-events: none;
+    /* The status region is always in the accessibility tree: it is hidden by
+       clipping, never with `visibility: hidden`, so the copy feedback is
+       announced even though the visual toast is off. */
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+    z-index: 99999;
+  }
+  .contact-toast.is-visible {
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>

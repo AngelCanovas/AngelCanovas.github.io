@@ -1,0 +1,74 @@
+---
+import { getContent, type Lang } from '../lib/i18n';
+import { formatNumber } from '../lib/format';
+import { localeTag } from '../lib/routes';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = getContent(lang).stats;
+const locale = localeTag(lang);
+---
+
+<section id="stats" class="stats section">
+  <div class="container">
+    <div class="row gy-4 text-center justify-content-center">
+      {t.items.map((item, idx) => (
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay={(idx + 1) * 100}>
+          <div class="stat">
+            <p class="stat-value mb-1">
+              <span
+                class="stat-number"
+                data-count-to={item.value}
+                data-count-decimals={item.decimals}
+                aria-hidden="true"
+              >
+                {formatNumber(item.value, item.decimals, locale)}
+              </span>
+              <span class="visually-hidden">{formatNumber(item.value, item.decimals, locale)}</span>
+              {item.suffix && <span class="stat-suffix">{item.suffix}</span>}
+            </p>
+            <p class="stat-label mb-0">{item.label}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCounters } from '../scripts/counters';
+  import { safeInit } from '../scripts/safe-init';
+
+  safeInit(initCounters);
+</script>
+
+<style>
+  .stats {
+    background:
+      radial-gradient(circle at 15% 20%, rgba(20, 157, 221, 0.25), transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.18), transparent 55%),
+      linear-gradient(135deg, #061a29 0%, #08293d 55%, #061a29 100%);
+    border-top: 1px solid rgba(20, 157, 221, 0.25);
+    border-bottom: 1px solid rgba(20, 157, 221, 0.25);
+  }
+  .stat-value {
+    font-family: var(--heading-font);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+  }
+  .stat-suffix {
+    color: var(--accent-color);
+    margin-left: 2px;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.72);
+  }
+</style>

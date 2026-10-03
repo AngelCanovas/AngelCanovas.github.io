@@ -1,0 +1,126 @@
+---
+import { withBase } from '../lib/base-path';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fontsource/raleway/latin-700.css';
+import '@fontsource-variable/roboto/wght.css';
+import '../styles/main.css';
+import raleway700 from '@fontsource/raleway/files/raleway-latin-700-normal.woff2?url';
+import robotoVariable from '@fontsource-variable/roboto/files/roboto-latin-wght-normal.woff2?url';
+import { personal } from '../data/site';
+import { getContent, getSiteMeta, type Lang } from '../lib/i18n';
+import { buildPersonSchema } from '../lib/structured-data';
+import { safeJson } from '../lib/security';
+import { absoluteUrl } from '../lib/site-url';
+
+interface Props {
+  lang?: Lang;
+  title?: string;
+  description?: string;
+  path?: string;
+  alternateEn?: string;
+  alternateEs?: string;
+  robots?: string;
+}
+
+const { lang = 'en' } = Astro.props;
+const meta = getSiteMeta(lang);
+const ui = getContent(lang).ui;
+const title = Astro.props.title ?? meta.title;
+const description = Astro.props.description ?? meta.description;
+
+const canonicalPath = Astro.props.path ?? (lang === 'es' ? '/es/' : '/');
+const canonicalURL = absoluteUrl(canonicalPath);
+const enURL = absoluteUrl(Astro.props.alternateEn ?? '/');
+const esURL = absoluteUrl(Astro.props.alternateEs ?? '/es/');
+const ogImage = absoluteUrl('/og-image.jpg');
+const skipLabel = ui.skipLink;
+const isCv = canonicalPath.startsWith('/cv');
+const preloadFonts = isCv ? [robotoVariable] : [raleway700, robotoVariable];
+
+const schema = buildPersonSchema({ lang, url: canonicalURL, image: ogImage });
+const fun = getContent(lang).fun;
+const htmlComment = fun.htmlComment.replace(/--/g, '—');
+---
+
+<!doctype html>
+<html lang={meta.htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {preloadFonts.map((font) => (
+      <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />
+    ))}
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={personal.fullName} />
+    <meta name="robots" content={Astro.props.robots ?? 'index, follow'} />
+    <meta name="theme-color" content="#149ddd" media="(prefers-color-scheme: light)" />
+    {!isCv && <meta name="theme-color" content="#040b14" media="(prefers-color-scheme: dark)" />}
+    <meta name="color-scheme" content={isCv ? 'light' : 'light dark'} />
+
+    <!-- Apply the stored theme before first paint (hash appended at build time). -->
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.dataset.theme = stored;
+          }
+        } catch {
+          /* storage can be unavailable (private mode) */
+        }
+      })();
+    </script>
+    <!-- Canonical + language alternates -->
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="en" href={enURL} />
+    <link rel="alternate" hreflang="es" href={esURL} />
+    <link rel="alternate" hreflang="x-default" href={enURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={personal.fullName} />
+    <meta property="og:locale" content={meta.ogLocale} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${personal.fullName} — ${ui.ogImageAlt}`} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon-32x32.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" is:inline set:html={safeJson(schema)}></script>
+    <slot name="head" />
+  </head>
+
+  <body class:list={[isCv && 'cv-page']} data-console-message={fun.consoleMessage}>
+    <Fragment set:html={`<!-- ${htmlComment} -->`} />
+    <a
+      href="#main-content"
+      class="visually-hidden-focusable position-absolute top-0 start-0 m-3 skip-link"
+    >
+      {skipLabel}
+    </a>
+    <slot />
+
+    <script>
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

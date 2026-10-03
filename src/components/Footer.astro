@@ -1,0 +1,29 @@
+---
+import { withBase } from '../lib/base-path';
+import { personal } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const f = getContent(lang).footer;
+const ui = getContent(lang).ui;
+const year = new Date().getFullYear();
+---
+
+<footer id="footer" class="footer light-background">
+  <div class="container">
+    <p class="copyright">
+      © <span data-current-year>{year}</span> <strong>{personal.fullName}</strong>. {f.rights}
+    </p>
+    <p class="credits mb-0">
+      {f.creditsPrefix}{' '}
+      <a href="https://astro.build" target="_blank" rel="noopener noreferrer">
+        Astro<span class="visually-hidden"> {ui.newTab}</span>
+      </a>{' '}
+      {' · '}
+      <a href={withBase('/third-party-notices.txt')}>{f.noticesLabel}</a>
+    </p>
+  </div>
+</footer>

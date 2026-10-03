@@ -1,0 +1,115 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Icon from './Icon.astro';
+import { getContent, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = getContent(lang).services;
+---
+
+<section id="services" class="services section">
+  <SectionHeading title={t.title} summary={t.subtitle} />
+
+  <div class="container">
+    <div class="row gy-4">
+      {t.items.map((service, idx) => (
+        <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay={(idx + 1) * 100}>
+          <article class="service-card card w-100 p-4">
+            <span class="service-number" aria-hidden="true">
+              {service.number}
+            </span>
+            <div class="service-icon mb-3">
+              <Icon name={service.icon} />
+            </div>
+            <h3 class="service-title mb-2">{service.title}</h3>
+            <p class="service-desc mb-3">{service.description}</p>
+            <ul class="service-points" role="list">
+              {service.points.map((point) => (
+                <li>
+                  <Icon name="check2" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-card {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .service-card:hover {
+    border-color: color-mix(in srgb, var(--accent-color), transparent 65%);
+  }
+  .service-number {
+    position: absolute;
+    top: 0.75rem;
+    right: 1.25rem;
+    font-family: var(--heading-font);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    color: color-mix(in srgb, var(--accent-color), transparent 88%);
+    pointer-events: none;
+    transition: color 0.3s ease;
+  }
+  .service-card:hover .service-number {
+    color: color-mix(in srgb, var(--accent-color), transparent 72%);
+  }
+  .service-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--accent-color), transparent 90%);
+    color: var(--accent-color);
+    font-size: 1.6rem;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  .service-card:hover .service-icon {
+    background: var(--accent-color);
+    color: var(--contrast-color);
+  }
+  .service-title {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--heading-color);
+  }
+  .service-desc {
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--default-color), transparent 15%);
+    margin-bottom: 0.75rem;
+  }
+  .service-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .service-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+    color: var(--default-color);
+  }
+  .service-points :global(svg) {
+    color: var(--accent-color);
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+</style>

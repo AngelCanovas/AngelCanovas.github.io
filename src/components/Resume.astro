@@ -1,0 +1,175 @@
+---
+import Icon from './Icon.astro';
+import PeriodRange from './PeriodRange.astro';
+import SectionHeading from './SectionHeading.astro';
+import TimelineEntry from './TimelineEntry.astro';
+import { getContent, type Lang } from '../lib/i18n';
+import { splitPeriod } from '../lib/format';
+import { cvPageHref, cvPdfHref } from '../lib/routes';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const r = getContent(lang).resume;
+
+const jobs = r.experience.map((job) => ({ ...job, period: splitPeriod(job.period) }));
+const studies = r.education.map((edu) => ({ ...edu, period: splitPeriod(edu.period) }));
+---
+
+<section id="resume" class="resume section">
+  <SectionHeading title={r.title} summary={r.subtitle}>
+    <div class="resume-actions">
+      <a class="resume-download" href={cvPageHref(lang)}>
+        <Icon name="file-earmark-text" class="me-2" />
+        {r.onlineCv}
+      </a>
+      <a class="resume-download resume-download--outline" href={cvPdfHref(lang)} download>
+        <Icon name="download" class="me-2" />
+        {r.downloadCv}
+      </a>
+    </div>
+  </SectionHeading>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <h3 class="resume-title">{r.experienceTitle}</h3>
+        {jobs.map((job, jobIndex) => (
+          <TimelineEntry end={jobIndex === jobs.length - 1}>
+            <h4>{job.title}</h4>
+            <p class="resume-period">
+              <PeriodRange period={job.period} />
+            </p>
+            <p class="resume-em">
+              <em>
+                {job.company}, {job.location}
+              </em>
+            </p>
+            {job.context && <p class="resume-context">{job.context}</p>}
+            <ul>
+              {job.highlights.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+            {job.stack.length > 0 && (
+              <div class="resume-stack d-flex flex-wrap gap-2 mt-3">
+                {job.stack.map((tech) => (
+                  <span class:list={['chip', jobIndex === 0 && 'chip--accent']}>{tech}</span>
+                ))}
+              </div>
+            )}
+            {job.assignments.map((assignment) => (
+              <div class="assignment-box mt-3 p-3 rounded-3">
+                <p class="mb-2 fw-bold">{assignment.title}</p>
+                <ul class="mb-0">
+                  {assignment.details.map((detail) => (
+                    <li>{detail}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </TimelineEntry>
+        ))}
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+        <h3 class="resume-title">{r.educationTitle}</h3>
+        {studies.map((edu) => (
+          <TimelineEntry>
+            <h4>{edu.degree}</h4>
+            <p class="resume-period">
+              <PeriodRange period={edu.period} />
+            </p>
+            <p>
+              <em>{edu.school}</em>
+            </p>
+            {edu.detail && <p>{edu.detail}</p>}
+          </TimelineEntry>
+        ))}
+
+        <h3 class="resume-title">{r.certificationsTitle}</h3>
+        <TimelineEntry>
+          <ul>
+            {r.certifications.map((cert) => (
+              <li>{cert}</li>
+            ))}
+          </ul>
+        </TimelineEntry>
+
+        <h3 class="resume-title">{r.languagesTitle}</h3>
+        <TimelineEntry end>
+          <ul>
+            {r.languages.map((langItem) => (
+              <li>
+                <strong>{langItem.language}:</strong> {langItem.level}
+              </li>
+            ))}
+          </ul>
+        </TimelineEntry>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .resume-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .resume-download {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1.35rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--contrast-color);
+    background: var(--accent-fill);
+    border: 1px solid var(--accent-fill);
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s ease;
+  }
+  .resume-download:hover {
+    color: var(--contrast-color);
+    background: color-mix(in srgb, var(--accent-fill), black 15%);
+    border-color: color-mix(in srgb, var(--accent-fill), black 15%);
+    transform: translateY(-2px);
+  }
+  .resume-download--outline {
+    color: var(--accent-ink);
+    background: transparent;
+  }
+  .resume-download--outline:hover {
+    color: var(--contrast-color);
+  }
+  .resume-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-block: 20px;
+  }
+  @media (max-width: 768px) {
+    .resume-title {
+      font-size: 22px;
+    }
+  }
+  .resume-em {
+    margin-bottom: 0.5rem;
+  }
+  .resume-context {
+    font-weight: 500;
+    color: var(--heading-color);
+  }
+  .assignment-box {
+    /* Recessed panel: the shared token, not a second hardcoded tone. */
+    background: var(--panel-color);
+    border-left: 3px solid var(--accent-color);
+  }
+  .assignment-box ul {
+    margin-bottom: 0;
+  }
+</style>

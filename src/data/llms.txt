@@ -1,0 +1,37 @@
+# Angel Cánovas Mula
+
+> Full-Stack Java Engineer based in Murcia, Spain. 5+ years at Capgemini building secure enterprise applications for the French Ministry of National Education (Livret de Parcours Inclusif, Faits Établissement). Java, Spring Boot, Spring Security, JPA/Hibernate, Angular, IBM DB2. Cybersecurity-trained (official Máster de FP, 8.83/10). Available for 100% remote roles (CET).
+
+Key facts:
+
+- Name: Angel Cánovas Mula
+- Role: Full-Stack Java Engineer / Secure Software Engineer
+- Location: Murcia, Spain — 100% remote (CET)
+- Experience: 5+ years at Capgemini (Jun 2021 – present)
+- Languages: Spanish (native), English (C1), French (B1)
+- Email: aca_dev@hotmail.com
+- LinkedIn: https://www.linkedin.com/in/angel-c%C3%A1novas-mula-5a49a72a9
+- GitHub: https://github.com/AngelCanovas
+- Website: {{SITE_URL}}
+
+## Curriculum vitae
+
+- [Online CV (HTML, English)]({{SITE_URL}}/cv/): semantic, print-friendly, machine-readable CV.
+- [CV online (HTML, Spanish)]({{SITE_URL}}/cv/es/): versión en español del CV.
+- [CV (PDF, English)]({{SITE_URL}}/cv/angel-canovas-cv-en.pdf): downloadable PDF.
+- [CV (PDF, Spanish)]({{SITE_URL}}/cv/angel-canovas-cv-es.pdf): PDF en español.
+- [Full CV text]({{SITE_URL}}/llms-full.txt): complete CV content as plain Markdown.
+
+## Portfolio sections
+
+- [Experience & education]({{SITE_URL}}/#resume): work history, education, certifications and languages.
+- [Skills]({{SITE_URL}}/#skills): technical skills grouped by area.
+- [Projects]({{SITE_URL}}/#portfolio): selected projects with problem/approach/impact case studies.
+- [Services]({{SITE_URL}}/#services): areas where I can contribute.
+- [About]({{SITE_URL}}/#about): professional summary and self-hosted home lab.
+- [Contact]({{SITE_URL}}/#contact): contact channels.
+
+## Optional
+
+- [Sitemap]({{SITE_URL}}/sitemap.xml)
+- [Spanish homepage]({{SITE_URL}}/es/)

@@ -1,0 +1,49 @@
+# build output
+dist/
+
+# test / quality reports
+playwright-report/
+test-results/
+.lighthouseci/
+
+# generated types
+.astro/
+.netlify/
+.cache/
+.vercel/
+.output/
+
+# dependencies
+node_modules/
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor / IDE
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# secrets / credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json

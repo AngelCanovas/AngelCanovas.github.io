@@ -1,0 +1,97 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Icon from './Icon.astro';
+import { getContent, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = getContent(lang).skills;
+---
+
+<section id="skills" class="skills section light-background">
+  <SectionHeading title={t.title} summary={t.subtitle} />
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4">
+      {t.groups.map((group, idx) => (
+        <div class:list={['d-flex', idx === 0 ? 'col-lg-8 col-md-12' : 'col-lg-4 col-md-6']}>
+          <article class="skill-group card p-4 w-100">
+            <header class="skill-group-header d-flex align-items-center mb-3">
+              <span class="skill-group-icon">
+                <Icon name={group.icon} />
+              </span>
+              <div>
+                <h3 class="h5 mb-0">{group.title}</h3>
+                <p class="skill-group-desc mb-0">{group.description}</p>
+              </div>
+            </header>
+            <div class="d-flex flex-wrap gap-2">
+              {group.skills.map((skill) => (
+                <span class="chip">{skill}</span>
+              ))}
+            </div>
+          </article>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .skill-group {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .skill-group::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: linear-gradient(
+      180deg,
+      var(--accent-color),
+      color-mix(in srgb, var(--accent-color), transparent 60%)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .skill-group:hover {
+    border-color: color-mix(in srgb, var(--accent-color), transparent 70%);
+  }
+  .skill-group:hover::before {
+    opacity: 1;
+  }
+  .skill-group-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    margin-right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 1.35rem;
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 88%);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  .skill-group:hover .skill-group-icon {
+    background: var(--accent-color);
+    color: var(--contrast-color);
+  }
+  .skill-group h3 {
+    color: var(--heading-color);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .skill-group-desc {
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+    margin-top: 2px;
+  }
+</style>

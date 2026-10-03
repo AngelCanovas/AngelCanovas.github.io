@@ -1,0 +1,187 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import SectionHeading from './SectionHeading.astro';
+import myProfileImg from '../assets/my-profile-img.webp';
+import { personal } from '../data/site';
+import { getContent, type Lang } from '../lib/i18n';
+import { emailParts, obfuscateEmail } from '../lib/security';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const a = getContent(lang).about;
+const ui = getContent(lang).ui;
+const { user: emailUser, domain: emailDomain } = emailParts();
+const emailHtml = obfuscateEmail();
+const factColumns = [
+  [
+    { label: a.meta.location, value: a.location, href: '', email: false },
+    { label: a.meta.workModel, value: a.workModel, href: '', email: false },
+  ],
+  [
+    { label: a.meta.email, value: '', href: '#contact', email: true },
+    { label: a.meta.github, value: personal.githubHandle, href: personal.github, email: false },
+    { label: a.meta.linkedin, value: a.meta.linkedinValue, href: personal.linkedin, email: false },
+  ],
+];
+---
+
+<section id="about" class="about section">
+  <SectionHeading title={a.title} summary={a.summary} />
+
+  <div class="container">
+    <div class="row gy-4 justify-content-center">
+      <div class="col-lg-4">
+        <Image
+          src={myProfileImg}
+          class="img-fluid rounded-3"
+          alt={`${personal.fullName} — ${ui.photoAlt}`}
+          widths={[320, 480, 760]}
+          sizes="(min-width: 1200px) 356px, (min-width: 992px) 30vw, 90vw"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="col-lg-8 about-copy">
+        <h3 class="about-role">{a.role}</h3>
+        <p class="secure-summary py-3">{a.secureSummary}</p>
+
+        <div class="row about-meta">
+          {factColumns.map((facts) => (
+            <div class="col-md-6">
+              <dl class="profile-facts">
+                {facts.map((fact) => (
+                  <div class="profile-fact">
+                    <dt>
+                      <Icon name="chevron-right" /> <strong>{fact.label}:</strong>
+                    </dt>
+                    <dd>
+                      {fact.email ? (
+                        <a
+                          href="#contact"
+                          data-email-link
+                          data-email-user={emailUser}
+                          data-email-domain={emailDomain}
+                          set:html={emailHtml}
+                        />
+                      ) : fact.href ? (
+                        <a href={fact.href} target="_blank" rel="noopener noreferrer">
+                          {fact.value}
+                          <span class="visually-hidden"> {ui.newTab}</span>
+                        </a>
+                      ) : (
+                        fact.value
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+
+        <p class="py-3">{a.languages}</p>
+
+        <div class="home-lab-box p-4 rounded-3 mt-3">
+          <h3 class="h5 mb-3">
+            <Icon name="server" class="me-2" />
+            {a.homeLab.title}
+          </h3>
+          <p class="home-lab-intro">{a.homeLab.intro}</p>
+          <ul class="mb-0" role="list">
+            {a.homeLab.points.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-role {
+    font-weight: 700;
+    font-size: 24px;
+  }
+  /* Keep the long-form copy at a comfortable measure instead of ~110 characters. */
+  .about-copy > p {
+    max-width: 65ch;
+    line-height: 1.65;
+  }
+  .secure-summary {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 1rem;
+  }
+  .profile-facts {
+    margin: 0;
+    padding: 0;
+  }
+  .profile-fact {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .profile-fact dt {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+  }
+  .profile-fact strong {
+    margin-right: 10px;
+  }
+  .profile-fact dd {
+    margin: 0;
+  }
+  .about-meta strong {
+    color: var(--heading-color);
+  }
+  .home-lab-box {
+    /* Recessed panel: the shared token, not a second hardcoded tone. */
+    background-color: var(--panel-color);
+    border-left: 4px solid var(--accent-color);
+  }
+  .home-lab-intro {
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: var(--heading-color);
+  }
+  .home-lab-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  /* Hanging indent: the bullet lives in its own gutter column, so wrapped
+     lines align with the text and the dot never drops to the second line. */
+  .home-lab-box ul li {
+    display: grid;
+    grid-template-columns: 1em 1fr;
+    align-items: center;
+    gap: 0 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .home-lab-box ul li::before {
+    content: '•';
+    color: var(--accent-color);
+    font-weight: 700;
+  }
+  @media (min-width: 768px) and (max-width: 991px) {
+    img {
+      max-width: 300px;
+      margin: 0 0 1.25rem;
+    }
+  }
+  @media (max-width: 768px) {
+    .about-role {
+      font-size: 20px;
+      margin-top: 0.5rem;
+    }
+    img {
+      max-width: 320px;
+      margin: 0 auto;
+      display: block;
+    }
+  }
+</style>

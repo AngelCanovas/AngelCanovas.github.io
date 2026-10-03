@@ -1,0 +1,346 @@
+---
+import { withBase } from '../lib/base-path';
+import { personal } from '../data/site';
+import PeriodRange from './PeriodRange.astro';
+import { getContent, type Lang } from '../lib/i18n';
+import { splitPeriod } from '../lib/format';
+import { cvPageHref, cvPdfHref, homeHref } from '../lib/routes';
+import { emailParts, obfuscateEmail } from '../lib/security';
+import { siteHost } from '../lib/site-url';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const c = getContent(lang);
+const { about, resume, skills } = c;
+const { user: emailUser, domain: emailDomain } = emailParts();
+const emailHtml = obfuscateEmail();
+
+const labels = {
+  ...c.cv,
+  switchHref: cvPageHref(lang === 'es' ? 'en' : 'es'),
+  switchLang: lang === 'es' ? 'en' : 'es',
+};
+
+const jobs = resume.experience.map((job) => ({ ...job, period: splitPeriod(job.period) }));
+const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu.period) }));
+---
+
+<article class="cv-doc" itemscope itemtype="https://schema.org/Person">
+  <nav class="cv-nav">
+    <a href={homeHref(lang)} class="cv-back" data-astro-prefetch>
+      {labels.back}
+    </a>
+    <span class="cv-nav-actions">
+      <a href={cvPdfHref(lang)} download>
+        {labels.download}
+      </a>
+      <button type="button" class="cv-generate" data-print-cv>
+        {labels.generate}
+      </button>
+      <a
+        href={labels.switchHref}
+        hreflang={labels.switchLang}
+        data-set-standalone-lang={labels.switchLang}
+        data-astro-prefetch
+      >
+        {labels.switchLabel}
+      </a>
+    </span>
+  </nav>
+
+  <header class="cv-head">
+    <h1 itemprop="name">{personal.fullName}</h1>
+    <p class="cv-role" itemprop="jobTitle">
+      {about.role} — {about.workModel}
+    </p>
+    <ul class="cv-contact" role="list">
+      <li>
+        <a
+          href={withBase('/#contact')}
+          itemprop="email"
+          data-email-link
+          data-email-user={emailUser}
+          data-email-domain={emailDomain}
+          set:html={emailHtml}
+        />
+      </li>
+      <li>
+        <a href={personal.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn
+          <span class="visually-hidden"> {c.ui.newTab}</span>
+        </a>
+      </li>
+      <li>
+        <a href={personal.github} target="_blank" rel="noopener noreferrer">
+          github.com/{personal.githubHandle}
+          <span class="visually-hidden"> {c.ui.newTab}</span>
+        </a>
+      </li>
+      <li>
+        <span itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+          <span itemprop="addressLocality">{about.location}</span>
+        </span>
+      </li>
+    </ul>
+  </header>
+
+  <section class="cv-section">
+    <h2>{labels.summary}</h2>
+    <p>{about.summary}</p>
+    <p>{about.secureSummary}</p>
+    <p>{about.languages}</p>
+  </section>
+
+  <section class="cv-section">
+    <h2>{resume.experienceTitle}</h2>
+    {jobs.map((job) => (
+      <div class="cv-job">
+        <h3>
+          {job.title}{' '}
+          <span class="cv-company">
+            · {job.company}, {job.location}
+          </span>
+        </h3>
+        <p class="cv-period">
+          <PeriodRange period={job.period} />
+        </p>
+        {job.context && <p class="cv-context">{job.context}</p>}
+        <ul>
+          {job.highlights.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        {job.stack.length > 0 && (
+          <p class="cv-stack">
+            <strong>{c.cv.stack}:</strong> {job.stack.join(', ')}
+          </p>
+        )}
+        {job.assignments.map((assignment) => (
+          <div class="cv-assignment">
+            <p class="cv-assignment-title">{assignment.title}</p>
+            <ul>
+              {assignment.details.map((detail) => (
+                <li>{detail}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    ))}
+  </section>
+
+  <section class="cv-section">
+    <h2>{skills.title}</h2>
+    {skills.groups.map((group) => (
+      <p class="cv-skill-group">
+        <strong>{group.title}:</strong> {group.skills.join(' · ')}
+      </p>
+    ))}
+  </section>
+
+  <section class="cv-section">
+    <h2>{resume.educationTitle}</h2>
+    {studies.map((edu) => (
+      <div class="cv-entry">
+        <h3>{edu.degree}</h3>
+        <p class="cv-period">
+          <PeriodRange period={edu.period} />
+          <span class="cv-company"> · {edu.school}</span>
+        </p>
+        {edu.detail && <p>{edu.detail}</p>}
+      </div>
+    ))}
+  </section>
+
+  <section class="cv-section">
+    <h2>{resume.certificationsTitle}</h2>
+    <ul>
+      {resume.certifications.map((cert) => (
+        <li>{cert}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="cv-section">
+    <h2>{resume.languagesTitle}</h2>
+    <ul>
+      {resume.languages.map((item) => (
+        <li>
+          <strong>{item.language}:</strong> {item.level}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="cv-section">
+    <h2>{about.homeLab.title}</h2>
+    <p>{about.homeLab.intro}</p>
+    <ul>
+      {about.homeLab.points.map((point) => (
+        <li>{point}</li>
+      ))}
+    </ul>
+  </section>
+
+  <footer class="cv-foot">
+    <p>
+      {personal.fullName} · {labels.updated} · {siteHost}
+    </p>
+  </footer>
+</article>
+
+<script>
+  import { initCvPrint } from '../scripts/cv-print';
+  import { initStandaloneLanguageSwitch } from '../scripts/navigation';
+  import { safeInit } from '../scripts/safe-init';
+
+  safeInit(initStandaloneLanguageSwitch);
+  safeInit(initCvPrint);
+</script>
+
+<style>
+  .cv-doc {
+    /* 45–75 characters per line for on-screen reading; print stays full width. */
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    color: #1c1f23;
+    background: #ffffff;
+    line-height: 1.6;
+  }
+  .cv-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid #d9dee3;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .cv-nav-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .cv-generate {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    color: #0d74a4;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor, transparent 60%);
+    text-underline-offset: 3px;
+  }
+  .cv-generate:hover {
+    text-decoration-color: currentColor;
+  }
+  .cv-head {
+    margin-bottom: 1.5rem;
+  }
+  .cv-head h1 {
+    font-size: 2rem;
+    margin: 0 0 0.25rem;
+    color: #050d18;
+  }
+  .cv-role {
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  .cv-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+    font-size: 0.92rem;
+  }
+  .cv-section {
+    margin-top: 2rem;
+  }
+  .cv-section h2 {
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #050d18;
+    border-bottom: 2px solid #149ddd;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.9rem;
+  }
+  .cv-job,
+  .cv-entry {
+    margin-bottom: 1.35rem;
+    break-inside: avoid;
+  }
+  .cv-job h3,
+  .cv-entry h3 {
+    font-size: 1.02rem;
+    margin: 0;
+    color: #050d18;
+  }
+  .cv-company {
+    font-weight: 500;
+    color: #4a5158;
+  }
+  .cv-period {
+    font-size: 0.88rem;
+    color: #4a5158;
+    margin: 0.15rem 0 0.5rem;
+  }
+  .cv-context {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .cv-stack,
+  .cv-skill-group {
+    font-size: 0.92rem;
+    margin: 0.6rem 0 0;
+  }
+  .cv-assignment {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f4fafd;
+    border-left: 3px solid #149ddd;
+  }
+  .cv-assignment-title {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  .cv-doc ul {
+    margin: 0.35rem 0 0;
+    padding-left: 1.25rem;
+  }
+  .cv-doc ul li {
+    margin-bottom: 0.3rem;
+  }
+  .cv-foot {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #d9dee3;
+    font-size: 0.82rem;
+    color: #6b7278;
+  }
+  @media (max-width: 575px) {
+    .cv-doc {
+      padding: 1.5rem 1rem 3rem;
+    }
+  }
+  @media print {
+    .cv-nav {
+      display: none;
+    }
+    .cv-doc {
+      max-width: none;
+      padding: 0;
+    }
+  }
+</style>

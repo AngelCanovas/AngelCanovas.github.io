@@ -1,0 +1,12 @@
+dist/
+node_modules/
+.astro/
+package-lock.json
+public/
+# Preserve upstream formatting so security patches remain reviewable.
+vendor/
+
+.cache/
+playwright-report/
+test-results/
+.lighthouseci/

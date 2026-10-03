@@ -1,0 +1,16 @@
+---
+import type { Period } from '../lib/types';
+
+interface Props {
+  period: Period;
+}
+const { period } = Astro.props;
+---
+
+<time datetime={period.startIso || undefined}>{period.start}</time>
+{period.end && (
+  <>
+    {' — '}
+    {period.endIso ? <time datetime={period.endIso}>{period.end}</time> : <span>{period.end}</span>}
+  </>
+)}

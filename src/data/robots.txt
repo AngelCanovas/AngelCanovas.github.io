@@ -1,0 +1,12 @@
+# Project-level reference only; this file does not control host crawlers.
+# robots.txt — {{SITE_URL}}
+# All crawlers are welcome, including AI/LLM agents and ATS/indexing tools.
+
+User-agent: *
+Allow: /CV/
+
+# Machine-readable content
+# LLM content map: {{SITE_URL}}/llms.txt
+# Full CV (plain text): {{SITE_URL}}/llms-full.txt
+
+Sitemap: {{SITE_URL}}/sitemap.xml

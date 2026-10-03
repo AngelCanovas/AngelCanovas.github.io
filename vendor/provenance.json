@@ -1,0 +1,71 @@
+{
+  "purpose": "Locally patched third-party build dependencies; not project-owned UI",
+  "files": [
+    {
+      "dependency": "braces",
+      "file": "index.js",
+      "upstreamSha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4",
+      "patchedSha256": "332ea07c7b006361aad12aa994ca75dc1db8e8382b884909e2f38f10b85c88a4"
+    },
+    {
+      "dependency": "braces",
+      "file": "LICENSE",
+      "upstreamSha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2",
+      "patchedSha256": "35bdd8a44339719441900fb50fbefc5e2dca1ca662cbaed7a687de842c8b70f2"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\compile.js",
+      "upstreamSha256": "dc98f22eee3d511785d92a00758d5f0d48efed5f5813bdecc2de430c529b5c9f",
+      "patchedSha256": "527d4e9ba567beb24f4366976533d91b9666f59ed3b00fcb586d05b03e0db4d4"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\constants.js",
+      "upstreamSha256": "c18ac5adb57308f1ce42a28552da3a31f5d83709743ebd9a636336813a744d4b",
+      "patchedSha256": "c18ac5adb57308f1ce42a28552da3a31f5d83709743ebd9a636336813a744d4b"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\expand.js",
+      "upstreamSha256": "41ccc196ebfa7b7781a634e721eb744e4e7bcb54cba427a7e3d6806a1b9e58f7",
+      "patchedSha256": "4426504e313954411141ee0acf0894b2a6b700900eba1f9482aafc5c7d8683c6"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\parse.js",
+      "upstreamSha256": "e572166565f15fa6ad9865ae49d678218e32aabfd1b3720f6d0d43d39800d310",
+      "patchedSha256": "79156026a4f583c66d1bce40877fd3d7b4872a4c3e77f1dfc1f5ed3c26d9f167"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\stringify.js",
+      "upstreamSha256": "379f22d77bfa1478341ccd49c5e4267464aabcbba03558bab332aac23fc6f23a",
+      "patchedSha256": "7e8f6658d68ffeaad1bc10bf7fcc6f99be0eb57c8f3a9e5f19c6c2f976aeba97"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib\\utils.js",
+      "upstreamSha256": "b5a7596aa67730412b3c029ef09e84e6b67b8e445cffd35d1d295549c89066c7",
+      "patchedSha256": "b5a7596aa67730412b3c029ef09e84e6b67b8e445cffd35d1d295549c89066c7"
+    },
+    {
+      "dependency": "http-cache-semantics",
+      "file": "index.js",
+      "upstreamSha256": "01b7d66c854b2fe53ac05c98feb6e0d64722ab8898a778e2d2426a8b468d178f",
+      "patchedSha256": "0a75e9f2ee2e9075c87bd9a0af03a8aba8aca3684311370584960f4e75c717ba"
+    },
+    {
+      "dependency": "http-cache-semantics",
+      "file": "LICENSE",
+      "upstreamSha256": "ab868ad5a2ef5068560d9cd3b2180ec63c140bb4c5cae1ba779d300a0ac74fa3",
+      "patchedSha256": "ab868ad5a2ef5068560d9cd3b2180ec63c140bb4c5cae1ba779d300a0ac74fa3"
+    },
+    {
+      "dependency": "braces",
+      "file": "lib/depth.js",
+      "upstreamSha256": null,
+      "patchedSha256": "80fdefebb0bb6564ed0945acc1fc36cc8ace07cc6f55feac7de802aee260c4d8"
+    }
+  ]
+}
