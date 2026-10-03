@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-for (const path of ['/CV/', '/CV/es/']) {
+for (const path of ['/', '/es/']) {
   test(`keeps the mobile hero still while its role is typed and erased on ${path}`, async ({
     page,
   }) => {

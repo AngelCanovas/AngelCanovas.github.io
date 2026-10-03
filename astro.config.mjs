@@ -123,7 +123,7 @@ function inlineScriptCspHashes() {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://angelcanovas.github.io',
-  base: '/CV',
+  base: '/',
   trailingSlash: 'always',
   // Opt-in on the language links only: the other locale is fetched when the
   // visitor hovers/taps the switch, so first paint stays untouched.

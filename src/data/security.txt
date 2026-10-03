@@ -1,5 +1,4 @@
-Contact: https://github.com/AngelCanovas/CV/security/advisories/new
+Contact: https://github.com/AngelCanovas/AngelCanovas.github.io/security/advisories/new
 Expires: 2027-09-18T00:00:00.000Z
 Canonical: {{SITE_URL}}/.well-known/security.txt
-# Project-level copy; RFC 9116 requires a file at the hosting origin.
 Preferred-Languages: en, es

@@ -61,7 +61,7 @@ for (const viewport of viewports) {
       test(`visual reference ${key}`, async ({ page }, info) => {
         await page.setViewportSize(viewport);
         await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-        await page.goto(withBase(path, '/CV/'));
+        await page.goto(withBase(path, '/'));
         await ready(page);
         await capture(page, `${key}-viewport`, info);
         const regions = portfolio
@@ -109,7 +109,7 @@ for (const viewport of viewports) {
 for (const width of [375, 1440]) {
   test(`reading navigation and return to start at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/CV/');
+    await page.goto('/');
     for (const id of ['about', 'portfolio', 'contact']) {
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await expect(page.locator(`#navmenu a[href="#${id}"]`)).toHaveAttribute(
@@ -130,7 +130,7 @@ for (const path of ['/', '/es/']) {
     test(`visual interaction ${path} ${theme}`, async ({ page }, info) => {
       await page.setViewportSize(viewports[0]);
       await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-      await page.goto(withBase(path, '/CV/'));
+      await page.goto(withBase(path, '/'));
       await ready(page);
       const prefix = `${path === '/' ? 'en' : 'es'}-${theme}`;
       await page.locator('.header-toggle').click();
@@ -155,7 +155,7 @@ for (const width of [320, 1199, 1200, 1201]) {
   for (const path of ['/', '/es/']) {
     test(`navigation geometry ${path} ${width}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
-      await page.goto(withBase(path, '/CV/'));
+      await page.goto(withBase(path, '/'));
       await ready(page);
       const main = await page.locator('#main-content').boundingBox();
       expect(main!.x).toBe(width >= 1200 ? 300 : 0);
@@ -176,7 +176,7 @@ for (const width of [320, 1199, 1200, 1201]) {
 for (const path of ['/', '/es/', '/cv/', '/cv/es/']) {
   test(`print reference ${path}`, async ({ page }, info) => {
     await page.setViewportSize(viewports[2]);
-    await page.goto(withBase(path, '/CV/'));
+    await page.goto(withBase(path, '/'));
     await ready(page);
     await page.emulateMedia({ media: 'print' });
     await capture(page.locator('#main-content'), `${path.replaceAll('/', '-')}-print`, info);

@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  base: '/CV/',
+  base: '/',
   test: {
-    env: { BASE_URL: '/CV/' },
+    env: { BASE_URL: '/' },
     include: ['src/**/*.test.ts'],
     environment: 'node',
   },

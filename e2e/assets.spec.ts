@@ -5,12 +5,12 @@ import { expect, test } from '@playwright/test';
 import { personal } from '../src/data/site';
 import packageInfo from '../package.json' with { type: 'json' };
 
-const siteUrl = 'https://angelcanovas.github.io/CV';
+const siteUrl = 'https://angelcanovas.github.io';
 
 test('build metadata identifies the version, origin and revision that will be deployed', async ({
   request,
 }) => {
-  const response = await request.get('/CV/build-info.json');
+  const response = await request.get('/build-info.json');
   expect(response.ok()).toBe(true);
   expect(await response.json()).toEqual({
     version: packageInfo.version,
@@ -23,13 +23,13 @@ test('site feeds and canonical URLs share the configured deployment origin', asy
   request,
 }) => {
   const expectations = [
-    ['/CV/', `rel="canonical" href="${siteUrl}/"`],
-    ['/CV/es/', `rel="canonical" href="${siteUrl}/es/"`],
-    ['/CV/robots.txt', `Sitemap: ${siteUrl}/sitemap.xml`],
-    ['/CV/sitemap.xml', `<loc>${siteUrl}/cv/es/</loc>`],
-    ['/CV/llms.txt', `(${siteUrl}/cv/)`],
-    ['/CV/llms-full.txt', `- Website: ${siteUrl}`],
-    ['/CV/.well-known/security.txt', `Canonical: ${siteUrl}/.well-known/security.txt`],
+    ['/', `rel="canonical" href="${siteUrl}/"`],
+    ['/es/', `rel="canonical" href="${siteUrl}/es/"`],
+    ['/robots.txt', `Sitemap: ${siteUrl}/sitemap.xml`],
+    ['/sitemap.xml', `<loc>${siteUrl}/cv/es/</loc>`],
+    ['/llms.txt', `(${siteUrl}/cv/)`],
+    ['/llms-full.txt', `- Website: ${siteUrl}`],
+    ['/.well-known/security.txt', `Canonical: ${siteUrl}/.well-known/security.txt`],
   ];
   for (const [path, expected] of expectations) {
     const response = await request.get(path);
@@ -42,12 +42,12 @@ test('website identifies its owner and retains full third-party notices', async 
   page,
   request,
 }) => {
-  await page.goto('/CV/es/');
+  await page.goto('/es/');
   await expect(page.locator('#footer .copyright')).toContainText(personal.fullName);
   await expect(page.locator('#footer .credits a[href="https://astro.build"]')).toBeVisible();
   await expect(page.locator('#footer a[href*="bootstrapmade"]')).toHaveCount(0);
-  await expect(page.locator('#footer a[href="/CV/third-party-notices.txt"]')).toBeVisible();
-  const response = await request.get('/CV/third-party-notices.txt');
+  await expect(page.locator('#footer a[href="/third-party-notices.txt"]')).toBeVisible();
+  const response = await request.get('/third-party-notices.txt');
   expect(response.ok()).toBe(true);
   const text = await response.text();
   expect(text).toContain('Bootstrap 5 (MIT)');
@@ -117,7 +117,7 @@ test.describe('ready-made CV PDFs', () => {
     { lang: 'es', file: 'angel-canovas-cv-es.pdf' },
   ]) {
     test(`the ${lang.toUpperCase()} CV PDF is served and is a real PDF`, async ({ request }) => {
-      const response = await request.get(`/CV/cv/${file}`);
+      const response = await request.get(`/cv/${file}`);
       expect(response.status()).toBe(200);
       expect(response.headers()['content-type']).toContain('application/pdf');
       const body = await response.body();
@@ -127,21 +127,21 @@ test.describe('ready-made CV PDFs', () => {
   }
 
   test('download links point to the PDF in the visitor language', async ({ page }) => {
-    await page.goto('/CV/cv/');
+    await page.goto('/cv/');
     await expect(page.locator('a[download]').first()).toHaveAttribute(
       'href',
-      '/CV/cv/angel-canovas-cv-en.pdf',
+      '/cv/angel-canovas-cv-en.pdf',
     );
 
-    await page.goto('/CV/cv/es/');
+    await page.goto('/cv/es/');
     await expect(page.locator('a[download]').first()).toHaveAttribute(
       'href',
-      '/CV/cv/angel-canovas-cv-es.pdf',
+      '/cv/angel-canovas-cv-es.pdf',
     );
   });
 
   test('the online CV offers generating a PDF from the page', async ({ page }) => {
-    await page.goto('/CV/cv/');
+    await page.goto('/cv/');
     await page.evaluate(() => {
       window.print = () => {
         document.body.dataset.printed = 'true';
@@ -153,35 +153,37 @@ test.describe('ready-made CV PDFs', () => {
 });
 
 test('the 404 page is not indexable and keeps a self canonical', async ({ request }) => {
-  const html = await (await request.get('/CV/404.html')).text();
+  const html = await (await request.get('/404.html')).text();
   expect(html).toContain('name="robots" content="noindex, follow"');
   expect(html).toContain(`rel="canonical" href="${siteUrl}/404.html"`);
 });
 
 test('the security.txt is published with a contact and a canonical URL', async ({ request }) => {
-  const response = await request.get('/CV/.well-known/security.txt');
+  const response = await request.get('/.well-known/security.txt');
   expect(response.status()).toBe(200);
   const text = await response.text();
-  expect(text).toContain('Contact: https://github.com/AngelCanovas/CV/security/advisories/new');
+  expect(text).toContain(
+    'Contact: https://github.com/AngelCanovas/AngelCanovas.github.io/security/advisories/new',
+  );
   expect(text).toContain(`Canonical: ${siteUrl}/.well-known/security.txt`);
 });
 
 test('cache headers revalidate mutable files and keep hashed assets immutable', async ({
   request,
 }) => {
-  for (const path of ['/CV/', '/CV/sitemap.xml', '/CV/llms-full.txt', '/CV/sprite.svg']) {
+  for (const path of ['/', '/sitemap.xml', '/llms-full.txt', '/sprite.svg']) {
     const response = await request.get(path);
     expect(response.headers()['cache-control'], path).toBe('no-cache');
   }
 
-  const binary = await request.get('/CV/cv/angel-canovas-cv-en.pdf');
+  const binary = await request.get('/cv/angel-canovas-cv-en.pdf');
   expect(binary.headers()['cache-control']).toContain('max-age=604800');
 
   const asset = readdirSync(join(process.cwd(), 'dist', '_astro')).find((name) =>
     name.endsWith('.js'),
   );
   expect(asset).toBeTruthy();
-  const hashed = await request.get(`/CV/_astro/${asset}`);
+  const hashed = await request.get(`/_astro/${asset}`);
   expect(hashed.headers()['cache-control']).toContain('immutable');
 });
 
@@ -195,21 +197,21 @@ test('no client bundle leaks the personal email', () => {
 });
 
 test('the Open Graph image is served as a 1200x630 JPEG', async ({ page }) => {
-  await page.goto('/CV/');
+  await page.goto('/');
   const dimensions = await page.evaluate(
     () =>
       new Promise<{ width: number; height: number }>((resolve, reject) => {
         const image = new Image();
         image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
         image.onerror = () => reject(new Error('og-image.jpg failed to load'));
-        image.src = '/CV/og-image.jpg';
+        image.src = '/og-image.jpg';
       }),
   );
   expect(dimensions).toEqual({ width: 1200, height: 630 });
 });
 
 test('llms-full.txt is generated at build time from the site content', async ({ request }) => {
-  const response = await request.get('/CV/llms-full.txt');
+  const response = await request.get('/llms-full.txt');
   expect(response.status()).toBe(200);
   const text = await response.text();
   expect(text).toContain('# Angel Cánovas Mula — Full CV');
@@ -223,8 +225,8 @@ test('the icon sprite is served and the page logs no CSP errors', async ({ page 
     if (message.type() === 'error') errors.push(message.text());
   });
 
-  await page.goto('/CV/', { waitUntil: 'networkidle' });
-  const response = await page.request.get('/CV/sprite.svg');
+  await page.goto('/', { waitUntil: 'networkidle' });
+  const response = await page.request.get('/sprite.svg');
   expect(response.status()).toBe(200);
   expect(response.headers()['content-type']).toContain('image/svg+xml');
   await expect(page.locator('.navmenu svg').first()).toBeVisible();
@@ -242,7 +244,7 @@ test('fonts are self-hosted: no request leaves the origin', async ({ page }) => 
     if (url.endsWith('.woff2')) woff2Requests.push(url);
   });
 
-  await page.goto('/CV/', { waitUntil: 'networkidle' });
+  await page.goto('/', { waitUntil: 'networkidle' });
   expect(externalFontRequests).toEqual([]);
   expect(woff2Requests.length).toBeGreaterThan(0);
   expect(woff2Requests.every((url) => url.startsWith('http://127.0.0.1:4321/'))).toBe(true);

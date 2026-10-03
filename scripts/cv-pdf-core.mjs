@@ -2,8 +2,8 @@ import { statSync } from 'node:fs';
 
 /** Shared CV PDF rendering, used by the manual CV PDF refresh script. */
 export const CV_PAGES = [
-  { lang: 'en', route: '/CV/cv/', file: 'angel-canovas-cv-en.pdf' },
-  { lang: 'es', route: '/CV/cv/es/', file: 'angel-canovas-cv-es.pdf' },
+  { lang: 'en', route: '/cv/', file: 'angel-canovas-cv-en.pdf' },
+  { lang: 'es', route: '/cv/es/', file: 'angel-canovas-cv-es.pdf' },
 ];
 
 export const PDF_OPTIONS = {

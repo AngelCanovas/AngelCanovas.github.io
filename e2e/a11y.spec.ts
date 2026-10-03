@@ -2,11 +2,11 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 const pages = [
-  { path: '/CV/', name: 'portfolio EN' },
-  { path: '/CV/es/', name: 'portfolio ES' },
-  { path: '/CV/cv/', name: 'online CV EN' },
-  { path: '/CV/cv/es/', name: 'online CV ES' },
-  { path: '/CV/404.html', name: '404 page' },
+  { path: '/', name: 'portfolio EN' },
+  { path: '/es/', name: 'portfolio ES' },
+  { path: '/cv/', name: 'online CV EN' },
+  { path: '/cv/es/', name: 'online CV ES' },
+  { path: '/404.html', name: '404 page' },
 ];
 
 for (const { path, name } of pages) {
@@ -29,7 +29,7 @@ for (const { path, name } of pages) {
 test('the page stays readable when JavaScript is disabled', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  await page.goto('/CV/');
+  await page.goto('/');
 
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('#skills h2')).toBeVisible();
@@ -42,7 +42,7 @@ test('without JavaScript the sidebar stays usable and the hamburger is hidden', 
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/CV/');
+  await page.goto('/');
 
   await expect(page.locator('#header')).toBeVisible();
   await expect(page.locator('#navmenu a[href="#about"]')).toBeVisible();
@@ -60,7 +60,7 @@ test('without JavaScript the sidebar stays usable and the hamburger is hidden', 
 });
 
 test('the skip link is the first stop for keyboard users and is not covered', async ({ page }) => {
-  await page.goto('/CV/');
+  await page.goto('/');
 
   await page.keyboard.press('Tab');
   const focused = page.locator(':focus');
@@ -75,7 +75,7 @@ test('the skip link is the first stop for keyboard users and is not covered', as
 
 test('the mobile navigation is keyboard operable and exposes ARIA state', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/CV/');
+  await page.goto('/');
 
   const toggle = page.locator('.header-toggle');
   await toggle.click();
@@ -96,7 +96,7 @@ test('the mobile navigation is keyboard operable and exposes ARIA state', async 
 
 test('the closed mobile navigation is unreachable by keyboard', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/CV/');
+  await page.goto('/');
 
   for (let index = 0; index < 15; index += 1) {
     await page.keyboard.press('Tab');
@@ -109,7 +109,7 @@ test('the closed mobile navigation is unreachable by keyboard', async ({ page })
 
 test('choosing a section in the mobile menu moves focus to that section', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/CV/');
+  await page.goto('/');
 
   await page.locator('.header-toggle').click();
   await page.locator('#navmenu a[href="#about"]').click();
@@ -142,7 +142,7 @@ test.describe('dark colour scheme', () => {
   }
 
   test('the online CV keeps its light tokens', async ({ page }) => {
-    await page.goto('/CV/cv/');
+    await page.goto('/cv/');
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(page.locator('body')).toHaveClass(/cv-page/);
   });
@@ -152,7 +152,7 @@ test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
   test('continuous animations are disabled', async ({ page }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
 
     const animation = await page
       .locator('.hero-availability-dot')
@@ -164,7 +164,7 @@ test.describe('reduced motion', () => {
 
 test.describe('scroll reveal', () => {
   test('a jump to the bottom never leaves content invisible', async ({ page }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
     await page.evaluate(() => {
       document.documentElement.style.scrollBehavior = 'auto';
       window.scrollTo(0, document.body.scrollHeight);
@@ -185,7 +185,7 @@ test.describe('scroll reveal', () => {
   });
 
   test('a section below the fold still fades in on a normal scroll', async ({ page }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
     const target = page.locator('#resume [data-aos]').first();
     await expect(target).toHaveClass(/aos-ready/);
     await expect(target).not.toHaveClass(/aos-animate/);

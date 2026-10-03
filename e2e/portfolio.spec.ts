@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('portfolio filter shows only the selected category and updates ARIA state', async ({
   page,
 }) => {
-  await page.goto('/CV/');
+  await page.goto('/');
   const items = page.locator('.portfolio-item');
   const securityItems = page.locator('.portfolio-item[data-category~="security"]');
   const total = await items.count();
@@ -29,19 +29,19 @@ test('portfolio filter shows only the selected category and updates ARIA state',
 });
 
 test('impact counters render locale-aware final values', async ({ page }) => {
-  await page.goto('/CV/');
+  await page.goto('/');
   await page.locator('#stats').scrollIntoViewIfNeeded();
   await expect(page.locator('.stat-number').nth(2)).toHaveText('4.23', { timeout: 5000 });
 });
 
 test('impact counters use Spanish decimal formatting on the Spanish page', async ({ page }) => {
-  await page.goto('/CV/es/');
+  await page.goto('/es/');
   await page.locator('#stats').scrollIntoViewIfNeeded();
   await expect(page.locator('.stat-number').nth(2)).toHaveText('4,23', { timeout: 5000 });
 });
 
 test('the quote rotation can be paused with the keyboard', async ({ page }) => {
-  await page.goto('/CV/');
+  await page.goto('/');
   const button = page.locator('[data-quote-pause]');
   await button.scrollIntoViewIfNeeded();
   await expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -58,7 +58,7 @@ test('the quote rotation can be paused with the keyboard', async ({ page }) => {
 
 test('section anchors leave room for the fixed mobile header', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/CV/');
+  await page.goto('/');
   const margin = await page
     .locator('#about')
     .evaluate((element) => getComputedStyle(element).scrollMarginTop);
@@ -69,8 +69,8 @@ test('a malformed hash does not break the page', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
 
-  await page.goto('/CV/#123');
-  await page.goto('/CV/#%');
+  await page.goto('/#123');
+  await page.goto('/#%');
 
   expect(errors).toEqual([]);
   await expect(page.locator('h1')).toBeVisible();
