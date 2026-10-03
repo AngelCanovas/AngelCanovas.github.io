@@ -6,7 +6,7 @@ test.describe('hero backdrop', () => {
   test('paints the label grid, stays still while idle and lights up under the pointer', async ({
     page,
   }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
     await expect(page.locator(HERO_CANVAS)).toBeVisible();
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
 
@@ -20,7 +20,7 @@ test.describe('hero backdrop', () => {
   });
 
   test('a click sends a ring through the grid', async ({ page }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
     const resting = await canvasChecksum(page);
 
@@ -35,7 +35,7 @@ test.describe('hero backdrop', () => {
     test.use({ reducedMotion: 'reduce' });
 
     test('keeps the grid painted but still', async ({ page }) => {
-      await page.goto('/CV/');
+      await page.goto('/');
       await expect(page.locator(HERO_CANVAS)).toBeVisible();
       await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
       const resting = await canvasChecksum(page);

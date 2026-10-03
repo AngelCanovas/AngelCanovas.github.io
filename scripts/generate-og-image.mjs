@@ -16,7 +16,7 @@ async function main() {
 
   try {
     const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-    await page.goto(`${origin}/CV/`, { waitUntil: 'networkidle' });
+    await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
     await page.evaluate(() => {
       const hide = (selector) => {
         document.querySelectorAll(selector).forEach((element) => {

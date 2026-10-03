@@ -1,6 +1,6 @@
 import { withBase } from './base-path';
 
-/** The hosting origin and the full project URL have distinct responsibilities. */
+/** The hosting origin and canonical site URL are explicit, even at the root mount. */
 export const siteOrigin = 'https://angelcanovas.github.io';
 export function absoluteUrl(path: string): string {
   return new URL(withBase(path), siteOrigin).href;

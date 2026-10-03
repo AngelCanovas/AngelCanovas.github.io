@@ -28,7 +28,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: 'node scripts/serve-dist.mjs --port 4321',
-    url: 'http://127.0.0.1:4321/CV/cv/',
+    url: 'http://127.0.0.1:4321/cv/',
     reuseExistingServer: false,
     timeout: 120_000,
   },

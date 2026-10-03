@@ -2,18 +2,20 @@
 
 Bilingual CV and portfolio of a Full-Stack Java Engineer based in Murcia, Spain.
 
-- [English portfolio](https://angelcanovas.github.io/CV/)
-- [Portfolio en español](https://angelcanovas.github.io/CV/es/)
-- [Online CV](https://angelcanovas.github.io/CV/cv/) · [CV online](https://angelcanovas.github.io/CV/cv/es/)
-- [English PDF](https://angelcanovas.github.io/CV/cv/angel-canovas-cv-en.pdf) · [PDF español](https://angelcanovas.github.io/CV/cv/angel-canovas-cv-es.pdf)
+- [English portfolio](https://angelcanovas.github.io/)
+- [Portfolio en español](https://angelcanovas.github.io/es/)
+- [Online CV](https://angelcanovas.github.io/cv/) · [CV online](https://angelcanovas.github.io/cv/es/)
+- [English PDF](https://angelcanovas.github.io/cv/angel-canovas-cv-en.pdf) · [PDF español](https://angelcanovas.github.io/cv/angel-canovas-cv-es.pdf)
 
 The static Astro site includes accessible navigation, light/dark themes, local
 fonts, an interactive hero, print styles and machine-readable CV feeds.
 
 ## Development
 
-Use the Node version in `.nvmrc`, then `npm ci` and `npm run dev`.
-The development URL is `http://localhost:4321/CV/`.
+Clone `https://github.com/AngelCanovas/AngelCanovas.github.io.git` into
+`AngelCanovas.github.io` and work from that directory. Use the Node version in
+`.nvmrc`, then `npm ci` and `npm run dev`.
+The development URL is `http://localhost:4321/`.
 Content lives in `src/data/site.ts`; maintain both locales together.
 The committed PDF files are canonical: do not regenerate them without the owner's
 explicit request. Hidden technical notes contain no unpublished articles.
@@ -21,7 +23,7 @@ explicit request. Hidden technical notes contain no unpublished articles.
 Before committing, run `npm run check`, `npm run lint`, `npm run format:check`,
 `npm test`, `npm run build`, `npm run test:e2e`, `npm run lighthouse`,
 `npm run lighthouse:mobile` and `npm audit --audit-level=high`.
-The test server mounts `dist/` at `/CV/`. Linux visual references use the lockfile
+The test server mounts `dist/` at `/`. Linux visual references use the lockfile
 Chromium and zero pixel tolerance; Windows captures supplement geometry checks.
 
 ## Deployment and security

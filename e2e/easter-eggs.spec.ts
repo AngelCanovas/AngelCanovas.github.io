@@ -7,14 +7,14 @@ declare global {
 }
 
 test('the HTML comment easter egg is present in the page source', async ({ request }) => {
-  const html = await (await request.get('/CV/')).text();
+  const html = await (await request.get('/')).text();
   expect(html).toContain('Konami code');
 });
 
 test('the developer console greets curious visitors', async ({ page }) => {
   const messages: string[] = [];
   page.on('console', (message) => messages.push(message.text()));
-  await page.goto('/CV/');
+  await page.goto('/');
   await expect.poll(() => messages.some((message) => message.includes('██'))).toBe(true);
   expect(messages.some((message) => message.includes('curious developer'))).toBe(true);
 });
@@ -26,7 +26,7 @@ test('the Konami code fires the hero backdrop easter egg', async ({ page }) => {
       window.__konami = (window.__konami ?? 0) + 1;
     });
   });
-  await page.goto('/CV/');
+  await page.goto('/');
 
   const sequence = [
     'ArrowUp',

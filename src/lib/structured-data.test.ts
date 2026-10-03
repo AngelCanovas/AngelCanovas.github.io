@@ -5,16 +5,16 @@ import { buildPersonSchema, buildWebSiteSchema, currentEmployer } from './struct
 
 const base = buildPersonSchema({
   lang: 'en',
-  url: 'https://angelcanovas.github.io/CV/',
-  image: 'https://angelcanovas.github.io/CV/profile.webp',
+  url: 'https://angelcanovas.github.io/',
+  image: 'https://angelcanovas.github.io/profile.webp',
 });
 
 describe('buildPersonSchema', () => {
   it('builds a schema.org Person node with the canonical url and image', () => {
     expect(base['@context']).toBe('https://schema.org');
     expect(base['@type']).toBe('Person');
-    expect(base.url).toBe('https://angelcanovas.github.io/CV/');
-    expect(base.image).toBe('https://angelcanovas.github.io/CV/profile.webp');
+    expect(base.url).toBe('https://angelcanovas.github.io/');
+    expect(base.image).toBe('https://angelcanovas.github.io/profile.webp');
   });
 
   it('links the public professional profiles', () => {
@@ -34,7 +34,7 @@ describe('buildPersonSchema', () => {
   });
 
   it('describes the person, employer, education and credentials', () => {
-    expect(base['@id']).toBe('https://angelcanovas.github.io/CV/#person');
+    expect(base['@id']).toBe('https://angelcanovas.github.io/#person');
     expect(base.description.length).toBeGreaterThan(80);
     expect(base.worksFor?.name).toBe('Capgemini');
     expect(base.alumniOf.map((entry) => entry.name)).toContain('IES Ingeniero de la Cierva');
@@ -116,12 +116,12 @@ describe('currentEmployer', () => {
 describe('buildWebSiteSchema', () => {
   it('builds a WebSite node declared in both site languages', () => {
     const site = buildWebSiteSchema({
-      url: 'https://angelcanovas.github.io/CV/',
+      url: 'https://angelcanovas.github.io/',
       name: 'Angel Cánovas Mula',
     });
     expect(site['@context']).toBe('https://schema.org');
     expect(site['@type']).toBe('WebSite');
-    expect(site.url).toBe('https://angelcanovas.github.io/CV/');
+    expect(site.url).toBe('https://angelcanovas.github.io/');
     expect(site.inLanguage).toEqual(['en', 'es']);
   });
 });

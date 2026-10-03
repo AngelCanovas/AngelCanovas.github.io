@@ -4,7 +4,7 @@ import { HERO_CANVAS, canvasChecksum } from './hero-canvas';
 
 test.describe('theme toggle', () => {
   test('starts from the system preference, toggles and persists the choice', async ({ page }) => {
-    await page.goto('/CV/');
+    await page.goto('/');
     const toggle = page.locator('[data-theme-toggle]');
     await expect(toggle).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
@@ -36,7 +36,7 @@ test.describe('theme toggle', () => {
 
     test('an explicit light choice overrides the system', async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('theme', 'light'));
-      await page.goto('/CV/');
+      await page.goto('/');
 
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
       await expect(page.locator('[data-theme-toggle]')).toHaveAttribute('aria-pressed', 'false');
@@ -55,7 +55,7 @@ test.describe('theme toggle', () => {
     test('the theme-color metas keep following the system without a stored choice', async ({
       page,
     }) => {
-      await page.goto('/CV/');
+      await page.goto('/');
       const lightMeta = page.locator('meta[name="theme-color"]').first();
       const darkMeta = page.locator('meta[name="theme-color"]').nth(1);
       await expect(lightMeta).toHaveAttribute('media', '(prefers-color-scheme: light)');

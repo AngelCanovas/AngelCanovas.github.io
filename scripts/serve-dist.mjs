@@ -6,7 +6,7 @@
  * Usage: node scripts/serve-dist.mjs [--port 4321] [--host 127.0.0.1]
  */
 import { createServer } from 'node:http';
-import { lstatSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { lstatSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { extname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,9 +31,9 @@ const MIME = {
 const LONG_CACHE_EXTENSIONS = new Set(['.woff2', '.png', '.webp', '.jpg', '.jpeg', '.ico', '.pdf']);
 
 /**
- * Mirror what nginx does in production so local previews (and the e2e run)
- * exercise the same caching: hashed `_astro` files are immutable, other static
- * assets are cached for a week and HTML is revalidated with an ETag.
+ * Use explicit QA cache policies for local previews and e2e.
+ * Hashed `_astro` files are immutable, other static assets are cached for a week,
+ * and HTML is revalidated with an ETag. GitHub Pages controls production headers.
  */
 function cacheControlFor(file) {
   if (/[\\/]_astro[\\/]/.test(file)) return 'public, max-age=31536000, immutable';
@@ -42,16 +42,22 @@ function cacheControlFor(file) {
 }
 
 function resolveAsset(root, urlPath, basePath) {
+  if (!urlPath.startsWith('/') || urlPath.startsWith('//')) return null;
   let pathname;
   try {
     pathname = decodeURIComponent(new URL(urlPath, 'http://localhost').pathname);
   } catch {
     return null;
   }
-  if (!pathname.startsWith(basePath) || pathname.includes('\\') || pathname.includes('\0'))
+  if (
+    !pathname.startsWith(basePath) ||
+    pathname.startsWith('//') ||
+    pathname.includes('\\') ||
+    pathname.includes('\0')
+  )
     return null;
   pathname = '/' + pathname.slice(basePath.length);
-  if (pathname.startsWith(basePath)) return null;
+  if (basePath !== '/' && pathname.startsWith(basePath)) return null;
   if (pathname.endsWith('/')) pathname += 'index.html';
   const rootAbs = resolve(root);
   const file = resolve(rootAbs, `.${pathname}`);
@@ -66,6 +72,14 @@ function resolveAsset(root, urlPath, basePath) {
   if (!stats.isFile()) return null;
   const actual = relative(realpathSync(rootAbs), realpathSync(file));
   if (actual.startsWith('..') || isAbsolute(actual)) return null;
+  // Windows can otherwise alias /CV/ to /cv/. Match the Pages filesystem.
+  if (process.platform === 'win32') {
+    let parent = rootAbs;
+    for (const segment of pathFromRoot.split(/[\\/]/)) {
+      if (!readdirSync(parent).includes(segment)) return null;
+      parent = resolve(parent, segment);
+    }
+  }
   return file;
 }
 
@@ -74,9 +88,9 @@ export function startStaticServer({
   root = 'dist',
   host = '127.0.0.1',
   port = 0,
-  basePath = '/CV/',
+  basePath = '/',
 } = {}) {
-  if (!/^\/[A-Za-z0-9_-]+\/$/.test(basePath)) throw new Error('Invalid project mount');
+  if (!/^\/(?:[A-Za-z0-9_-]+\/)?$/.test(basePath)) throw new Error('Invalid project mount');
   const server = createServer((request, response) => {
     const file = resolveAsset(root, request.url ?? '/', basePath);
     if (!file) {
@@ -138,5 +152,5 @@ if (isCli) {
   const port = Number.parseInt(readFlag('--port', '4321'), 10);
   const host = readFlag('--host', '127.0.0.1');
   const { origin } = await startStaticServer({ host, port });
-  console.log(`[serve-dist] serving ./dist at ${origin}/CV/`);
+  console.log(`[serve-dist] serving ./dist at ${origin}/`);
 }

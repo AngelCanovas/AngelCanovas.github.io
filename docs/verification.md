@@ -4,13 +4,13 @@ After a reviewed update reaches `main`, open its CI run and confirm that verify,
 security and both CodeQL jobs passed, followed by the Pages deployment. A pull
 request validates without publishing; a push to `main` starts publication itself.
 
-Read https://angelcanovas.github.io/CV/build-info.json and compare `revision` with
+Read https://angelcanovas.github.io/build-info.json and compare `revision` with
 the immutable `main` commit that passed CI, `version` with package.json and `site`
-with `https://angelcanovas.github.io/CV`. Allow for host/CDN propagation before
+with `https://angelcanovas.github.io`. Allow for host/CDN propagation before
 concluding that an older response indicates a deployment failure.
 
 Verify HTTP responses for the four main routes, sprite, optimized assets, fonts,
-Open Graph JPEG, sitemap, text feeds, project security contact copy and both PDFs.
+Open Graph JPEG, sitemap, text feeds, origin security contact and both PDFs.
 Check canonical/hreflang/JSON-LD URLs, local links and unknown routes. Use a browser
 to check language switching, query/hash and Back, theme, icons, downloads, focus
 and the absence of CSP errors. A successful root request alone is insufficient.
@@ -26,10 +26,11 @@ publish Playwright reports/traces; the local report privacy check decodes the ZI
 inside HTML and rejects Git metadata and personal paths. Retain the disabled
 Git capture setting even though the public commits use a noreply identity.
 
-Preserve zero-difference Linux visual gates. The initial release changes eight
-online-CV footer references solely for the visible hosting URL; the other 150
-references are unchanged. PDF downloads retain their canonical bytes.
+Preserve zero-difference Linux visual gates. Root hosting updates eight online-CV
+footer references solely for the visible hosting URL; the other 150 references are
+unchanged. PDF downloads retain their canonical bytes.
 
-The project cannot redirect the hosting origin or install host-wide robots.txt or
-RFC 9116 contact rules. Treat `/CV/` as the canonical entry point and SECURITY.md as
-the operational reporting policy.
+The site publishes robots.txt and .well-known/security.txt at the hosting root.
+Treat `/` as the canonical entry point and SECURITY.md as the operational reporting
+policy. Verify that generated URLs and local links do not retain the old `/CV/`
+mount.

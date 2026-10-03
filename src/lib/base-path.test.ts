@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { withBase } from './base-path';
-import { absoluteUrl, siteUrl } from './site-url';
+import { absoluteUrl, siteUrl, siteHost } from './site-url';
 
-describe('project URLs', () => {
-  it('preserves a case-sensitive base, trailing slash, query and hash', () => {
-    expect(withBase('/')).toBe('/CV/');
-    expect(withBase('/es/?utm=qa#contact')).toBe('/CV/es/?utm=qa#contact');
-    expect(withBase('/CV/cv/')).toBe('/CV/cv/');
-    expect(withBase('/sprite.svg', '/CV')).toBe('/CV/sprite.svg');
-    expect(withBase('/cv/', '/')).toBe('/cv/');
+describe('site URLs', () => {
+  it('serves root paths without changing trailing slash, query or hash', () => {
+    expect(withBase('/')).toBe('/');
+    expect(withBase('/es/?utm=qa#contact')).toBe('/es/?utm=qa#contact');
+    expect(withBase('/cv/')).toBe('/cv/');
+    expect(withBase('/sprite.svg')).toBe('/sprite.svg');
     expect(() => withBase('//other.example/')).toThrow();
+    expect(() => withBase('https://other.example/')).toThrow();
   });
-  it('keeps the origin separate from the full project URL', () => {
-    expect(siteUrl).toBe('https://angelcanovas.github.io/CV');
-    expect(absoluteUrl('/cv/es/')).toBe('https://angelcanovas.github.io/CV/cv/es/');
+  it('retains generic support for an explicit case-sensitive mount', () => {
+    expect(withBase('/cv/', '/CV/')).toBe('/CV/cv/');
+    expect(withBase('/CV/cv/', '/CV')).toBe('/CV/cv/');
+  });
+  it('uses the hosting root for canonical URLs and the visible CV footer', () => {
+    expect(siteUrl).toBe('https://angelcanovas.github.io');
+    expect(absoluteUrl('/cv/es/')).toBe('https://angelcanovas.github.io/cv/es/');
+    expect(siteHost).toBe('angelcanovas.github.io/');
   });
 });
