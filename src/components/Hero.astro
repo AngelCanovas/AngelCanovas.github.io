@@ -18,6 +18,7 @@ const t = getContent(lang);
       <canvas id="hero-canvas" class="hero-canvas"></canvas>
     </div>
   </div>
+  <div class="hero-atmosphere" aria-hidden="true"></div>
   <div class="hero-glow" aria-hidden="true"></div>
 
   <div class="container hero-content">
@@ -180,6 +181,14 @@ const t = getContent(lang);
   .hero .container {
     position: relative;
     z-index: 3;
+  }
+  .hero-atmosphere {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
   }
   .hero-availability {
     display: inline-flex;
@@ -373,6 +382,94 @@ const t = getContent(lang);
     }
     .typed-cursor--blink {
       animation: none;
+    }
+  }
+  /* Primary input, not viewport width: tablets and touch laptops get the same
+     autonomous backdrop, while a small desktop window retains its mouse grid. */
+  @media (hover: none), (pointer: coarse) {
+    .hero-backdrop {
+      display: none;
+    }
+    .hero-atmosphere {
+      display: block;
+    }
+    .hero-atmosphere::before,
+    .hero-atmosphere::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+    }
+    .hero-atmosphere::before {
+      width: 140%;
+      height: 68%;
+      left: -48%;
+      bottom: -18%;
+      background: radial-gradient(
+        ellipse at center,
+        light-dark(rgb(20 157 221 / 36%), rgb(20 157 221 / 32%)) 0%,
+        light-dark(rgb(20 157 221 / 14%), rgb(20 157 221 / 12%)) 38%,
+        transparent 70%
+      );
+    }
+    .hero-atmosphere::after {
+      width: 118%;
+      height: 62%;
+      right: -64%;
+      top: 4%;
+      background: radial-gradient(
+        ellipse at center,
+        light-dark(rgb(139 92 246 / 28%), rgb(139 92 246 / 30%)) 0%,
+        light-dark(rgb(139 92 246 / 10%), rgb(139 92 246 / 12%)) 38%,
+        transparent 70%
+      );
+    }
+    /* Protect the copy at the centre, leaving the edge halos visible in both
+       themes, including reduced motion and an explicit theme override. */
+    .hero-glow {
+      background: linear-gradient(
+        to bottom,
+        light-dark(rgb(242 247 252 / 12%), rgb(4 11 20 / 16%)) 0%,
+        light-dark(rgb(242 247 252 / 55%), rgb(4 11 20 / 60%)) 44%,
+        light-dark(rgb(242 247 252 / 12%), rgb(4 11 20 / 16%)) 100%
+      );
+    }
+  }
+  @media (hover: none) and (prefers-reduced-motion: no-preference),
+    (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .hero-atmosphere::before {
+      animation: hero-halo-blue 4s ease-out both;
+    }
+    .hero-atmosphere::after {
+      animation: hero-halo-violet 4s ease-out both;
+    }
+    .hero[data-hero-paused] .hero-atmosphere::before,
+    .hero[data-hero-paused] .hero-atmosphere::after {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes hero-halo-blue {
+    from {
+      opacity: 0.55;
+      transform: translate3d(-6%, 8%, 0) scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes hero-halo-violet {
+    from {
+      opacity: 0.45;
+      transform: translate3d(8%, -6%, 0) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media print {
+    .hero-atmosphere {
+      display: none;
     }
   }
 </style>
