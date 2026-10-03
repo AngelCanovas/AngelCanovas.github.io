@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 — 2026-10-03
+
+Add automatic atmospheric Hero halos for touch devices, with light and dark theme
+palettes, a brief entrance animation and a static reduced-motion fallback. Preserve
+the desktop canvas interaction and avoid allocating its buffers on touch devices.
+
+Simplify client animation and filter configuration, remove 18 unused settings and
+three options interfaces, and fix first-paint scheduling, reveal cleanup and quote
+pause lifecycles. Add 22 regression cases; see `docs/code-cleanup.md` for scope,
+measurements and validation limits.
 
 Refresh compatible npm dependencies and SHA-pinned GitHub Actions, move CI to
 Node 24 LTS with matching runtime types, and document the compiler compatibility
