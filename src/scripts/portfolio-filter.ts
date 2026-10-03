@@ -1,42 +1,27 @@
-export interface PortfolioFilterOptions {
-  buttonSelector?: string;
-  itemSelector?: string;
-  activeClass?: string;
-  hiddenClass?: string;
-  emptySelector?: string;
-  statusSelector?: string;
-}
-
 /**
  * Category filter for the portfolio grid. Buttons carry `data-filter`; items
  * carry `data-category` (space-separated). `*` matches everything.
  *
  * Returns a cleanup function that removes the click listeners.
  */
-export function initPortfolioFilter(
-  root: HTMLElement,
-  options: PortfolioFilterOptions = {},
-): () => void {
-  const buttonSelector = options.buttonSelector ?? '.filter-btn';
-  const itemSelector = options.itemSelector ?? '.portfolio-item';
-  const activeClass = options.activeClass ?? 'filter-active';
-  const hiddenClass = options.hiddenClass ?? 'is-hidden';
-  const emptySelector = options.emptySelector ?? '[data-portfolio-empty]';
-  const statusSelector = options.statusSelector ?? '[data-portfolio-status]';
-
-  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>(buttonSelector));
-  const items = Array.from(root.querySelectorAll<HTMLElement>(itemSelector));
-  const empty = root.querySelector<HTMLElement>(emptySelector);
-  const status = root.querySelector<HTMLElement>(statusSelector);
+export function initPortfolioFilter(root: HTMLElement): () => void {
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('.filter-btn'));
+  const items = Array.from(root.querySelectorAll<HTMLElement>('.portfolio-item')).map(
+    (element) => ({
+      element,
+      categories: (element.dataset.category ?? '').split(/\s+/),
+    }),
+  );
+  const empty = root.querySelector<HTMLElement>('[data-portfolio-empty]');
+  const status = root.querySelector<HTMLElement>('[data-portfolio-status]');
   const statusTemplate = root.dataset.statusTemplate ?? '{shown} / {total}';
   if (buttons.length === 0 || items.length === 0) return () => {};
 
   function applyFilter(filter: string, announce = false) {
     let visible = 0;
-    for (const item of items) {
-      const categories = (item.dataset.category ?? '').split(/\s+/);
+    for (const { element, categories } of items) {
       const matches = filter === '*' || categories.includes(filter);
-      item.classList.toggle(hiddenClass, !matches);
+      element.classList.toggle('is-hidden', !matches);
       if (matches) visible += 1;
     }
     if (empty) empty.hidden = visible > 0;
@@ -52,7 +37,7 @@ export function initPortfolioFilter(
       const filter = button.dataset.filter ?? '*';
       for (const candidate of buttons) {
         const isActive = candidate === button;
-        candidate.classList.toggle(activeClass, isActive);
+        candidate.classList.toggle('filter-active', isActive);
         candidate.setAttribute('aria-pressed', String(isActive));
       }
       applyFilter(filter, true);

@@ -13,12 +13,7 @@ import {
 } from '../lib/hero-backdrop';
 import { KONAMI_EVENT } from '../lib/konami';
 import { prefersReducedMotion } from './scroll-utils';
-
-export interface HeroBackdropOptions {
-  reducedMotion?: boolean;
-  maxDevicePixelRatio?: number;
-  labels?: readonly string[];
-}
+import { scheduleHeroFirstPaint } from './hero-first-paint';
 
 interface Glyph {
   value: string;
@@ -82,15 +77,6 @@ const PING_RING_PROBES = 16;
 /** Full repaints are throttled; dirty rectangles are padded for antialiasing. */
 const REBUILD_MIN_INTERVAL = 100;
 const DIRTY_PADDING = 4;
-/**
- * The first paint measures ~1.3k labels and fills the offscreen buffer: it is
- * the heaviest main-thread task of the page, so it waits for an idle slot after
- * the first paint (with a hard deadline) instead of competing with it.
- */
-const FIRST_PAINT_TIMEOUT = 250;
-const FIRST_PAINT_FALLBACK = 80;
-/** Hard deadline: the backdrop still appears if `load` takes too long. */
-const FIRST_PAINT_DEADLINE = 1200;
 
 /**
  * Interactive hero backdrop: a masked grid of monospaced labels that drifts with
@@ -101,20 +87,16 @@ const FIRST_PAINT_DEADLINE = 1200;
  *
  * Returns a cleanup function that stops the loop and detaches every listener.
  */
-function initLabelBackdrop(
-  root: HTMLElement,
-  canvas: HTMLCanvasElement,
-  options: HeroBackdropOptions = {},
-): () => void {
+function initLabelBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => void {
   const context = canvas.getContext('2d', { alpha: true });
   const base = document.createElement('canvas');
   const baseContext = base.getContext('2d', { alpha: true });
   if (!context || !baseContext) return () => {};
 
-  const labels = options.labels ?? HERO_BACKDROP_LABELS;
+  const labels = HERO_BACKDROP_LABELS;
   // Two full-size buffers: capping the ratio keeps them around ~15 MB each on a
   // desktop hero instead of doubling that on retina screens.
-  const maxDevicePixelRatio = options.maxDevicePixelRatio ?? 1.5;
+  const maxDevicePixelRatio = 1.5;
   const canvasContext: CanvasRenderingContext2D = context;
   const bufferContext: CanvasRenderingContext2D = baseContext;
   const drift = root.querySelector<HTMLElement>('[data-hero-drift]');
@@ -134,7 +116,7 @@ function initLabelBackdrop(
       ? window.matchMedia('(prefers-color-scheme: dark)')
       : null;
 
-  let reducedMotion = options.reducedMotion ?? prefersReducedMotion();
+  let reducedMotion = prefersReducedMotion();
   let canvasStyle = readStyle();
   let width = 1;
   let height = 1;
@@ -149,8 +131,6 @@ function initLabelBackdrop(
   let rafId = 0;
   let lastFrame = 0;
   let rebuildTimer: ReturnType<typeof setTimeout> | undefined;
-  let firstPaintTimer: ReturnType<typeof setTimeout> | undefined;
-  let firstPaintIdle: number | undefined;
   let firstPaintPending = true;
   let lastRebuild = 0;
   let stopped = false;
@@ -483,41 +463,10 @@ function initLabelBackdrop(
     canvas.height = Math.max(1, Math.round(height * dpr));
     canvasContext.setTransform(dpr, 0, 0, dpr, 0, 0);
     build();
-    hot = new Set();
-    samples.length = 0;
-    pings.length = 0;
-    trail = null;
+    resetHeat();
     paintBase();
     canvas.dataset.ready = 'true';
     requestFrame();
-  }
-
-  /**
-   * Defers the expensive first rebuild: the canvas stays hidden until it has
-   * content, and any resize that happens before it runs is picked up by that
-   * same measurement (hence the early return below). It waits for `load` so the
-   * paint never competes with the LCP text, with a deadline in case `load`
-   * never fires (a stalled image, a long-lived connection).
-   */
-  function scheduleFirstPaint() {
-    const paint = () => {
-      firstPaintTimer = undefined;
-      firstPaintIdle = undefined;
-      rebuild();
-    };
-    const idlePaint = () => {
-      if (typeof window.requestIdleCallback === 'function') {
-        firstPaintIdle = window.requestIdleCallback(paint, { timeout: FIRST_PAINT_TIMEOUT });
-        return;
-      }
-      firstPaintTimer = setTimeout(paint, FIRST_PAINT_FALLBACK);
-    };
-    if (document.readyState === 'complete') {
-      idlePaint();
-      return;
-    }
-    window.addEventListener('load', idlePaint, { once: true });
-    firstPaintTimer = setTimeout(idlePaint, FIRST_PAINT_DEADLINE);
   }
 
   /** Coalesces resize/theme/font storms into one repaint. */
@@ -580,8 +529,7 @@ function initLabelBackdrop(
 
   function onPointerDown(event: PointerEvent) {
     if (stopped || reducedMotion) return;
-    const target = event.target as Element | null;
-    if (target?.closest('a, button')) return;
+    if (event.target instanceof Element && event.target.closest('a, button')) return;
     const point = canvasPoint(event.clientX, event.clientY);
     if (!point) return;
     addPing(point.x, point.y, performance.now());
@@ -605,10 +553,7 @@ function initLabelBackdrop(
 
   function onReducedMotionChange() {
     reducedMotion = prefersReducedMotion();
-    samples.length = 0;
-    pings.length = 0;
-    trail = null;
-    hot = new Set();
+    resetHeat();
     if (!reducedMotion) {
       scheduleRebuild();
       return;
@@ -619,10 +564,7 @@ function initLabelBackdrop(
   function onVisibilityChange() {
     setMotionState();
     if (document.hidden || reducedMotion) return;
-    hot = new Set();
-    samples.length = 0;
-    pings.length = 0;
-    trail = null;
+    resetHeat();
     paintBase();
     requestFrame();
   }
@@ -661,16 +603,28 @@ function initLabelBackdrop(
   root.addEventListener('pointerdown', onPointerDown, { passive: true });
   root.addEventListener('pointerleave', onPointerLeave, { passive: true });
 
-  scheduleFirstPaint();
+  const cancelFirstPaint = scheduleHeroFirstPaint(rebuild);
+
+  function resetHeat() {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+    lastFrame = 0;
+    for (const label of hot) {
+      label.levels.fill(0);
+      label.peak = 0;
+    }
+    hot.clear();
+    samples.length = 0;
+    pings.length = 0;
+    trail = null;
+    pending = null;
+  }
 
   return () => {
     stopped = true;
     cancelAnimationFrame(rafId);
     if (rebuildTimer !== undefined) clearTimeout(rebuildTimer);
-    if (firstPaintTimer !== undefined) clearTimeout(firstPaintTimer);
-    if (firstPaintIdle !== undefined && typeof window.cancelIdleCallback === 'function') {
-      window.cancelIdleCallback(firstPaintIdle);
-    }
+    cancelFirstPaint();
     resizeObserver?.disconnect();
     intersectionObserver?.disconnect();
     themeObserver?.disconnect();
@@ -689,11 +643,7 @@ function initLabelBackdrop(
 
 /** CSS supplies the touch halos even without JS. Allocate the two canvas
  * buffers only when the primary input supports the interactive label field. */
-export function initHeroBackdrop(
-  root: HTMLElement,
-  canvas: HTMLCanvasElement,
-  options: HeroBackdropOptions = {},
-): () => void {
+export function initHeroBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => void {
   const touchQuery = window.matchMedia('(hover: none), (pointer: coarse)');
   let cleanupLabels: (() => void) | undefined;
   let visible = true;
@@ -707,7 +657,7 @@ export function initHeroBackdrop(
       canvas.height = 150;
       delete canvas.dataset.ready;
     } else {
-      cleanupLabels ??= initLabelBackdrop(root, canvas, options);
+      cleanupLabels ??= initLabelBackdrop(root, canvas);
     }
   }
 

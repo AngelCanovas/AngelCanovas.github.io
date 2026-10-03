@@ -33,6 +33,8 @@ export function initScrollReveal(): void {
     pending.add(element);
   }
 
+  if (pending.size === 0) return;
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -46,6 +48,12 @@ export function initScrollReveal(): void {
     if (!pending.delete(element)) return;
     element.classList.add('aos-animate');
     observer.unobserve(element);
+    if (pending.size === 0) {
+      observer.disconnect();
+      window.removeEventListener('scroll', revealCrossed);
+      window.removeEventListener('load', revealCrossed);
+      window.removeEventListener('pageshow', revealCrossed);
+    }
   }
 
   // Safety net: a fast scroll (dragging the scrollbar, repeated PageDown, an
