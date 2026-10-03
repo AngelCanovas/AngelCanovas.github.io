@@ -125,6 +125,8 @@ export default defineConfig({
   site: 'https://angelcanovas.github.io',
   base: '/',
   trailingSlash: 'always',
+  // There are no Markdown code blocks; avoid Shiki's default inline styles under CSP.
+  markdown: { syntaxHighlight: false },
   // Opt-in on the language links only: the other locale is fetched when the
   // visitor hovers/taps the switch, so first paint stays untouched.
   prefetch: {

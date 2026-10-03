@@ -1,6 +1,6 @@
 {
   "name": "@portfolio-patches/http-cache-semantics",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Parses Cache-Control and other headers. Helps building correct HTTP caches and proxies",
   "repository": {
     "type": "git",
@@ -17,6 +17,9 @@
     "upstream": "http-cache-semantics",
     "version": "4.2.0",
     "integrity": "sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==",
-    "advisory": "GHSA-ch52-4w7c-c8xp"
+    "advisory": "GHSA-ch52-4w7c-c8xp",
+    "hardening": [
+      "js/polynomial-redos: linear Connection and Vary tokenization"
+    ]
   }
 }

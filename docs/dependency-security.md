@@ -20,14 +20,16 @@ until an upstream replacement is verified compatible: update only that dependenc
 repeat the security regressions and all quality/visual gates, then remove the fork
 and update provenance/notices. An advisory disappearing is insufficient evidence.
 
-## Additional static-analysis finding
+## Header-processing hardening
 
-CodeQL flags `js/polynomial-redos` in the upstream connection-header splitting
-expression in `vendor/http-cache-semantics/index.js`. Crafted long whitespace
-input may cause excessive processing. This dependency runs during the build;
-the deployed site contains static files and does not run this Node package.
-The current site uses local assets and performs no remote image fetches. This
-limits the current exposure but does not resolve the upstream expression.
-The existing stale-cache patch and recorded source hashes remain unchanged.
-Track this separately before reusing the fork in a server or with untrusted
-HTTP inputs; no alert suppression or claim of complete CodeQL clearance is made.
+The cache fork also replaces the upstream Connection and Vary whitespace-splitting
+regexps with comma splitting followed by per-field trimming. Processing stays
+linear even when a header contains a long whitespace run without commas.
+Connection field names are normalized before removing nominated headers.
+This resolves the expression flagged by CodeQL's `js/polynomial-redos` rule
+without suppressing the alert or changing the stale-cache confidentiality patch.
+
+Regressions cover normal header semantics, a 250,000-character adversarial input
+in an isolated process with a timeout, and all recorded source/license hashes.
+The installed fork is version 4.2.2; its upstream base remains 4.2.0. The original
+upstream hashes and licenses remain intact; only the patched source hash changes.

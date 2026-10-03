@@ -439,7 +439,7 @@ const en = {
           impact:
             'Lighthouse 100 in accessibility, best practices and SEO, with zero CSP violations.',
         },
-        link: personal.github,
+        link: `${personal.github}/AngelCanovas.github.io`,
       },
     ],
   },
@@ -981,7 +981,7 @@ const es = {
           impact:
             'Lighthouse 100 en accesibilidad, buenas prácticas y SEO, con cero violaciones de CSP.',
         },
-        link: personal.github,
+        link: `${personal.github}/AngelCanovas.github.io`,
       },
     ],
   },

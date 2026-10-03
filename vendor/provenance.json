@@ -53,7 +53,7 @@
       "dependency": "http-cache-semantics",
       "file": "index.js",
       "upstreamSha256": "01b7d66c854b2fe53ac05c98feb6e0d64722ab8898a778e2d2426a8b468d178f",
-      "patchedSha256": "0a75e9f2ee2e9075c87bd9a0af03a8aba8aca3684311370584960f4e75c717ba"
+      "patchedSha256": "529028e28695971bfc2a19b0101add586ae499ebd850fd1b54fe590af85b365f"
     },
     {
       "dependency": "http-cache-semantics",
