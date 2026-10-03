@@ -44,8 +44,14 @@ describe('runtime policy', () => {
       )
       .toBeGreaterThanOrEqual(0);
     const packageEngine = packageJson.engines.node;
-    expect(packageEngine.startsWith('>=')).toBe(true);
-    const packageFloor = packageEngine.slice(2).trim();
+    expect(packageEngine).toMatch(/^\^\d+\.\d+\.\d+$/);
+    const packageFloor = packageEngine.slice(1);
+    const runtimeMajor = parseVersion(pinnedNode)[0];
+    expect(runtimeMajor, 'Use the tested LTS major').toBe(parseVersion(packageFloor)[0]);
+    expect(
+      parseVersion(lockfile.packages['node_modules/@types/node'].version)[0],
+      'Node types must describe the supported runtime',
+    ).toBe(runtimeMajor);
     expect
       .soft(
         compareVersions(parseVersion(pinnedNode), parseVersion(packageFloor)),

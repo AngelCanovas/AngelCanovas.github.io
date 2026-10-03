@@ -1,4 +1,7 @@
 import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
@@ -25,6 +28,7 @@ interface CacheInstance {
     response: { status: number; headers: Record<string, string> },
   ): { modified: boolean };
   toObject(): unknown;
+  responseHeaders(): Record<string, string>;
 }
 interface CacheConstructor {
   new (
@@ -164,5 +168,81 @@ describe('dependency security: shared-cache confidentiality', () => {
       { shared: false },
     );
     expect(privateCache.satisfiesWithoutRevalidation(request)).toBe(true);
+  });
+});
+
+describe('dependency security: header tokenization', () => {
+  it('strips Connection-nominated headers regardless of case or whitespace', () => {
+    const policy = new CachePolicy(request, {
+      status: 200,
+      headers: {
+        'cache-control': 'public, max-age=600',
+        connection: ' X-Internal ,\tX-Trace  ',
+        'x-internal': 'private',
+        'x-trace': 'private',
+        'content-type': 'image/webp',
+      },
+    });
+    const headers = policy.responseHeaders();
+    expect(headers).not.toHaveProperty('connection');
+    expect(headers).not.toHaveProperty('x-internal');
+    expect(headers).not.toHaveProperty('x-trace');
+    expect(headers['content-type']).toBe('image/webp');
+  });
+
+  it('matches each trimmed, case-insensitive Vary field', () => {
+    const original = {
+      ...request,
+      headers: { ...request.headers, accept: 'image/webp', 'accept-language': 'en' },
+    };
+    const policy = new CachePolicy(original, {
+      status: 200,
+      headers: { 'cache-control': 'public, max-age=600', vary: ' Accept ,\tAccept-Language ' },
+    });
+    expect(policy.satisfiesWithoutRevalidation(original)).toBe(true);
+    expect(
+      policy.satisfiesWithoutRevalidation({
+        ...original,
+        headers: { ...original.headers, 'accept-language': 'es' },
+      }),
+    ).toBe(false);
+  });
+
+  it('bounds adversarial whitespace processing in both header paths', () => {
+    // Isolate the call: a reintroduced quadratic regexp must time out safely,
+    // rather than block the test runner. Startup margin is deliberately generous.
+    const module = createRequire(require.resolve('astro/config')).resolve('http-cache-semantics');
+    const script = `
+      const CachePolicy = require(${JSON.stringify(module)});
+      const value = 'x-start' + ' '.repeat(250000) + 'x-end';
+      const request = { url: 'https://example.test/image', headers: { host: 'example.test' } };
+      const policy = new CachePolicy(request, { status: 200, headers: {
+        'cache-control': 'public, max-age=600', connection: value, vary: value,
+      }});
+      policy.responseHeaders();
+      if (!policy.satisfiesWithoutRevalidation(request)) process.exit(1);
+    `;
+    const result = spawnSync(process.execPath, ['-e', script], { timeout: 5000, encoding: 'utf8' });
+    expect(result.error).toBeUndefined();
+    expect(result.status, result.stderr).toBe(0);
+  });
+});
+
+describe('dependency security: patch provenance', () => {
+  it('verifies every recorded source and license hash', () => {
+    const provenance = JSON.parse(
+      readFileSync(new URL('../../vendor/provenance.json', import.meta.url), 'utf8'),
+    ) as {
+      files: { dependency: string; file: string; patchedSha256: string }[];
+    };
+    for (const entry of provenance.files) {
+      const path = entry.file.replaceAll('\\', '/');
+      const bytes = readFileSync(
+        new URL(`../../vendor/${entry.dependency}/${path}`, import.meta.url),
+      );
+      expect(createHash('sha256').update(bytes).digest('hex'), `${entry.dependency}/${path}`).toBe(
+        entry.patchedSha256,
+      );
+    }
   });
 });

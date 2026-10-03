@@ -12,6 +12,13 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Astro check and typescript-eslint currently support TypeScript through 6.0.
+    # Node types follow the runtime major in .nvmrc. Revisit with an LTS migration.
+    ignore:
+      - dependency-name: typescript
+        versions: ['>=6.1.0']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       npm-minor-and-patch:
         applies-to: version-updates
