@@ -34,20 +34,29 @@ section,
 .section-title {
   padding-bottom: var(--title-space);
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem 2rem;
+  align-items: start;
 }
 .section-title h2 {
   font-size: var(--title-size);
   font-weight: 700;
-  margin-bottom: var(--title-gap);
-  padding-bottom: var(--title-gap);
-  background-image: linear-gradient(var(--accent-color), var(--accent-color));
-  background-size: 50px 3px;
-  background-position: left bottom;
-  background-repeat: no-repeat;
+  margin: 0;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
 }
 .section-title p {
   margin-bottom: 0;
   max-width: 62ch;
+  line-height: 1.75;
+  border-top: 1px solid var(--rule-color);
+  padding-top: 1rem;
+}
+@media (max-width: 767px) {
+  .section-title {
+    grid-template-columns: 1fr;
+  }
 }
 @media (prefers-reduced-motion: no-preference) {
   :root {

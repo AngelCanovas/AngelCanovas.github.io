@@ -3,10 +3,8 @@
 @import './tokens.css';
 @import './base.css';
 @import './chrome.css';
+@import './editorial.css';
 
-/* Shared surface recipe: one radius, one neutral border, no shadow. The big
-   shadow is reserved for the quote card (#quote); everything else separates
-   itself from the background with the border alone. */
 .card {
   --bs-card-bg: var(--surface-color);
   --bs-card-border-color: color-mix(in srgb, var(--default-color), transparent 90%);
@@ -31,11 +29,9 @@
   color: var(--default-color);
   background-color: color-mix(in srgb, var(--default-color), transparent 95%);
   border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
 }
 
-/* The only accent-filled chip set: the stack of the current role in Resume
-   (first experience entry). Nothing else uses the solid accent fill. */
 .chip--accent {
   color: var(--contrast-color);
   background-color: var(--accent-fill);
@@ -60,7 +56,7 @@
 
 .header :focus-visible,
 .scroll-top:focus-visible {
-  outline-color: light-dark(#0d74a4, var(--contrast-color));
+  outline-color: var(--accent-ink);
 }
 
 /* The skip link must paint above the fixed sidebar header (z-index 997) and
@@ -87,14 +83,11 @@
   padding-block: 80px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  place-items: center;
+  align-items: center;
   /* Background and overflow live here (global) so the print override below and
      the responsive tweaks keep their usual cascade weight; `Hero.astro` only
      styles the hero's own children. */
-  background:
-    radial-gradient(ellipse at 20% 20%, light-dark(#d9ecfa, #0b2233) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030) 0%, transparent 60%),
-    light-dark(#f2f7fc, #040b14);
+  background: var(--background-color);
   overflow: hidden;
 }
 
@@ -193,7 +186,7 @@
   }
 
   .section-title h2 {
-    background-image: linear-gradient(#000, #000);
+    background-image: none;
   }
 }
 

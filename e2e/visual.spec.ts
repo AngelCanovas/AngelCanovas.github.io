@@ -37,6 +37,14 @@ async function ready(page: Page) {
 }
 
 async function capture(target: Page | Locator, name: string, info: TestInfo) {
+  if ('scrollIntoViewIfNeeded' in target) await target.scrollIntoViewIfNeeded();
+  const page = 'scrollIntoViewIfNeeded' in target ? target.page() : target;
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
   const options = { animations: 'disabled' as const, caret: 'hide' as const };
   if (process.platform === 'linux') {
     await expect(target).toHaveScreenshot(`${name}.png`, {
@@ -142,6 +150,7 @@ for (const path of ['/', '/es/']) {
       await expect(page.locator('.header-toggle')).toBeFocused();
       await page.locator('.filter-btn').nth(1).click();
       await expect(page.locator('.filter-btn').nth(1)).toHaveAttribute('aria-pressed', 'true');
+      await page.mouse.move(0, 0);
       await capture(page.locator('#portfolio'), `${prefix}-filtered`, info);
       const detail = page.locator('.portfolio-item:not(.is-hidden) details').first();
       await detail.locator('summary').click();

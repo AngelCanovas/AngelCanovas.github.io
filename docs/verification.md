@@ -26,9 +26,10 @@ publish Playwright reports/traces; the local report privacy check decodes the ZI
 inside HTML and rejects Git metadata and personal paths. Retain the disabled
 Git capture setting even though the public commits use a noreply identity.
 
-Preserve zero-difference Linux visual gates. Root hosting updates eight online-CV
-footer references solely for the visible hosting URL; the other 150 references are
-unchanged. PDF downloads retain their canonical bytes.
+Preserve zero-difference Linux visual gates. For an authorized redesign, inspect
+representative desktop/mobile light/dark pages before updating intentional changes
+with `npm run test:e2e -- e2e/visual.spec.ts --update-snapshots`, then rerun the
+complete suite. PDF downloads retain their canonical bytes.
 
 The site publishes robots.txt and .well-known/security.txt at the hosting root.
 Treat `/` as the canonical entry point and SECURITY.md as the operational reporting

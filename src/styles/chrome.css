@@ -26,7 +26,7 @@
   object-fit: cover;
   margin: 15px auto;
   border: 8px solid color-mix(in srgb, var(--default-color), transparent 85%);
-  border-radius: 50%;
+  border-radius: var(--radius-control);
 }
 .sidebar-name {
   display: flex;
@@ -55,7 +55,7 @@
   width: var(--control-size);
   height: var(--control-size);
   margin-inline: 2px;
-  border-radius: 50%;
+  border-radius: var(--radius-control);
   font-size: 16px;
   color: var(--default-color);
   background: color-mix(in srgb, var(--default-color), transparent 90%);
@@ -104,7 +104,7 @@
   height: var(--control-size);
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-control);
   font-size: 22px;
   line-height: 0;
   cursor: pointer;
@@ -202,7 +202,7 @@ body:has(.header-show) .mobile-nav-overlay {
   bottom: -15px;
   width: 44px;
   height: 44px;
-  border-radius: 50px;
+  border-radius: var(--radius-control);
   background: var(--accent-fill);
   opacity: 0;
   visibility: hidden;

@@ -87,6 +87,13 @@ test.describe('language switch', () => {
 
   test('the section in view wins over a stale hash', async ({ page }) => {
     await page.goto('/#portfolio');
+    await expect
+      .poll(() =>
+        page
+          .locator('#portfolio')
+          .evaluate((element) => Math.abs(scrollY - (element as HTMLElement).offsetTop)),
+      )
+      .toBeLessThan(2);
     await page.locator('#resume').evaluate((element) => {
       document.documentElement.style.scrollBehavior = 'auto';
       window.scrollTo(0, (element as HTMLElement).offsetTop);
