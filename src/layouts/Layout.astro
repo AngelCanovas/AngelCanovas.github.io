@@ -43,7 +43,7 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
 ---
 
 <!doctype html>
-<html lang={meta.htmlLang}>
+<html lang={meta.htmlLang} data-style="technical">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -63,6 +63,13 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <!-- Apply the stored theme before first paint (hash appended at build time). -->
     <script is:inline>
       (() => {
+        try {
+          const style = localStorage.getItem('page-style');
+          document.documentElement.dataset.style =
+            style === 'original' || style === 'editorial' ? style : 'technical';
+        } catch {
+          document.documentElement.dataset.style = 'technical';
+        }
         try {
           const stored = localStorage.getItem('theme');
           if (stored === 'light' || stored === 'dark') {

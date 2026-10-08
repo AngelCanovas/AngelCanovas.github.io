@@ -3,6 +3,9 @@ import { expect, test } from '@playwright/test';
 import { HERO_CANVAS, canvasChecksum, sweepHero } from './hero-canvas';
 
 test.describe('hero backdrop', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+  });
   test('paints the label grid, stays still while idle and lights up under the pointer', async ({
     page,
   }) => {

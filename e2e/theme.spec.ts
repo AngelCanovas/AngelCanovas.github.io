@@ -2,6 +2,10 @@ import { expect, test } from '@playwright/test';
 
 import { HERO_CANVAS, canvasChecksum } from './hero-canvas';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+});
+
 test.describe('theme toggle', () => {
   test('starts from the system preference, toggles and persists the choice', async ({ page }) => {
     await page.goto('/');

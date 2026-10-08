@@ -1,6 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+});
+
 for (const colorScheme of ['light', 'dark'] as const) {
   test.describe(`touch hero in ${colorScheme} mode`, () => {
     test.use({
@@ -131,7 +135,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       });
       const page = await context.newPage();
       await page.goto('/');
-      await expect(page.locator('.hero-atmosphere')).toBeVisible();
+      await expect(page.locator('[data-technical-graph]')).toBeVisible();
       await expect(page.locator('#hero-canvas')).toBeHidden();
       await expect(page.locator('h1')).toBeVisible();
       await context.close();

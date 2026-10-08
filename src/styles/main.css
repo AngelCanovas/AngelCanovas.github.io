@@ -4,6 +4,7 @@
 @import './base.css';
 @import './chrome.css';
 @import './editorial.css';
+@import './style-modes.css';
 
 .card {
   --bs-card-bg: var(--surface-color);

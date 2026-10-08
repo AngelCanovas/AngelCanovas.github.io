@@ -1,6 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+});
+
 for (const width of [375, 1440]) {
   for (const colorScheme of ['light', 'dark'] as const) {
     test(`editorial presentation at ${width} in ${colorScheme}`, async ({ page }) => {
@@ -68,7 +72,7 @@ test('depth responds to scroll and resets on a live motion preference', async ({
   expect(errors).toEqual([]);
 });
 
-test('editorial content and its static field are usable without JavaScript', async ({
+test('default technical content and its static field are usable without JavaScript', async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -78,7 +82,7 @@ test('editorial content and its static field are usable without JavaScript', asy
   const page = await context.newPage();
   await page.goto('/es/');
   await expect(page.locator('h1')).toBeVisible();
-  await expect(page.locator('.hero-atmosphere')).toBeVisible();
+  await expect(page.locator('[data-technical-graph]')).toBeVisible();
   await expect(page.locator('#navmenu a[href="#portfolio"]')).toBeVisible();
   await expect(page.locator('.hero-actions [download]')).toHaveAttribute('href', /\.pdf$/);
   await context.close();

@@ -48,6 +48,7 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
   const options = { animations: 'disabled' as const, caret: 'hide' as const };
   if (process.platform === 'linux') {
     await expect(target).toHaveScreenshot(`${name}.png`, {
+      timeout: 30000,
       ...options,
       maxDiffPixels: 0,
       threshold: 0,

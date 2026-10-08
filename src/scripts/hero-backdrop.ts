@@ -20,6 +20,10 @@ export function initHeroBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): 
   function paint() {
     frame = 0;
     if (stopped || touch.matches) return;
+    if (document.documentElement.dataset.style === 'technical') {
+      canvas.dataset.ready = 'true';
+      return;
+    }
     const css = getComputedStyle(canvas);
     inkContext.clearRect(0, 0, width, height);
     inkContext.lineWidth = 1;
@@ -126,7 +130,10 @@ export function initHeroBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): 
   const resize = new ResizeObserver(rebuild);
   resize.observe(root);
   const theme = new MutationObserver(rebuild);
-  theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  theme.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme', 'data-style'],
+  });
   touch.addEventListener('change', rebuild);
   motion.addEventListener('change', rebuild);
   scheme.addEventListener('change', rebuild);

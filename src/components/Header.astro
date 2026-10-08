@@ -123,6 +123,20 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       <Icon name="moon-stars" class="theme-icon theme-icon--moon" />
       <Icon name="sun" class="theme-icon theme-icon--sun" />
     </button>
+    <button
+      type="button"
+      class="style-toggle"
+      data-style-toggle
+      data-label-technical={lang === 'es' ? 'Estilo técnico' : 'Technical style'}
+      data-label-original={lang === 'es' ? 'Estilo original' : 'Original style'}
+      data-label-editorial={lang === 'es' ? 'Estilo editorial' : 'Editorial style'}
+      aria-label={
+        lang === 'es' ? 'Estilo técnico. Estilo original' : 'Technical style. Original style'
+      }
+      title={lang === 'es' ? 'Estilo técnico. Estilo original' : 'Technical style. Original style'}
+    >
+      <Icon name="images" />
+    </button>
   </div>
 
   <nav id="navmenu" class="navmenu">
@@ -182,7 +196,8 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     justify-content: center;
     gap: 0.35rem;
   }
-  .theme-toggle {
+  .theme-toggle,
+  .style-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -200,7 +215,8 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       border-color 0.3s,
       background-color 0.3s;
   }
-  .theme-toggle:hover {
+  .theme-toggle:hover,
+  .style-toggle:hover {
     color: var(--nav-hover-color);
     border-color: var(--accent-color);
   }
