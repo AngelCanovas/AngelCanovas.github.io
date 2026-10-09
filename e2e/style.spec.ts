@@ -103,6 +103,33 @@ test('invalid storage, reduced motion and no-JS graph fallback', async ({ browse
   await noJs.close();
 });
 
+test('noir bonfire keeps its hilt above the flame and responds to a fine pointer', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.76, configurable: true });
+  });
+  await page.goto('/');
+  const artwork = page.locator('[data-noir-bonfire]');
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'noir');
+  await expect(artwork.locator('[data-sword-orientation]')).toHaveAttribute(
+    'data-sword-orientation',
+    'hilt-up-tip-down',
+  );
+  const box = await artwork.boundingBox();
+  if (!box) throw new Error('the noir bonfire has no box to interact with');
+  await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.56);
+  await expect(artwork).toHaveAttribute('data-noir-hover', 'true');
+  await expect
+    .poll(() => artwork.evaluate((element) => element.style.getPropertyValue('--noir-hover')))
+    .not.toBe('');
+  await page.evaluate(() => {
+    document.getElementById('hero')?.dispatchEvent(new PointerEvent('pointerleave'));
+  });
+  await expect(artwork).not.toHaveAttribute('data-noir-hover', 'true');
+});
+
 for (const mode of ['original', 'editorial', 'technical', 'noir']) {
   for (const colorScheme of ['light', 'dark'] as const) {
     test(`style rendering ${mode} ${colorScheme}`, async ({ page }) => {

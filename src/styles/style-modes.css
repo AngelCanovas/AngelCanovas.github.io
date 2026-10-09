@@ -282,6 +282,7 @@
   pointer-events: none;
   color: var(--hero-labels-ink);
   opacity: 0.72;
+  --noir-hover: 0;
   mask-image: linear-gradient(90deg, transparent 0%, #000 25%, #000 92%, transparent 100%);
 }
 
@@ -337,17 +338,46 @@
   opacity: 0.45;
 }
 
+.bonfire-sword .sword-wrap,
+.bonfire-sword .sword-pommel-ring {
+  stroke-width: 0.85;
+  opacity: 0.62;
+}
+
 .bonfire-sword .sword-glint {
   stroke: var(--heading-color);
   stroke-width: 3;
   opacity: 0.12;
   stroke-dasharray: 18 230;
+  transform: translateX(var(--noir-glint-x, 0px));
+  filter: drop-shadow(0 0 calc(1px + var(--noir-hover, 0) * 4px) currentColor);
+  transition:
+    transform 180ms ease-out,
+    filter 180ms ease-out;
+}
+
+.bonfire-sword .sword-reflection {
+  fill: none;
+  stroke: var(--heading-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 70;
+  opacity: calc(0.08 + var(--noir-hover, 0) * 0.58);
+  transform: translateX(var(--noir-glint-x, 0px));
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
 }
 
 .bonfire-flames {
   color: var(--heading-color);
   stroke-width: 1.7;
   transform-origin: 360px 470px;
+  transform: translate3d(var(--noir-flame-x, 0px), var(--noir-flame-y, 0px), 0)
+    scale(var(--noir-flame-scale, 1));
+  filter: drop-shadow(0 0 calc(var(--noir-hover, 0) * 7px) currentColor);
+  transition:
+    transform 180ms ease-out,
+    filter 180ms ease-out;
 }
 
 .bonfire-flames .flame {
@@ -436,16 +466,16 @@
 @keyframes noir-sword-glint {
   0%,
   24% {
-    opacity: 0.08;
+    opacity: calc(0.08 + var(--noir-hover, 0) * 0.18);
     stroke-dashoffset: 240;
   }
   48%,
   68% {
-    opacity: 0.72;
+    opacity: calc(0.42 + var(--noir-hover, 0) * 0.42);
   }
   92%,
   100% {
-    opacity: 0.08;
+    opacity: calc(0.08 + var(--noir-hover, 0) * 0.18);
     stroke-dashoffset: -22;
   }
 }

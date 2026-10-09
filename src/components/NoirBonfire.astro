@@ -29,21 +29,35 @@
       />
     </g>
 
-    <g class="bonfire-sword">
+    <g class="bonfire-sword" data-sword-orientation="hilt-up-tip-down">
       <path
         class="sword-blade"
-        d="M344 389 L344 111 L360 68 L376 111 L376 389 Q360 405 344 389 Z"
+        d="M344 115 C329 157 385 184 351 237 C322 283 382 312 351 363 C331 397 347 431 360 463 C373 431 389 397 369 363 C338 312 398 283 369 237 C335 184 391 157 376 115 Q360 103 344 115 Z"
       />
-      <path class="sword-fuller" d="M360 87 L360 378" />
-      <path class="sword-edge" d="M348 116 L348 373 M372 116 L372 373" />
-      <path class="sword-guard" d="M305 387 Q360 377 415 387 L415 402 Q360 393 305 402 Z" />
-      <path class="sword-grip" d="M347 400 L347 455 Q360 466 373 455 L373 400" />
-      <path class="sword-wrap" d="M349 418 L371 426 M349 434 L371 442" />
+      <path
+        class="sword-fuller"
+        d="M360 117 C342 164 378 184 359 237 C341 285 378 310 359 363 C348 394 355 423 360 450"
+      />
+      <path
+        class="sword-edge"
+        d="M348 120 C335 163 388 184 354 237 C328 282 388 311 354 365 M372 120 C385 163 332 184 366 237 C392 282 332 311 366 365"
+      />
+      <path class="sword-guard" d="M305 106 Q360 95 415 106 L415 121 Q360 112 305 121 Z" />
+      <path class="sword-grip" d="M347 106 L347 63 Q360 52 373 63 L373 106" />
+      <path class="sword-wrap" d="M349 70 L371 77 M349 83 L371 90 M349 96 L371 103" />
       <path
         class="sword-pommel"
-        d="M345 456 Q360 471 375 456 Q375 482 360 489 Q345 482 345 456 Z"
+        d="M347 63 Q360 48 373 63 Q387 53 379 36 Q360 22 341 36 Q333 53 347 63 Z"
       />
-      <path class="sword-glint" d="M363 102 L363 347" />
+      <path class="sword-pommel-ring" d="M350 38 Q360 30 370 38" />
+      <path
+        class="sword-glint"
+        d="M357 120 C346 163 378 184 359 237 C342 285 378 310 359 363 C352 388 356 416 360 439"
+      />
+      <path
+        class="sword-reflection"
+        d="M365 134 C355 170 382 189 366 230 C351 267 382 296 367 335"
+      />
     </g>
 
     <g class="bonfire-flames">
@@ -78,3 +92,90 @@
     />
   </g>
 </svg>
+
+<script>
+  import { safeInit } from '../scripts/safe-init';
+
+  function initNoirBonfireInteraction(): void {
+    const hero = document.getElementById('hero');
+    const artwork = document.querySelector<SVGElement>('[data-noir-bonfire]');
+    if (!hero || !artwork) return;
+
+    const pointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const properties = [
+      '--noir-hover',
+      '--noir-flame-x',
+      '--noir-flame-y',
+      '--noir-flame-scale',
+      '--noir-glint-x',
+    ];
+    let frame = 0;
+    let latest: { x: number; y: number } | null = null;
+
+    const clear = () => {
+      latest = null;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      properties.forEach((property) => artwork.style.removeProperty(property));
+      delete artwork.dataset.noirHover;
+    };
+
+    const paint = () => {
+      frame = 0;
+      if (
+        !latest ||
+        document.documentElement.dataset.style !== 'noir' ||
+        !pointer.matches ||
+        motion.matches
+      ) {
+        clear();
+        return;
+      }
+
+      const rect = artwork.getBoundingClientRect();
+      const normalX = (latest.x - (rect.left + rect.width * 0.5)) / (rect.width * 0.5);
+      const normalY = (latest.y - (rect.top + rect.height * 0.56)) / (rect.height * 0.56);
+      const distance = Math.hypot(normalX, normalY);
+      const intensity = Math.max(0, Math.min(1, 1 - distance));
+      if (intensity < 0.08) {
+        clear();
+        return;
+      }
+
+      artwork.style.setProperty('--noir-hover', intensity.toFixed(3));
+      artwork.style.setProperty('--noir-flame-x', `${(normalX * 13).toFixed(2)}px`);
+      artwork.style.setProperty('--noir-flame-y', `${(-intensity * 7).toFixed(2)}px`);
+      artwork.style.setProperty('--noir-flame-scale', (1 + intensity * 0.1).toFixed(3));
+      artwork.style.setProperty('--noir-glint-x', `${(normalX * 5).toFixed(2)}px`);
+      artwork.dataset.noirHover = 'true';
+    };
+
+    const move = (event: PointerEvent) => {
+      if (
+        event.pointerType === 'touch' ||
+        !pointer.matches ||
+        motion.matches ||
+        document.documentElement.dataset.style !== 'noir'
+      ) {
+        clear();
+        return;
+      }
+      latest = { x: event.clientX, y: event.clientY };
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    const styleObserver = new MutationObserver(clear);
+    styleObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-style'],
+    });
+    pointer.addEventListener('change', clear);
+    motion.addEventListener('change', clear);
+    hero.addEventListener('pointermove', move, { passive: true });
+    hero.addEventListener('pointerleave', clear);
+    window.addEventListener('pagehide', clear, { once: true });
+  }
+
+  safeInit(initNoirBonfireInteraction);
+</script>
