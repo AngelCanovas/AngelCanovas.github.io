@@ -1,8 +1,28 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+import { canvasChecksum } from './hero-canvas';
+
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+  });
+});
+
+test('orange style removes the dotted atmosphere but keeps interactive curved linework', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'editorial');
+  await expect(page.locator('.hero-atmosphere')).toHaveCSS('display', 'none');
+  await expect(page.locator('[data-technical-graph]')).toHaveCSS('display', 'none');
+  await expect(page.locator('#hero-canvas')).toBeVisible();
+  await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
+  const resting = await canvasChecksum(page);
+  const box = await page.locator('#hero').boundingBox();
+  if (!box) throw new Error('the hero section has no box to move across');
+  await page.mouse.move(box.x + box.width * 0.75, box.y + box.height * 0.35);
+  await expect.poll(() => canvasChecksum(page)).not.toBe(resting);
 });
 
 for (const width of [375, 1440]) {

@@ -3,6 +3,9 @@ import AxeBuilder from '@axe-core/playwright';
 
 for (const route of ['/', '/es/']) {
   test(`style cycle and technical graph ${route}`, async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(Math, 'random', { value: () => 0.8, configurable: true });
+    });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(route);
     const root = page.locator('html');
@@ -10,7 +13,7 @@ for (const route of ['/', '/es/']) {
     const graph = page.locator('[data-technical-graph]');
     await expect(button).toHaveAttribute(
       'aria-label',
-      route === '/' ? /Technical style/ : /Estilo técnico/,
+      route === '/' ? /Blue and green style/ : /Estilo azul y verde/,
     );
     await expect(root).toHaveAttribute('data-style', 'technical');
     await expect(graph).toBeVisible();
@@ -29,8 +32,6 @@ for (const route of ['/', '/es/']) {
       expect(await root.getAttribute('data-theme')).toBe(theme);
       await expect(page.locator('.hero-name')).toBeVisible();
       await expect(button).toHaveAttribute('data-style', mode);
-      await page.reload();
-      await expect(root).toHaveAttribute('data-style', mode);
     }
     await page.locator('[data-theme-toggle]').click();
     await expect(root).toHaveAttribute('data-theme', /light|dark/);
@@ -41,9 +42,28 @@ for (const route of ['/', '/es/']) {
   });
 }
 
+test('chooses a fresh random style on every load instead of restoring storage', async ({ page }) => {
+  await page.addInitScript(() => {
+    const load = Number(sessionStorage.getItem('style-test-load') ?? '0');
+    sessionStorage.setItem('style-test-load', String(load + 1));
+    localStorage.setItem('page-style', 'editorial');
+    Object.defineProperty(Math, 'random', {
+      value: () => (load === 0 ? 0.01 : 0.8),
+      configurable: true,
+    });
+  });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'original');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'technical');
+});
+
 test('invalid storage, reduced motion and no-JS graph fallback', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce' });
-  await context.addInitScript(() => localStorage.setItem('page-style', 'invalid'));
+  await context.addInitScript(() => {
+    localStorage.setItem('page-style', 'invalid');
+    Object.defineProperty(Math, 'random', { value: () => 0.8, configurable: true });
+  });
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-style', 'technical');
@@ -71,7 +91,13 @@ for (const mode of ['original', 'editorial', 'technical']) {
     test(`style rendering ${mode} ${colorScheme}`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
-      await page.addInitScript((style) => localStorage.setItem('page-style', style), mode);
+      await page.addInitScript((style) => {
+        const values = { original: 0.01, editorial: 0.34, technical: 0.8 } as const;
+        Object.defineProperty(Math, 'random', {
+          value: () => values[style as keyof typeof values],
+          configurable: true,
+        });
+      }, mode);
       await page.goto('/');
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
@@ -98,6 +124,9 @@ test('technical touch input and live reduced-motion preference remain static', a
     hasTouch: true,
     isMobile: true,
     viewport: { width: 375, height: 812 },
+  });
+  await context.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.8, configurable: true });
   });
   const page = await context.newPage();
   await page.goto('/');

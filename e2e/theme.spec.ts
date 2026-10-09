@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 import { HERO_CANVAS, canvasChecksum } from './hero-canvas';
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+  });
 });
 
 test.describe('theme toggle', () => {

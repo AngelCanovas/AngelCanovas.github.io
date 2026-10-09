@@ -4,9 +4,11 @@ import { HERO_CANVAS, canvasChecksum, sweepHero } from './hero-canvas';
 
 test.describe('hero backdrop', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem('page-style', 'editorial'));
+    await page.addInitScript(() => {
+      Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+    });
   });
-  test('paints the label grid, stays still while idle and lights up under the pointer', async ({
+  test('paints curved linework, stays still while idle and reacts under the pointer', async ({
     page,
   }) => {
     await page.goto('/');
@@ -22,7 +24,7 @@ test.describe('hero backdrop', () => {
     await expect.poll(() => canvasChecksum(page)).not.toBe(resting);
   });
 
-  test('a click sends a ring through the grid', async ({ page }) => {
+  test('a click sends a pulse through the linework', async ({ page }) => {
     await page.goto('/');
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
     const resting = await canvasChecksum(page);
@@ -37,7 +39,7 @@ test.describe('hero backdrop', () => {
   test.describe('reduced motion', () => {
     test.use({ reducedMotion: 'reduce' });
 
-    test('keeps the grid painted but still', async ({ page }) => {
+    test('keeps the linework painted but still', async ({ page }) => {
       await page.goto('/');
       await expect(page.locator(HERO_CANVAS)).toBeVisible();
       await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);

@@ -61,6 +61,12 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
 }
 
 test.use({ reducedMotion: 'reduce', locale: 'en-US', colorScheme: 'light' });
+test.beforeEach(async ({ page }) => {
+  // Visual references use the technical style baseline; product loads remain random.
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.8, configurable: true });
+  });
+});
 
 for (const viewport of viewports) {
   for (const path of ['/', '/es/', '/cv/', '/cv/es/', '/404.html']) {

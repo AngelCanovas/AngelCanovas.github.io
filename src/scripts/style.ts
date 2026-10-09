@@ -1,4 +1,4 @@
-export const STYLES = ['technical', 'original', 'editorial'] as const;
+export const STYLES = ['original', 'editorial', 'technical'] as const;
 export const STYLE_KEY = 'page-style';
 export type PageStyle = (typeof STYLES)[number];
 
@@ -6,16 +6,16 @@ export function resolveStyle(value: string | null | undefined): PageStyle {
   return STYLES.find((style) => style === value) ?? 'technical';
 }
 
+export function randomStyle(random: () => number = Math.random): PageStyle {
+  const index = Math.min(STYLES.length - 1, Math.floor(random() * STYLES.length));
+  return STYLES[index] ?? STYLES[0];
+}
+
 export function initStyleToggle(): void {
   const button = document.querySelector<HTMLButtonElement>('[data-style-toggle]');
   if (!button || button.dataset.initialized) return;
   button.dataset.initialized = 'true';
   let style = resolveStyle(document.documentElement.dataset.style);
-  try {
-    style = resolveStyle(localStorage.getItem(STYLE_KEY));
-  } catch {
-    /* storage unavailable */
-  }
   const apply = () => {
     document.documentElement.dataset.style = style;
     button.dataset.style = style;
@@ -28,10 +28,5 @@ export function initStyleToggle(): void {
   button.addEventListener('click', () => {
     style = STYLES[(STYLES.indexOf(style) + 1) % STYLES.length];
     apply();
-    try {
-      localStorage.setItem(STYLE_KEY, style);
-    } catch {
-      /* storage unavailable */
-    }
   });
 }

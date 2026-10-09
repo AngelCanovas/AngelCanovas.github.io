@@ -23,6 +23,9 @@
     --accent-fill: #0d74a4;
     --hero-labels-ink: light-dark(#8f9dae, #59626e);
     --nav-color: light-dark(#5c6470, #a8a9b4);
+    --nav-hover-color: light-dark(#10161f, #fff);
+    --radius-control: 50rem;
+    --radius-pill: 50rem;
     --radius-card: 1rem;
     --section-space: 60px;
     --title-space: 60px;
@@ -38,10 +41,14 @@
   :root[data-style='technical'] :is(.hero-atmosphere, .hero-backdrop, .hero-glow) {
     display: none;
   }
+  :root[data-style='editorial'] .hero-atmosphere {
+    display: none;
+  }
   :root[data-style='technical'] .main .stats .stat-suffix {
     color: light-dark(#b6dec7, #20533d);
   }
   :root[data-style='original'] .hero {
+    place-items: center;
     background:
       radial-gradient(ellipse at 20% 20%, light-dark(#d9ecfa, #0b2233), transparent 55%),
       radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030), transparent 60%),

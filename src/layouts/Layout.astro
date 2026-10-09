@@ -60,13 +60,13 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     {!isCv && <meta name="theme-color" content="#191a18" media="(prefers-color-scheme: dark)" />}
     <meta name="color-scheme" content={isCv ? 'light' : 'light dark'} />
 
-    <!-- Apply the stored theme before first paint (hash appended at build time). -->
+    <!-- Choose a fresh visual style before first paint (the button can cycle it later). -->
     <script is:inline>
       (() => {
         try {
-          const style = localStorage.getItem('page-style');
-          document.documentElement.dataset.style =
-            style === 'original' || style === 'editorial' ? style : 'technical';
+          const styles = ['original', 'editorial', 'technical'];
+          const index = Math.min(styles.length - 1, Math.floor(Math.random() * styles.length));
+          document.documentElement.dataset.style = styles[index] ?? 'technical';
         } catch {
           document.documentElement.dataset.style = 'technical';
         }

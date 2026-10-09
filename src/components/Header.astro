@@ -127,13 +127,19 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       type="button"
       class="style-toggle"
       data-style-toggle
-      data-label-technical={lang === 'es' ? 'Estilo técnico' : 'Technical style'}
-      data-label-original={lang === 'es' ? 'Estilo original' : 'Original style'}
-      data-label-editorial={lang === 'es' ? 'Estilo editorial' : 'Editorial style'}
+      data-label-technical={lang === 'es' ? 'Estilo azul y verde' : 'Blue and green style'}
+      data-label-original={lang === 'es' ? 'Estilo azul original' : 'Original blue style'}
+      data-label-editorial={lang === 'es' ? 'Estilo naranja' : 'Orange style'}
       aria-label={
-        lang === 'es' ? 'Estilo técnico. Estilo original' : 'Technical style. Original style'
+        lang === 'es'
+          ? 'Estilo azul y verde. Estilo azul original'
+          : 'Blue and green style. Original blue style'
       }
-      title={lang === 'es' ? 'Estilo técnico. Estilo original' : 'Technical style. Original style'}
+      title={
+        lang === 'es'
+          ? 'Estilo azul y verde. Estilo azul original'
+          : 'Blue and green style. Original blue style'
+      }
     >
       <Icon name="images" />
     </button>
