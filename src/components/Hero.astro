@@ -1,6 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import TechnicalGraph from './TechnicalGraph.astro';
+import NoirBonfire from './NoirBonfire.astro';
 import { personal } from '../data/site';
 import { getContent, type Lang } from '../lib/i18n';
 import { cvPdfHref } from '../lib/routes';
@@ -15,6 +16,7 @@ const t = getContent(lang);
 
 <section id="hero" class="hero section">
   <TechnicalGraph />
+  <NoirBonfire />
   <div class="hero-backdrop" aria-hidden="true">
     <div class="hero-backdrop-drift" data-hero-drift data-editorial-depth>
       <canvas id="hero-canvas" class="hero-canvas"></canvas>

@@ -9,17 +9,18 @@ beforeEach(() => {
   localStorage.clear();
   document.documentElement.dataset.style = 'technical';
   document.documentElement.dataset.theme = 'light';
-  document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange"></button><button data-theme-toggle data-label-light="Light" data-label-dark="Dark"></button>`;
+  document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-theme-toggle data-label-light="Light" data-label-dark="Dark"></button>`;
 });
 
-it('accepts exactly three styles and maps random values to each style', () => {
-  expect(STYLES).toEqual(['original', 'editorial', 'technical']);
+it('accepts exactly four styles and maps random values to each style', () => {
+  expect(STYLES).toEqual(['original', 'editorial', 'technical', 'noir']);
   for (const style of STYLES) expect(resolveStyle(style)).toBe(style);
   for (const value of [null, '', 'dark', 'sepia']) expect(resolveStyle(value)).toBe('technical');
   expect(randomStyle(() => 0)).toBe('original');
-  expect(randomStyle(() => 0.34)).toBe('editorial');
-  expect(randomStyle(() => 0.67)).toBe('technical');
-  expect(randomStyle(() => 0.999)).toBe('technical');
+  expect(randomStyle(() => 0.25)).toBe('editorial');
+  expect(randomStyle(() => 0.5)).toBe('technical');
+  expect(randomStyle(() => 0.75)).toBe('noir');
+  expect(randomStyle(() => 0.999)).toBe('noir');
 });
 
 it('cycles through all styles and ignores the previous stored style independently of theme', () => {
@@ -28,8 +29,8 @@ it('cycles through all styles and ignores the previous stored style independentl
   initThemeToggle();
   const button = document.querySelector<HTMLButtonElement>('[data-style-toggle]')!;
   expect(document.documentElement.dataset.style).toBe('technical');
-  expect(button.getAttribute('aria-label')).toBe('Blue and green. Original blue');
-  for (const style of ['original', 'editorial', 'technical']) {
+  expect(button.getAttribute('aria-label')).toBe('Blue and green. Ink grayscale');
+  for (const style of ['noir', 'original', 'editorial', 'technical']) {
     button.click();
     expect(document.documentElement.dataset.style).toBe(style);
     expect(button.dataset.style).toBe(style);
@@ -59,8 +60,9 @@ it('chooses a random style in the head bootstrap before client modules', () => {
   expect(script).toBeTruthy();
   for (const [random, expected] of [
     [0, 'original'],
-    [0.34, 'editorial'],
-    [0.67, 'technical'],
+    [0.25, 'editorial'],
+    [0.5, 'technical'],
+    [0.75, 'noir'],
   ] as const) {
     const root = { dataset: {} as Record<string, string> };
     runInNewContext(script!, {

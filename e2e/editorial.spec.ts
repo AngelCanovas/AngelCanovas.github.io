@@ -5,7 +5,7 @@ import { canvasChecksum } from './hero-canvas';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+    Object.defineProperty(Math, 'random', { value: () => 0.26, configurable: true });
   });
 });
 

@@ -5,7 +5,7 @@ import { HERO_CANVAS, canvasChecksum, sweepHero } from './hero-canvas';
 test.describe('hero backdrop', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+      Object.defineProperty(Math, 'random', { value: () => 0.26, configurable: true });
     });
   });
   test('paints curved linework, stays still while idle and reacts under the pointer', async ({

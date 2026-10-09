@@ -64,7 +64,7 @@ test.use({ reducedMotion: 'reduce', locale: 'en-US', colorScheme: 'light' });
 test.beforeEach(async ({ page }) => {
   // Visual references use the technical style baseline; product loads remain random.
   await page.addInitScript(() => {
-    Object.defineProperty(Math, 'random', { value: () => 0.8, configurable: true });
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
   });
 });
 

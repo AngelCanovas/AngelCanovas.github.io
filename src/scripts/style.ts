@@ -1,4 +1,4 @@
-export const STYLES = ['original', 'editorial', 'technical'] as const;
+export const STYLES = ['original', 'editorial', 'technical', 'noir'] as const;
 export const STYLE_KEY = 'page-style';
 export type PageStyle = (typeof STYLES)[number];
 

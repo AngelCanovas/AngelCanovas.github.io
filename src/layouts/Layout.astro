@@ -64,7 +64,7 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <script is:inline>
       (() => {
         try {
-          const styles = ['original', 'editorial', 'technical'];
+          const styles = ['original', 'editorial', 'technical', 'noir'];
           const index = Math.min(styles.length - 1, Math.floor(Math.random() * styles.length));
           document.documentElement.dataset.style = styles[index] ?? 'technical';
         } catch {

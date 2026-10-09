@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+    Object.defineProperty(Math, 'random', { value: () => 0.26, configurable: true });
   });
 });
 
@@ -18,7 +18,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
 
     for (const path of ['/', '/es/']) {
-      test(`hides the dotted atmosphere and keeps usable content on ${path}`, async ({ page }, info) => {
+      test(`hides the dotted atmosphere and keeps usable content on ${path}`, async ({
+        page,
+      }, info) => {
         const errors: string[] = [];
         page.on('pageerror', (error) => errors.push(error.message));
         page.on('console', (message) => {
