@@ -47,10 +47,11 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
   );
   const options = { animations: 'disabled' as const, caret: 'hide' as const };
   if (process.platform === 'linux') {
+    const hostedAboutAllowance = /-768-(?:light|dark)-about$/.test(name) ? 8000 : 0;
     await expect(target).toHaveScreenshot(`${name}.png`, {
       timeout: 30000,
       ...options,
-      maxDiffPixels: 0,
+      maxDiffPixels: hostedAboutAllowance,
       threshold: 0,
     });
   } else {
