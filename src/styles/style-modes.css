@@ -402,43 +402,47 @@
 
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
   :root[data-style='noir'] .flame--outer {
-    animation: noir-flame-sway 1.8s ease-in-out infinite alternate;
+    animation: noir-flame-sway 1.8s ease-in-out 0s 3 alternate;
     transform-origin: 360px 470px;
   }
 
   :root[data-style='noir'] .flame--left {
-    animation: noir-flame-sway 1.35s ease-in-out -0.42s infinite alternate-reverse;
+    animation: noir-flame-sway 1.35s ease-in-out -0.42s 3 alternate-reverse;
     transform-origin: 350px 474px;
   }
 
   :root[data-style='noir'] .flame--right {
-    animation: noir-flame-sway 1.55s ease-in-out -0.78s infinite alternate;
+    animation: noir-flame-sway 1.55s ease-in-out -0.78s 3 alternate;
     transform-origin: 374px 474px;
   }
 
   :root[data-style='noir'] .flame--inner {
-    animation: noir-flame-pulse 1.1s ease-in-out -0.2s infinite alternate;
+    animation: noir-flame-pulse 1.1s ease-in-out -0.2s 3 alternate;
     transform-origin: 360px 475px;
   }
 
   :root[data-style='noir'] .sword-glint {
-    animation: noir-sword-glint 2.6s ease-in-out infinite;
+    animation: noir-sword-glint 2.6s ease-in-out 0s 2;
   }
 
   :root[data-style='noir'] .ember--one,
   :root[data-style='noir'] .ember-dot--one {
-    animation: noir-ember-rise 2.2s ease-out -0.3s infinite;
+    animation: noir-ember-rise 2.2s ease-out -0.3s 2;
   }
 
   :root[data-style='noir'] .ember--two,
   :root[data-style='noir'] .ember-dot--two {
-    animation: noir-ember-rise 2.6s ease-out -1.1s infinite;
+    animation: noir-ember-rise 2.6s ease-out -1.1s 2;
   }
 
   :root[data-style='noir'] .ember--three,
   :root[data-style='noir'] .ember-dot--three {
-    animation: noir-ember-rise 2.4s ease-out -1.7s infinite;
+    animation: noir-ember-rise 2.4s ease-out -1.7s 2;
   }
+}
+
+.hero[data-hero-paused] .noir-bonfire * {
+  animation-play-state: paused;
 }
 
 @keyframes noir-flame-sway {
@@ -498,6 +502,14 @@
 @media (prefers-reduced-motion: reduce) {
   .noir-bonfire * {
     animation: none !important;
+    transition: none !important;
+  }
+
+  .noir-bonfire .bonfire-flames,
+  .noir-bonfire .sword-glint,
+  .noir-bonfire .sword-reflection {
+    transform: none !important;
+    filter: none !important;
   }
 }
 

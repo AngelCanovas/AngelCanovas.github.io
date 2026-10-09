@@ -130,6 +130,18 @@ test('noir bonfire keeps its hilt above the flame and responds to a fine pointer
   await expect(artwork).not.toHaveAttribute('data-noir-hover', 'true');
 });
 
+test('original style keeps section headings compact and stacked for print', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.01, configurable: true });
+  });
+  await page.goto('/');
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'original');
+  const heading = page.locator('.section-title').first();
+  await expect(heading).toHaveCSS('display', 'block');
+  await expect(heading.locator('h2')).toHaveCSS('font-size', '24px');
+});
+
 for (const mode of ['original', 'editorial', 'technical', 'noir']) {
   for (const colorScheme of ['light', 'dark'] as const) {
     test(`style rendering ${mode} ${colorScheme}`, async ({ page }) => {
