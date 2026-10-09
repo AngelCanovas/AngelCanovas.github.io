@@ -43,7 +43,7 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
 ---
 
 <!doctype html>
-<html lang={meta.htmlLang}>
+<html lang={meta.htmlLang} data-style="technical">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,13 +56,20 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <meta name="description" content={description} />
     <meta name="author" content={personal.fullName} />
     <meta name="robots" content={Astro.props.robots ?? 'index, follow'} />
-    <meta name="theme-color" content="#149ddd" media="(prefers-color-scheme: light)" />
-    {!isCv && <meta name="theme-color" content="#040b14" media="(prefers-color-scheme: dark)" />}
+    <meta name="theme-color" content="#f6f3eb" media="(prefers-color-scheme: light)" />
+    {!isCv && <meta name="theme-color" content="#191a18" media="(prefers-color-scheme: dark)" />}
     <meta name="color-scheme" content={isCv ? 'light' : 'light dark'} />
 
-    <!-- Apply the stored theme before first paint (hash appended at build time). -->
+    <!-- Choose a fresh visual style before first paint (the button can cycle it later). -->
     <script is:inline>
       (() => {
+        try {
+          const styles = ['original', 'editorial', 'technical'];
+          const index = Math.min(styles.length - 1, Math.floor(Math.random() * styles.length));
+          document.documentElement.dataset.style = styles[index] ?? 'technical';
+        } catch {
+          document.documentElement.dataset.style = 'technical';
+        }
         try {
           const stored = localStorage.getItem('theme');
           if (stored === 'light' || stored === 'dark') {

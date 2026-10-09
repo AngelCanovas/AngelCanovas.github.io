@@ -1,6 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.34, configurable: true });
+  });
+});
+
 for (const colorScheme of ['light', 'dark'] as const) {
   test.describe(`touch hero in ${colorScheme} mode`, () => {
     test.use({
@@ -12,7 +18,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
 
     for (const path of ['/', '/es/']) {
-      test(`shows autonomous halos and usable content on ${path}`, async ({ page }, info) => {
+      test(`hides the dotted atmosphere and keeps usable content on ${path}`, async ({ page }, info) => {
         const errors: string[] = [];
         page.on('pageerror', (error) => errors.push(error.message));
         page.on('console', (message) => {
@@ -22,33 +28,11 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.goto(path);
         await page.evaluate(() => document.fonts.ready);
         const atmosphere = page.locator('.hero-atmosphere');
-        await expect(atmosphere).toBeVisible();
+        await expect(atmosphere).toBeHidden();
         await expect(page.locator('#hero-canvas')).toBeHidden();
         await expect(page.locator('#hero-canvas')).not.toHaveAttribute('data-ready');
         await expect(page.locator('h1')).toBeVisible();
         await expect(page.locator('.hero-actions a')).toHaveCount(3);
-
-        // Both CSS animations finish without a pointer, leaving visible halos.
-        await expect
-          .poll(
-            () =>
-              atmosphere.evaluate((element) =>
-                element
-                  .getAnimations({ subtree: true })
-                  .every((animation) => animation.playState === 'finished'),
-              ),
-            { timeout: 7000 },
-          )
-          .toBe(true);
-        for (const pseudo of ['::before', '::after']) {
-          const style = await atmosphere.evaluate((element, pseudo) => {
-            const computed = getComputedStyle(element, pseudo);
-            return { background: computed.backgroundImage, opacity: computed.opacity };
-          }, pseudo);
-          expect(style.background).toContain('radial-gradient');
-          expect(style.background).not.toContain('light-dark');
-          expect(style.opacity).toBe('1');
-        }
         await page.screenshot({ path: info.outputPath('hero-touch-portrait.png') });
 
         const accessibility = await new AxeBuilder({ page })
@@ -68,7 +52,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
           { width: 844, height: 390 },
         ]) {
           await page.setViewportSize(viewport);
-          await expect(atmosphere).toBeVisible();
+          await expect(atmosphere).toBeHidden();
           const overflow = await page.evaluate(
             () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
           );
@@ -85,39 +69,26 @@ for (const colorScheme of ['light', 'dark'] as const) {
       });
     }
 
-    test('updates the halos when the chosen theme overrides the system', async ({ page }) => {
+    test('keeps the orange atmosphere hidden when the chosen theme changes', async ({ page }) => {
       await page.goto('/');
       const halo = page.locator('.hero-atmosphere');
-      const background = () =>
-        halo.evaluate((element) => getComputedStyle(element, '::before').backgroundImage);
-      const initial = await background();
+      await expect(halo).toBeHidden();
       await page.locator('.header-toggle').tap();
       await page.locator('[data-theme-toggle]').tap();
       await expect(page.locator('html')).toHaveAttribute(
         'data-theme',
         colorScheme === 'light' ? 'dark' : 'light',
       );
-      await expect.poll(background).not.toBe(initial);
-      const chosen = await background();
+      await expect(halo).toBeHidden();
       await page.reload();
-      await expect.poll(background).toBe(chosen);
+      await expect(page.locator('.hero-atmosphere')).toBeHidden();
     });
 
-    test('keeps a visible static background with reduced motion', async ({ page }) => {
+    test('keeps the removed atmosphere hidden with reduced motion', async ({ page }) => {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto('/');
       const atmosphere = page.locator('.hero-atmosphere');
-      await expect(atmosphere).toBeVisible();
-      for (const pseudo of ['::before', '::after']) {
-        const animation = await atmosphere.evaluate(
-          (element, pseudo) => getComputedStyle(element, pseudo).animationName,
-          pseudo,
-        );
-        expect(animation).toBe('none');
-      }
-      expect(
-        await atmosphere.evaluate((element) => element.getAnimations({ subtree: true }).length),
-      ).toBe(0);
+      await expect(atmosphere).toBeHidden();
     });
 
     test('works without JavaScript', async ({ browser }) => {
@@ -131,7 +102,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       });
       const page = await context.newPage();
       await page.goto('/');
-      await expect(page.locator('.hero-atmosphere')).toBeVisible();
+      await expect(page.locator('[data-technical-graph]')).toBeVisible();
       await expect(page.locator('#hero-canvas')).toBeHidden();
       await expect(page.locator('h1')).toBeVisible();
       await context.close();

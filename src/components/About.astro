@@ -36,7 +36,8 @@ const factColumns = [
       <div class="col-lg-4">
         <Image
           src={myProfileImg}
-          class="img-fluid rounded-3"
+          class="img-fluid about-portrait"
+          data-editorial-depth
           alt={`${personal.fullName} — ${ui.photoAlt}`}
           widths={[320, 480, 760]}
           sizes="(min-width: 1200px) 356px, (min-width: 992px) 30vw, 90vw"
@@ -84,7 +85,7 @@ const factColumns = [
 
         <p class="py-3">{a.languages}</p>
 
-        <div class="home-lab-box p-4 rounded-3 mt-3">
+        <div class="home-lab-box p-4 rounded-3 mt-3" data-editorial-depth>
           <h3 class="h5 mb-3">
             <Icon name="server" class="me-2" />
             {a.homeLab.title}

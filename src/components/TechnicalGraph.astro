@@ -1,0 +1,62 @@
+---
+const nodes = [
+  [80, 120],
+  [230, 120],
+  [340, 230],
+  [510, 230],
+  [640, 100],
+  [790, 100],
+  [160, 370],
+  [340, 370],
+  [510, 460],
+  [690, 330],
+  [820, 460],
+];
+const edges = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [0, 6],
+  [6, 7],
+  [7, 2],
+  [3, 8],
+  [8, 9],
+  [9, 5],
+  [9, 10],
+];
+---
+
+<svg
+  class="technical-graph"
+  data-technical-graph
+  viewBox="0 0 900 560"
+  aria-hidden="true"
+  focusable="false"
+>
+  <g class="technical-traces">
+    {edges.map(([a, b], index) => {
+      const [x, y] = nodes[a];
+      const [endX, endY] = nodes[b];
+      const path = `M${x} ${y} H${(x + endX) / 2} V${endY} H${endX}`;
+      return (
+        <>
+          <path d={path} />
+          <path d={path} data-signal class={`signal signal--${index % 3}`} />
+        </>
+      );
+    })}
+    {nodes.map(([x, y]) => (
+      <>
+        <rect x={x - 8} y={y - 8} width="16" height="16" rx="2" />
+        <circle cx={x} cy={y} r="2" />
+      </>
+    ))}
+  </g>
+</svg>
+<script>
+  import { initTechnicalGraph } from '../scripts/technical-graph';
+  import { safeInit } from '../scripts/safe-init';
+  safeInit(initTechnicalGraph);
+</script>

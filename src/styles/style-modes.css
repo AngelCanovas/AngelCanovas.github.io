@@ -1,0 +1,173 @@
+@media screen {
+  :root[data-style='technical'] {
+    --background-color: light-dark(#edf2f5, #081727);
+    --default-color: light-dark(#344a5d, #c6d5df);
+    --heading-color: light-dark(#102c46, #eef5fa);
+    --surface-color: light-dark(#f8fbfc, #10263a);
+    --panel-color: light-dark(#dfe8ed, #0d2032);
+    --accent-color: light-dark(#20533d, #9ecbb0);
+    --accent-ink: light-dark(#20533d, #9ecbb0);
+    --accent-fill: #20533d;
+    --nav-color: light-dark(#344a5d, #c6d5df);
+    --rule-color: light-dark(#b6c9d2, #355063);
+    --hero-labels-ink: light-dark(#416578, #7395ac);
+  }
+  :root[data-style='original'] {
+    --background-color: light-dark(#fff, #0b1219);
+    --default-color: light-dark(#272829, #c9d1d9);
+    --heading-color: light-dark(#050d18, #f0f4f8);
+    --surface-color: light-dark(#fff, #151f2b);
+    --panel-color: light-dark(#f4fafd, #101c28);
+    --accent-color: #149ddd;
+    --accent-ink: light-dark(#0d74a4, #5ac8f5);
+    --accent-fill: #0d74a4;
+    --hero-labels-ink: light-dark(#8f9dae, #59626e);
+    --nav-color: light-dark(#5c6470, #a8a9b4);
+    --nav-hover-color: light-dark(#10161f, #fff);
+    --radius-control: 50rem;
+    --radius-pill: 50rem;
+    --radius-card: 1rem;
+    --section-space: 60px;
+    --title-space: 60px;
+    --title-size: 32px;
+  }
+  :root[data-style='technical'] .header.header {
+    --default-color: light-dark(#344a5d, #c6d5df);
+    --heading-color: light-dark(#102c46, #eef5fa);
+  }
+  :root[data-style='technical'] .error-text {
+    color: var(--default-color);
+  }
+  :root[data-style='technical'] :is(.hero-atmosphere, .hero-backdrop, .hero-glow) {
+    display: none;
+  }
+  :root[data-style='editorial'] .hero-atmosphere {
+    display: none;
+  }
+  :root[data-style='technical'] .main .stats .stat-suffix {
+    color: light-dark(#b6dec7, #20533d);
+  }
+  :root[data-style='original'] .hero {
+    place-items: center;
+    background:
+      radial-gradient(ellipse at 20% 20%, light-dark(#d9ecfa, #0b2233), transparent 55%),
+      radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030), transparent 60%),
+      light-dark(#f2f7fc, #040b14);
+  }
+  :root[data-style='original'] .hero-name {
+    max-width: none;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+  :root[data-style='original'] .hero-availability {
+    border: 0;
+    margin-bottom: 1.5rem;
+  }
+  :root[data-style='original'] .hero-atmosphere {
+    display: none;
+  }
+  :root[data-style='original'] .section-title {
+    display: block;
+  }
+  :root[data-style='original'] .section-title h2 {
+    letter-spacing: 0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(var(--accent-color), var(--accent-color)) left bottom / 50px 3px
+      no-repeat;
+  }
+  :root[data-style='original'] .section-title p {
+    border: 0;
+    padding: 0;
+    max-width: none;
+  }
+  :root[data-style='original'] .sidebar-avatar {
+    border-radius: 50%;
+  }
+}
+.style-toggle {
+  width: 40px;
+  height: 40px;
+}
+@media (scripting: none) {
+  .style-toggle {
+    display: none;
+  }
+}
+.technical-graph {
+  display: none;
+  position: absolute;
+  width: 76%;
+  height: 85%;
+  right: -12%;
+  top: 8%;
+  pointer-events: none;
+  color: var(--hero-labels-ink);
+  opacity: 0.55;
+  mask-image: linear-gradient(90deg, transparent, #000 48%);
+}
+:root[data-style='technical'] .technical-graph {
+  display: block;
+}
+.technical-traces {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+.technical-traces rect {
+  fill: var(--background-color);
+  stroke: var(--accent-ink);
+}
+.technical-traces circle {
+  fill: var(--accent-ink);
+  stroke: none;
+}
+.technical-traces .signal {
+  stroke: var(--accent-ink);
+  stroke-width: 2;
+  stroke-dasharray: 8 480;
+}
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  .technical-graph {
+    transform: translate(var(--graph-x, 0px), var(--graph-y, 0px));
+  }
+  .technical-traces .signal {
+    animation: signal-travel 9s linear infinite;
+  }
+  .technical-traces .signal--1 {
+    animation-delay: -3s;
+  }
+  .technical-traces .signal--2 {
+    animation-delay: -6s;
+  }
+  .graph-paused .signal {
+    animation-play-state: paused;
+  }
+}
+@keyframes signal-travel {
+  to {
+    stroke-dashoffset: -488;
+  }
+}
+@media (max-width: 767px) {
+  .technical-graph {
+    width: 120%;
+    height: 40%;
+    top: auto;
+    bottom: -8%;
+    opacity: 0.25;
+    mask-image: linear-gradient(180deg, transparent, #000);
+  }
+  :root[data-style='original'] {
+    --section-space: 48px;
+    --title-space: 36px;
+    --title-size: 26px;
+  }
+}
+@media print {
+  .technical-graph,
+  .style-toggle {
+    display: none !important;
+  }
+}
