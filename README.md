@@ -54,8 +54,9 @@ Before committing, run `npm run check`, `npm run lint`, `npm run format:check`,
 `npm test`, `npm run build`, `npm run test:e2e`, `npm run lighthouse`,
 `npm run lighthouse:mobile` and `npm audit --audit-level=high`.
 For local browser tests, build first: `npm run build && npm run test:e2e`.
-The test server mounts `dist/` at `/`. Linux visual references use the lockfile
-Chromium and zero pixel tolerance; Windows captures supplement geometry checks.
+The test server mounts `dist/` at `/`. Linux captures use zero pixel tolerance for stable
+surfaces; the noir hero and hosted 768px About crops use the bounded allowances documented
+in [verification](docs/verification.md). Windows captures supplement geometry checks.
 
 ## Deployment and security
 

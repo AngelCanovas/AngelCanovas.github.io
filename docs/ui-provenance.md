@@ -12,10 +12,13 @@ Preserve DOM contracts: `#header`, `.header-toggle`, `#navmenu`,
 language links, theme attributes and hero canvas colour tokens. Client modules
 depend on these for focus, navigation, scroll, theme and animation behavior.
 
-Linux visual references compare with zero differing pixels. The 158 reference
+Linux visual references compare with zero differing pixels for stable surfaces. The noir
+hero and hosted 768px About crops use the bounded allowances documented in
+`docs/verification.md`.
+The 158 reference
 images cover both languages, themes, navigation states, filters, CV and print.
 The editorial redesign intentionally updates the reviewed presentation references;
-behaviour assertions and zero-pixel tolerances remain unchanged.
+behaviour assertions remain unchanged and zero-pixel tolerances apply to stable surfaces.
 Windows browser tests capture review images and validate geometry and behavior.
 Neither visual agreement nor a new Git history establishes resource ownership.
 

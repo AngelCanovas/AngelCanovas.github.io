@@ -26,9 +26,11 @@ publish Playwright reports/traces; the local report privacy check decodes the ZI
 inside HTML and rejects Git metadata and personal paths. Retain the disabled
 Git capture setting even though the public commits use a noreply identity.
 
-Preserve zero-difference Linux visual gates. For an authorized redesign, inspect
-representative desktop/mobile light/dark pages before updating intentional changes
-with `npm run test:e2e -- e2e/visual.spec.ts --update-snapshots`, then rerun the
+Preserve zero-difference Linux visual gates for stable surfaces. The noir hero and hosted
+768px About crops use bounded allowances because their browser-rendered artwork/layout has
+known runner variance; keep those exceptions narrow and explicit. For an authorized
+redesign, inspect representative desktop/mobile light/dark pages before updating intentional
+changes with `npm run test:e2e -- e2e/visual.spec.ts --update-snapshots`, then rerun the
 complete suite. PDF downloads retain their canonical bytes.
 
 The site publishes robots.txt and .well-known/security.txt at the hosting root.

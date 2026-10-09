@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0 — 2026-10-09
+
+Add the fourth `noir` visual style: a grayscale ink/comic presentation with an original
+inline SVG bonfire and coiled sword hero illustration. The fire, embers, blade glint and
+reflection respond to a fine pointer while reduced-motion, print and touch fallbacks stay
+static and accessible.
+
+Correct the sword orientation to match the intended hilt-up, tip-down bonfire silhouette.
+Pause decorative motion when the hero leaves the viewport, make technical graph lifecycle
+handling safe across visibility and back-forward-cache transitions, normalize print headings
+across styles, and serialize browser visual checks for stable zero-diff references.
+
 ## 1.1.0 — 2026-10-03
 
 Add automatic atmospheric Hero halos for touch devices, with light and dark theme

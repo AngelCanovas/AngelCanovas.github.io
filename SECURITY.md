@@ -1,6 +1,6 @@
 # Security policy
 
-The current 1.0 release is supported. Please report vulnerabilities through
+The current 1.2.0 release is supported. Please report vulnerabilities through
 [GitHub private vulnerability reporting](https://github.com/AngelCanovas/AngelCanovas.github.io/security/advisories/new).
 Avoid placing sensitive reports in public issues.
 

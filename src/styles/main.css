@@ -164,6 +164,24 @@
     background: #fff !important;
   }
 
+  .section-title {
+    display: block;
+    padding-bottom: 12px;
+  }
+
+  .section-title h2 {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    font-size: 24px;
+    letter-spacing: 0;
+  }
+
+  .section-title p {
+    max-width: none;
+    padding: 0;
+    border: 0;
+  }
+
   .hero {
     min-height: auto;
     background: #fff !important;

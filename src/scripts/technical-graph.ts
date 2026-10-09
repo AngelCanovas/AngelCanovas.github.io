@@ -7,6 +7,8 @@ export function initTechnicalGraph(): void {
   let frame = 0;
   let x = 0;
   let y = 0;
+  let intersecting = true;
+  let hidden = document.hidden;
   const reset = () => {
     cancelAnimationFrame(frame);
     frame = 0;
@@ -40,21 +42,37 @@ export function initTechnicalGraph(): void {
   hero.addEventListener('pointerleave', reset);
   motion.addEventListener('change', reset);
   pointer.addEventListener('change', reset);
+  const syncPaused = () => {
+    const paused = hidden || !intersecting;
+    graph.classList.toggle('graph-paused', paused);
+    if (paused) reset();
+  };
   const observer = new IntersectionObserver(([entry]) => {
-    graph.classList.toggle('graph-paused', !entry.isIntersecting);
-    if (!entry.isIntersecting) reset();
+    intersecting = entry?.isIntersecting ?? false;
+    syncPaused();
   });
   observer.observe(hero);
-  document.addEventListener('visibilitychange', () => {
-    graph.classList.toggle('graph-paused', document.hidden);
-    if (document.hidden) reset();
-  });
-  window.addEventListener(
-    'pagehide',
-    () => {
-      reset();
-      observer.disconnect();
-    },
-    { once: true },
-  );
+  const onVisibilityChange = () => {
+    hidden = document.hidden;
+    syncPaused();
+  };
+  const onPageShow = () => {
+    hidden = document.hidden;
+    observer.observe(hero);
+    syncPaused();
+  };
+  const onPageHide = (event: PageTransitionEvent) => {
+    reset();
+    observer.disconnect();
+    if (!event.persisted) {
+      hero.removeEventListener('pointerleave', reset);
+      motion.removeEventListener('change', reset);
+      pointer.removeEventListener('change', reset);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pageshow', onPageShow);
+    }
+  };
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  window.addEventListener('pageshow', onPageShow);
+  window.addEventListener('pagehide', onPageHide);
 }
