@@ -1,0 +1,181 @@
+<svg
+  class="noir-bonfire"
+  data-noir-bonfire
+  viewBox="0 0 720 620"
+  aria-hidden="true"
+  focusable="false"
+>
+  <g class="bonfire-linework">
+    <path class="bonfire-ground" d="M74 516 Q180 493 280 510 T490 504 T662 518" />
+    <path class="bonfire-ground bonfire-ground--fine" d="M112 540 Q232 521 358 538 T614 536" />
+
+    <g class="bonfire-logs">
+      <path d="M190 475 L315 404 Q326 399 335 412 L346 431 L218 503 Z" />
+      <path d="M373 429 L500 476 Q510 480 505 493 L495 511 L358 458 Z" />
+      <path d="M232 437 L364 489 Q374 494 370 507 L363 524 L215 466 Z" />
+      <path class="log-ring" d="M205 478 Q246 496 304 509" />
+      <path class="log-ring" d="M398 455 Q448 474 489 491" />
+      <path class="log-ring" d="M258 452 Q304 469 349 487" />
+    </g>
+
+    <g class="bonfire-stones">
+      <path d="M138 492 Q144 462 175 454 Q206 452 225 478 L215 507 L165 513 Z" />
+      <path d="M214 514 Q223 484 252 476 Q286 475 302 501 L291 529 L241 533 Z" />
+      <path d="M418 501 Q431 472 460 468 Q493 470 506 499 L493 527 L442 530 Z" />
+      <path d="M500 489 Q513 460 543 458 Q575 461 591 490 L578 519 L526 520 Z" />
+      <path
+        class="stone-hatch"
+        d="M153 479 l20 25 m-4-31 l25 29 M231 493 l20 27 m-2-34 l25 29 M440 485 l22 28 m-2-34 l24 29 M523 475 l22 28 m-2-34 l24 29"
+      />
+    </g>
+
+    <g class="bonfire-sword" data-sword-orientation="hilt-up-tip-down">
+      <path
+        class="sword-blade"
+        d="M344 115 C329 157 385 184 351 237 C322 283 382 312 351 363 C331 397 347 431 360 463 C373 431 389 397 369 363 C338 312 398 283 369 237 C335 184 391 157 376 115 Q360 103 344 115 Z"
+      />
+      <path
+        class="sword-fuller"
+        d="M360 117 C342 164 378 184 359 237 C341 285 378 310 359 363 C348 394 355 423 360 450"
+      />
+      <path
+        class="sword-edge"
+        d="M348 120 C335 163 388 184 354 237 C328 282 388 311 354 365 M372 120 C385 163 332 184 366 237 C392 282 332 311 366 365"
+      />
+      <path class="sword-guard" d="M305 106 Q360 95 415 106 L415 121 Q360 112 305 121 Z" />
+      <path class="sword-grip" d="M347 106 L347 63 Q360 52 373 63 L373 106" />
+      <path class="sword-wrap" d="M349 70 L371 77 M349 83 L371 90 M349 96 L371 103" />
+      <path
+        class="sword-pommel"
+        d="M347 63 Q360 48 373 63 Q387 53 379 36 Q360 22 341 36 Q333 53 347 63 Z"
+      />
+      <path class="sword-pommel-ring" d="M350 38 Q360 30 370 38" />
+      <path
+        class="sword-glint"
+        d="M357 120 C346 163 378 184 359 237 C342 285 378 310 359 363 C352 388 356 416 360 439"
+      />
+      <path
+        class="sword-reflection"
+        d="M365 134 C355 170 382 189 366 230 C351 267 382 296 367 335"
+      />
+    </g>
+
+    <g class="bonfire-flames">
+      <path
+        class="flame flame--outer"
+        d="M360 472 C315 445 324 405 350 379 C343 413 372 410 371 365 C411 407 407 439 381 472 Z"
+      />
+      <path
+        class="flame flame--left"
+        d="M336 474 C296 446 305 420 326 396 C322 428 345 425 348 399 C366 428 359 456 347 474 Z"
+      />
+      <path
+        class="flame flame--right"
+        d="M384 477 C424 449 416 421 394 394 C397 428 377 425 375 402 C354 436 366 459 384 477 Z"
+      />
+      <path
+        class="flame flame--inner"
+        d="M360 475 C342 450 350 431 362 414 C366 437 381 440 374 460 C371 468 367 472 360 475 Z"
+      />
+      <path class="ember ember--one" d="M321 366 l-7-20" />
+      <path class="ember ember--two" d="M401 348 l9-23" />
+      <path class="ember ember--three" d="M345 333 l-3-17" />
+      <path class="ember ember--four" d="M384 310 l5-18" />
+      <circle class="ember-dot ember-dot--one" cx="310" cy="326" r="3" />
+      <circle class="ember-dot ember-dot--two" cx="415" cy="304" r="2.5" />
+      <circle class="ember-dot ember-dot--three" cx="328" cy="292" r="2" />
+    </g>
+
+    <path
+      class="bonfire-ash"
+      d="M284 496 q18-12 36 0 m70 4 q22-14 44 0 m-125 23 q16-9 32 0 m62 4 q17-10 34 0"
+    />
+  </g>
+</svg>
+
+<script>
+  import { safeInit } from '../scripts/safe-init';
+
+  function initNoirBonfireInteraction(): void {
+    const hero = document.getElementById('hero');
+    const artwork = document.querySelector<SVGElement>('[data-noir-bonfire]');
+    if (!hero || !artwork) return;
+
+    const pointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const properties = [
+      '--noir-hover',
+      '--noir-flame-x',
+      '--noir-flame-y',
+      '--noir-flame-scale',
+      '--noir-glint-x',
+    ];
+    let frame = 0;
+    let latest: { x: number; y: number } | null = null;
+
+    const clear = () => {
+      latest = null;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      properties.forEach((property) => artwork.style.removeProperty(property));
+      delete artwork.dataset.noirHover;
+    };
+
+    const paint = () => {
+      frame = 0;
+      if (
+        !latest ||
+        document.documentElement.dataset.style !== 'noir' ||
+        !pointer.matches ||
+        motion.matches
+      ) {
+        clear();
+        return;
+      }
+
+      const rect = artwork.getBoundingClientRect();
+      const normalX = (latest.x - (rect.left + rect.width * 0.5)) / (rect.width * 0.5);
+      const normalY = (latest.y - (rect.top + rect.height * 0.56)) / (rect.height * 0.56);
+      const distance = Math.hypot(normalX, normalY);
+      const intensity = Math.max(0, Math.min(1, 1 - distance));
+      if (intensity < 0.08) {
+        clear();
+        return;
+      }
+
+      artwork.style.setProperty('--noir-hover', intensity.toFixed(3));
+      artwork.style.setProperty('--noir-flame-x', `${(normalX * 13).toFixed(2)}px`);
+      artwork.style.setProperty('--noir-flame-y', `${(-intensity * 7).toFixed(2)}px`);
+      artwork.style.setProperty('--noir-flame-scale', (1 + intensity * 0.1).toFixed(3));
+      artwork.style.setProperty('--noir-glint-x', `${(normalX * 5).toFixed(2)}px`);
+      artwork.dataset.noirHover = 'true';
+    };
+
+    const move = (event: PointerEvent) => {
+      if (
+        event.pointerType === 'touch' ||
+        !pointer.matches ||
+        motion.matches ||
+        document.documentElement.dataset.style !== 'noir'
+      ) {
+        clear();
+        return;
+      }
+      latest = { x: event.clientX, y: event.clientY };
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    const styleObserver = new MutationObserver(clear);
+    styleObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-style'],
+    });
+    pointer.addEventListener('change', clear);
+    motion.addEventListener('change', clear);
+    hero.addEventListener('pointermove', move, { passive: true });
+    hero.addEventListener('pointerleave', clear);
+    window.addEventListener('pagehide', clear, { once: true });
+  }
+
+  safeInit(initNoirBonfireInteraction);
+</script>

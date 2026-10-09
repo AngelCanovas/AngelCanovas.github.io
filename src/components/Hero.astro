@@ -1,5 +1,7 @@
-﻿---
+---
 import Icon from './Icon.astro';
+import TechnicalGraph from './TechnicalGraph.astro';
+import NoirBonfire from './NoirBonfire.astro';
 import { personal } from '../data/site';
 import { getContent, type Lang } from '../lib/i18n';
 import { cvPdfHref } from '../lib/routes';
@@ -13,12 +15,14 @@ const t = getContent(lang);
 ---
 
 <section id="hero" class="hero section">
+  <TechnicalGraph />
+  <NoirBonfire />
   <div class="hero-backdrop" aria-hidden="true">
-    <div class="hero-backdrop-drift" data-hero-drift>
+    <div class="hero-backdrop-drift" data-hero-drift data-editorial-depth>
       <canvas id="hero-canvas" class="hero-canvas"></canvas>
     </div>
   </div>
-  <div class="hero-atmosphere" aria-hidden="true"></div>
+  <div class="hero-atmosphere" aria-hidden="true" data-editorial-depth></div>
   <div class="hero-glow" aria-hidden="true"></div>
 
   <div class="container hero-content">
@@ -69,11 +73,8 @@ const t = getContent(lang);
   safeInit(() => {
     const root = document.getElementById('hero');
     const canvas = document.getElementById('hero-canvas');
-    if (root && canvas instanceof HTMLCanvasElement) {
-      initHeroBackdrop(root, canvas);
-    }
+    if (root && canvas instanceof HTMLCanvasElement) initHeroBackdrop(root, canvas);
   });
-
   safeInit(() => {
     const typed = document.querySelector<HTMLElement>('.typed');
     if (typed) initTypedText(typed);
@@ -81,170 +82,100 @@ const t = getContent(lang);
 </script>
 
 <style>
-  /* `.hero` box, background and overflow live in `main.css` (global) so the
-     print/responsive overrides there keep winning; this block only styles the
-     hero's own children. */
-  /* Backdrop of masked monospaced labels, after Cloudflare's Registrar landing
-     page: the grid drifts with the container and the canvas lights the labels
-     around the pointer. The canvas reads its tokens from this CSS â€” `color`
-     (resting ink), `outline-color` (lit glyphs), font, line-height,
-     letter-spacing, column-gap and row-gap â€” so keep both in sync. */
   .hero-backdrop {
     position: absolute;
     inset: 0;
-    z-index: 1;
     pointer-events: none;
-    overflow: hidden;
-    /* Text safe zone: the field lives on the right so the headline keeps the
-       left half. The radial and the horizontal ramp intersect, so the grid
-       fades out before it ever reaches the copy. */
-    mask-image:
-      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
-      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
-      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
-    -webkit-mask-image:
-      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
-      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
-      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
-    mask-composite: intersect;
-    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, transparent 32%, #000 74%);
   }
   .hero-backdrop-drift {
     position: absolute;
-    /* Overscan for the drift below: at least 48px / 80px, more on big screens. */
-    inset: min(-14%, -48px) min(-10%, -80px);
-    animation: hero-backdrop-drift 48s ease-in-out infinite;
-    will-change: transform;
-  }
-  @keyframes hero-backdrop-drift {
-    0%,
-    100% {
-      transform: translate3d(-66px, 0, 0);
-    }
-    25% {
-      transform: translate3d(0, -40px, 0);
-    }
-    50% {
-      transform: translate3d(66px, 0, 0);
-    }
-    75% {
-      transform: translate3d(0, 40px, 0);
-    }
+    inset: -20px;
   }
   .hero-canvas {
-    position: absolute;
-    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.6s ease;
     color: var(--hero-labels-ink);
     outline-color: var(--accent-ink);
-    font-family: var(--mono-font);
-    font-size: 11px;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
-    column-gap: 14px;
-    row-gap: 3px;
+    font-family: var(--default-font);
   }
   .hero-canvas[data-ready] {
+    opacity: 0.65;
+  }
+  .hero-atmosphere {
+    position: absolute;
+    right: -8%;
+    top: 14%;
+    width: 48%;
+    height: 74%;
+    pointer-events: none;
+  }
+  .hero-atmosphere::before,
+  .hero-atmosphere::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .hero-atmosphere::before {
+    background: radial-gradient(light-dark(#a4422b, #e5a086) 0.8px, transparent 1px) 0 0 / 6px 6px;
+    clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
     opacity: 1;
   }
-  @media (min-width: 768px) {
-    .hero-canvas {
-      font-size: 12px;
-      column-gap: 16px;
-      row-gap: 4px;
-    }
+  .hero-atmosphere::after {
+    inset: 16% 10% 8% -10%;
+    background: radial-gradient(light-dark(#787d67, #aeb39a) 0.65px, transparent 1px) 0 0 / 5px 5px;
+    clip-path: polygon(0 0, 72% 0, 100% 100%, 28% 100%);
+    opacity: 1;
   }
   .hero-glow {
     position: absolute;
     inset: 0;
-    z-index: 2;
     pointer-events: none;
-    background: light-dark(
-      linear-gradient(
-        100deg,
-        rgba(242, 247, 252, 0.68) 0%,
-        rgba(242, 247, 252, 0.26) 45%,
-        rgba(242, 247, 252, 0) 100%
-      ),
-      linear-gradient(
-        100deg,
-        rgba(4, 11, 20, 0.88) 0%,
-        rgba(4, 11, 20, 0.44) 45%,
-        rgba(4, 11, 20, 0.08) 100%
-      )
-    );
+    background: linear-gradient(90deg, var(--background-color) 12%, transparent 85%);
   }
-  .hero .container {
+  .hero-content {
     position: relative;
-    z-index: 3;
-  }
-  .hero-atmosphere {
-    display: none;
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
+    z-index: 2;
   }
   .hero-availability {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.35rem 0.9rem;
-    border-radius: 50rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: light-dark(#0f4a66, #d7f2ff);
-    background: color-mix(in srgb, var(--accent-color), transparent 88%);
-    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 55%);
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--default-color);
+    padding-bottom: 1rem;
+    margin-bottom: clamp(2rem, 6vh, 4rem);
+    border-bottom: 1px solid var(--rule-color);
+    max-width: 30rem;
   }
   .hero-availability-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #38ef7d;
-    box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.5);
-    animation: hero-pulse 2s infinite;
-  }
-  @keyframes hero-pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.5);
-    }
-    70% {
-      box-shadow: 0 0 0 8px rgba(56, 239, 125, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(56, 239, 125, 0);
-    }
+    width: 7px;
+    height: 7px;
+    background: var(--accent-ink);
   }
   .hero-eyebrow {
-    margin: 0 0 6px;
-    font-family: var(--nav-font);
     font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 1rem;
     color: var(--accent-ink);
   }
-  .hero h1 {
+  .hero-name {
+    max-width: 9ch;
     margin: 0;
-    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-size: clamp(3.8rem, 7.6vw, 7.2rem);
     font-weight: 700;
-    line-height: 1.05;
+    line-height: 0.98;
+    letter-spacing: -0.065em;
+    text-wrap: balance;
   }
   .hero-role {
-    font-size: 1.6rem;
-    margin: 0.75rem 0 0;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    margin: 2rem 0 0;
+    max-width: 33rem;
+    font-weight: 500;
   }
-  /* Every role shares a grid cell so deleting or wrapping the animated text
-     cannot move the headline and buttons. Hidden copies reserve the maximum
-     height at each viewport, including before JavaScript or fonts load. */
   .hero-role-stack {
     display: grid;
   }
@@ -259,208 +190,98 @@ const t = getContent(lang);
     display: inline-block;
     width: 0.6ch;
     color: var(--accent-ink);
-    font-weight: 400;
   }
   .typed-cursor::after {
     content: '|';
   }
-  .typed-cursor--blink {
-    animation: typed-blink 1s step-end infinite;
-  }
-  @keyframes typed-blink {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
-    }
-  }
   .hero-subtitle {
-    font-size: 1.1rem;
-    color: var(--default-color);
-    max-width: 640px;
-    line-height: 1.6;
+    max-width: 31rem;
+    font-size: 1rem;
+    line-height: 1.75;
     margin-bottom: 0;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 36rem;
   }
   .hero-btn {
     display: inline-flex;
     align-items: center;
-    padding: 0.6rem 1.5rem;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    border-radius: 50px;
-    border: 1px solid transparent;
-    transition:
-      background-color 0.3s ease,
-      border-color 0.3s ease,
-      color 0.3s ease,
-      transform 0.3s ease;
-  }
-  .hero-btn:hover,
-  .hero-btn:focus-visible {
-    transform: translateY(-2px);
+    border-radius: var(--radius-control);
+    border: 1px solid var(--rule-color);
+    color: var(--heading-color);
+    background: var(--background-color);
   }
   .hero-btn--primary {
-    background-color: light-dark(var(--accent-fill), #ffffff);
-    border-color: light-dark(var(--accent-fill), #ffffff);
-    color: light-dark(#ffffff, #040b14);
+    color: var(--contrast-color);
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
   }
-  .hero-btn--primary:hover,
-  .hero-btn--primary:focus-visible {
-    background-color: light-dark(
-      color-mix(in srgb, var(--accent-fill), black 15%),
-      color-mix(in srgb, #ffffff, var(--accent-color) 15%)
-    );
-    border-color: light-dark(
-      color-mix(in srgb, var(--accent-fill), black 15%),
-      color-mix(in srgb, #ffffff, var(--accent-color) 15%)
-    );
-    color: light-dark(#ffffff, #040b14);
+  .hero-btn:hover {
+    color: var(--contrast-color);
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
   }
-  .hero-btn--ghost {
-    color: light-dark(var(--heading-color), #ffffff);
-    border-color: light-dark(
-      color-mix(in srgb, var(--heading-color), transparent 55%),
-      rgba(255, 255, 255, 0.45)
-    );
-  }
-  .hero-btn--ghost:hover,
-  .hero-btn--ghost:focus-visible {
-    color: light-dark(var(--heading-color), #ffffff);
-    background-color: light-dark(
-      color-mix(in srgb, var(--heading-color), transparent 94%),
-      rgba(255, 255, 255, 0.12)
-    );
-    border-color: light-dark(
-      color-mix(in srgb, var(--heading-color), transparent 35%),
-      rgba(255, 255, 255, 0.7)
-    );
-  }
-  @media (max-width: 768px) {
-    /* Mobile: the grid only lives in the band below the buttons, never behind
-       the name or the actions. */
+  @media (max-width: 767px) {
+    .hero-name {
+      font-size: clamp(3.3rem, 13vw, 5rem);
+    }
+    .hero-atmosphere {
+      top: auto;
+      bottom: -7%;
+      right: -15%;
+      height: 30%;
+      width: 85%;
+      opacity: 0.4;
+    }
     .hero-backdrop {
-      mask-image:
-        radial-gradient(150% 42% at 60% 100%, #000 42%, transparent 84%),
-        linear-gradient(to bottom, transparent 0%, transparent 66%, #000 84%, #000 100%);
-      -webkit-mask-image:
-        radial-gradient(150% 42% at 60% 100%, #000 42%, transparent 84%),
-        linear-gradient(to bottom, transparent 0%, transparent 66%, #000 84%, #000 100%);
-    }
-    .hero-role {
-      font-size: 1.2rem;
-    }
-    .hero-subtitle {
-      font-size: 0.95rem;
+      mask-image: linear-gradient(180deg, transparent 68%, #000);
     }
     .hero-glow {
-      background: light-dark(
-        linear-gradient(
-          180deg,
-          rgba(242, 247, 252, 0.5) 0%,
-          rgba(242, 247, 252, 0.72) 70%,
-          rgba(242, 247, 252, 0.85) 100%
-        ),
-        linear-gradient(
-          180deg,
-          rgba(4, 11, 20, 0.55) 0%,
-          rgba(4, 11, 20, 0.82) 70%,
-          rgba(4, 11, 20, 0.95) 100%
-        )
-      );
+      background: linear-gradient(180deg, transparent 55%, var(--background-color));
+    }
+    .hero-availability {
+      margin-bottom: 2.5rem;
+      max-width: calc(100% - 3rem);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-backdrop-drift {
-      animation: none;
-    }
-    .hero-glow {
-      background: light-dark(rgba(242, 247, 252, 0.7), rgba(4, 11, 20, 0.72));
-    }
-    .hero-availability-dot {
-      animation: none;
-    }
-    .typed-cursor--blink {
-      animation: none;
-    }
-  }
-  /* Primary input, not viewport width: tablets and touch laptops get the same
-     autonomous backdrop, while a small desktop window retains its mouse grid. */
-  @media (hover: none), (pointer: coarse) {
+  @media (hover: none), (pointer: coarse), (scripting: none) {
     .hero-backdrop {
       display: none;
     }
-    .hero-atmosphere {
-      display: block;
-    }
-    .hero-atmosphere::before,
-    .hero-atmosphere::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-    }
-    .hero-atmosphere::before {
-      width: 140%;
-      height: 68%;
-      left: -48%;
-      bottom: -18%;
-      background: radial-gradient(
-        ellipse at center,
-        light-dark(rgb(20 157 221 / 36%), rgb(20 157 221 / 32%)) 0%,
-        light-dark(rgb(20 157 221 / 14%), rgb(20 157 221 / 12%)) 38%,
-        transparent 70%
-      );
-    }
-    .hero-atmosphere::after {
-      width: 118%;
-      height: 62%;
-      right: -64%;
-      top: 4%;
-      background: radial-gradient(
-        ellipse at center,
-        light-dark(rgb(139 92 246 / 28%), rgb(139 92 246 / 30%)) 0%,
-        light-dark(rgb(139 92 246 / 10%), rgb(139 92 246 / 12%)) 38%,
-        transparent 70%
-      );
-    }
-    /* Protect the copy at the centre, leaving the edge halos visible in both
-       themes, including reduced motion and an explicit theme override. */
-    .hero-glow {
-      background: linear-gradient(
-        to bottom,
-        light-dark(rgb(242 247 252 / 12%), rgb(4 11 20 / 16%)) 0%,
-        light-dark(rgb(242 247 252 / 55%), rgb(4 11 20 / 60%)) 44%,
-        light-dark(rgb(242 247 252 / 12%), rgb(4 11 20 / 16%)) 100%
-      );
-    }
   }
-  @media (hover: none) and (prefers-reduced-motion: no-preference),
-    (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) {
     .hero-atmosphere::before {
-      animation: hero-halo-blue 4s ease-out both;
+      animation: ink-register-front 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     }
     .hero-atmosphere::after {
-      animation: hero-halo-violet 4s ease-out both;
+      animation: ink-register-back 3.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     }
     .hero[data-hero-paused] .hero-atmosphere::before,
     .hero[data-hero-paused] .hero-atmosphere::after {
       animation-play-state: paused;
     }
   }
-  @keyframes hero-halo-blue {
+  @keyframes ink-register-front {
     from {
-      opacity: 0.55;
-      transform: translate3d(-6%, 8%, 0) scale(0.94);
+      opacity: 0;
+      transform: translate(18%, -7%);
     }
     to {
       opacity: 1;
       transform: none;
     }
   }
-  @keyframes hero-halo-violet {
+  @keyframes ink-register-back {
     from {
-      opacity: 0.45;
-      transform: translate3d(8%, -6%, 0) scale(0.92);
+      opacity: 0;
+      transform: translate(-15%, 12%);
     }
     to {
       opacity: 1;
@@ -470,6 +291,10 @@ const t = getContent(lang);
   @media print {
     .hero-atmosphere {
       display: none;
+    }
+    .hero-name {
+      max-width: none;
+      font-size: 2.5rem;
     }
   }
 </style>

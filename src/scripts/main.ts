@@ -7,6 +7,8 @@ import { initScrollReveal } from './scroll-reveal';
 import { initScrollTop } from './scroll-top';
 import { initScrollspy } from './scrollspy';
 import { initThemeToggle } from './theme';
+import { initStyleToggle } from './style';
+import { initEditorialMotion } from './editorial-motion';
 
 /** The build bakes a year into the static HTML; keep it current on long-lived visits. */
 function syncFooterYear(): void {
@@ -23,12 +25,14 @@ function syncFooterYear(): void {
 function bootstrap(): void {
   safeInit(syncFooterYear);
   safeInit(initThemeToggle);
+  safeInit(initStyleToggle);
   safeInit(upgradeEmailLinks);
   safeInit(initMobileNav);
   safeInit(initScrollTop);
   safeInit(initScrollReveal);
   safeInit(initHashScroll);
   safeInit(initScrollspy);
+  safeInit(initEditorialMotion);
   safeInit(() => initEasterEggs({ consoleMessage: document.body.dataset.consoleMessage }));
 }
 

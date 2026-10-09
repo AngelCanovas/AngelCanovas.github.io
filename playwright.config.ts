@@ -8,9 +8,10 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
   captureGitInfo: { commit: false, diff: false },
-  // Keep browser QA sequential on local machines/VPS; retain CI parallelism.
-  fullyParallel: !!process.env.CI,
-  workers: process.env.CI ? undefined : 1,
+  // Keep browser QA sequential on local machines and CI: the zero-diff visual
+  // references are sensitive to concurrent font/layout work on shared runners.
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI

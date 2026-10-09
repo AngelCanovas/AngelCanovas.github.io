@@ -123,6 +123,27 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       <Icon name="moon-stars" class="theme-icon theme-icon--moon" />
       <Icon name="sun" class="theme-icon theme-icon--sun" />
     </button>
+    <button
+      type="button"
+      class="style-toggle"
+      data-style-toggle
+      data-label-technical={lang === 'es' ? 'Estilo azul y verde' : 'Blue and green style'}
+      data-label-original={lang === 'es' ? 'Estilo azul original' : 'Original blue style'}
+      data-label-editorial={lang === 'es' ? 'Estilo naranja' : 'Orange style'}
+      data-label-noir={lang === 'es' ? 'Estilo tinta monocroma' : 'Monochrome ink style'}
+      aria-label={
+        lang === 'es'
+          ? 'Estilo azul y verde. Estilo azul original'
+          : 'Blue and green style. Original blue style'
+      }
+      title={
+        lang === 'es'
+          ? 'Estilo azul y verde. Estilo azul original'
+          : 'Blue and green style. Original blue style'
+      }
+    >
+      <Icon name="images" />
+    </button>
   </div>
 
   <nav id="navmenu" class="navmenu">
@@ -154,7 +175,7 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     gap: 0.45rem;
     margin: 0 0 16px 0;
     padding: 0.55rem 1rem;
-    border-radius: 50rem;
+    border-radius: var(--radius-control);
     font-family: var(--nav-font);
     font-size: 0.85rem;
     font-weight: 700;
@@ -182,7 +203,8 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     justify-content: center;
     gap: 0.35rem;
   }
-  .theme-toggle {
+  .theme-toggle,
+  .style-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -190,7 +212,7 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     height: 34px;
     padding: 0;
     border: 1px solid color-mix(in srgb, var(--nav-color), transparent 70%);
-    border-radius: 50%;
+    border-radius: var(--radius-control);
     background: transparent;
     color: var(--nav-color);
     font-size: 0.95rem;
@@ -200,7 +222,8 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       border-color 0.3s,
       background-color 0.3s;
   }
-  .theme-toggle:hover {
+  .theme-toggle:hover,
+  .style-toggle:hover {
     color: var(--nav-hover-color);
     border-color: var(--accent-color);
   }
@@ -227,7 +250,7 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     font-weight: 700;
     letter-spacing: 0.05em;
     padding: 0.25rem 0.7rem;
-    border-radius: 50rem;
+    border-radius: var(--radius-control);
     color: var(--nav-color);
     border: 1px solid color-mix(in srgb, var(--nav-color), transparent 70%);
     transition:
