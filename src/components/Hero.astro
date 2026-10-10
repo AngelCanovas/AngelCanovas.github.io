@@ -66,14 +66,40 @@ const t = getContent(lang);
 </section>
 
 <script>
-  import { initHeroBackdrop } from '../scripts/hero-backdrop';
+  import { initHeroCodeBackdrop } from '../scripts/hero-code-backdrop';
+  import { initHeroBackdrop as initHeroWaveBackdrop } from '../scripts/hero-backdrop';
   import { safeInit } from '../scripts/safe-init';
   import { initTypedText } from '../scripts/typed-text';
 
   safeInit(() => {
     const root = document.getElementById('hero');
     const canvas = document.getElementById('hero-canvas');
-    if (root && canvas instanceof HTMLCanvasElement) initHeroBackdrop(root, canvas);
+    if (!(root && canvas instanceof HTMLCanvasElement)) return;
+
+    let cleanup = () => {};
+    let activeStyle = '';
+    const syncBackdrop = () => {
+      const style = document.documentElement.dataset.style ?? 'technical';
+      if (style === activeStyle) return;
+      cleanup();
+      activeStyle = style;
+      root.dataset.heroBackdropMode =
+        style === 'original' ? 'code' : style === 'editorial' ? 'waves' : 'none';
+      if (style === 'original') cleanup = initHeroCodeBackdrop(root, canvas);
+      else if (style === 'editorial') cleanup = initHeroWaveBackdrop(root, canvas);
+      else {
+        canvas.width = 300;
+        canvas.height = 150;
+        delete canvas.dataset.ready;
+      }
+    };
+
+    const styleObserver = new MutationObserver(syncBackdrop);
+    styleObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-style'],
+    });
+    syncBackdrop();
   });
   safeInit(() => {
     const typed = document.querySelector<HTMLElement>('.typed');
@@ -103,6 +129,60 @@ const t = getContent(lang);
   }
   .hero-canvas[data-ready] {
     opacity: 0.65;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-backdrop {
+    z-index: 1;
+    overflow: hidden;
+    mask-image:
+      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
+      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
+      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
+    -webkit-mask-image:
+      radial-gradient(96% 86% at 76% 44%, #000 18%, transparent 74%),
+      linear-gradient(to right, transparent 0%, transparent 36%, #000 68%, #000 100%),
+      linear-gradient(to bottom, rgb(0 0 0 / 20%), #000 9%, #000 84%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-backdrop-drift {
+    inset: min(-14%, -48px) min(-10%, -80px);
+    animation: hero-code-backdrop-drift 48s ease-in-out infinite;
+    will-change: transform;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-canvas {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.6s ease;
+    color: var(--hero-labels-ink);
+    outline-color: var(--accent-ink);
+    font-family: var(--mono-font);
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    column-gap: 14px;
+    row-gap: 3px;
+  }
+  @media (min-width: 768px) {
+    .hero[data-hero-backdrop-mode='code'] .hero-canvas {
+      font-size: 12px;
+      column-gap: 16px;
+      row-gap: 4px;
+    }
+  }
+  @keyframes hero-code-backdrop-drift {
+    0%,
+    100% {
+      transform: translate3d(-66px, 0, 0);
+    }
+    25% {
+      transform: translate3d(0, -40px, 0);
+    }
+    50% {
+      transform: translate3d(66px, 0, 0);
+    }
+    75% {
+      transform: translate3d(0, 40px, 0);
+    }
   }
   .hero-atmosphere {
     position: absolute;
@@ -266,6 +346,11 @@ const t = getContent(lang);
     .hero[data-hero-paused] .hero-atmosphere::before,
     .hero[data-hero-paused] .hero-atmosphere::after {
       animation-play-state: paused;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero[data-hero-backdrop-mode='code'] .hero-backdrop-drift {
+      animation: none;
     }
   }
   @keyframes ink-register-front {
