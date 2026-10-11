@@ -67,8 +67,7 @@ export function initStyleToggle(): void {
     }
   };
 
-  const readRemaining = () =>
-    Math.max(0, STYLE_AUTO_INTERVAL_MS - (Date.now() - startedAt));
+  const readRemaining = () => Math.max(0, STYLE_AUTO_INTERVAL_MS - (Date.now() - startedAt));
 
   const updateProgressA11y = () => {
     if (!paused) remaining = readRemaining();

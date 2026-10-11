@@ -95,9 +95,7 @@ test('automatically cycles styles and the progress control pauses and resumes th
   await expect(progress).toBeVisible();
   await progress.click();
   await expect(progress).toHaveAttribute('aria-pressed', 'false');
-  await expect
-    .poll(() => root.getAttribute('data-style'), { timeout: 16_000 })
-    .toBe('noir');
+  await expect.poll(() => root.getAttribute('data-style'), { timeout: 16_000 }).toBe('noir');
 });
 
 test('chooses a fresh random style on every load instead of restoring storage', async ({

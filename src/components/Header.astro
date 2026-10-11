@@ -148,9 +148,15 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       type="button"
       class="style-progress"
       data-style-progress
-      data-label-running={lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'}
-      data-label-paused={lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'}
-      aria-label={lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'}
+      data-label-running={
+        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
+      }
+      data-label-paused={
+        lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'
+      }
+      aria-label={
+        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
+      }
       aria-pressed="false"
     >
       <span
