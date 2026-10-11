@@ -191,7 +191,9 @@ function initLabelBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => 
 
     const placements = layoutLabels({
       areaWidth: width,
-      areaHeight: height,
+      // Keep the first idle paint bounded on slower devices; the masked field
+      // only needs to cover the upper Hero copy, not the whole canvas height.
+      areaHeight: Math.min(height, 560),
       rowHeight: canvasStyle.lineHeight,
       columnGap: canvasStyle.columnGap,
       rowGap: canvasStyle.rowGap,

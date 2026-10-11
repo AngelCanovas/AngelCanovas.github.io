@@ -90,7 +90,9 @@ const t = getContent(lang);
       else {
         canvas.width = 300;
         canvas.height = 150;
-        delete canvas.dataset.ready;
+        if (window.matchMedia('(hover: none), (pointer: coarse)').matches)
+          delete canvas.dataset.ready;
+        else canvas.dataset.ready = 'true';
       }
     };
 

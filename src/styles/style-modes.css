@@ -91,7 +91,8 @@
   height: 40px;
 }
 @media (scripting: none) {
-  .style-toggle {
+  .style-toggle,
+  .style-progress {
     display: none;
   }
 }
@@ -532,7 +533,8 @@
 @media print {
   .technical-graph,
   .noir-bonfire,
-  .style-toggle {
+  .style-toggle,
+  .style-progress {
     display: none !important;
   }
 }

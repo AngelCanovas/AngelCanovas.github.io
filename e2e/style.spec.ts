@@ -10,7 +10,9 @@ for (const route of ['/', '/es/']) {
     await page.goto(route);
     const root = page.locator('html');
     const button = page.locator('[data-style-toggle]');
+    const progress = page.locator('[data-style-progress]');
     const graph = page.locator('[data-technical-graph]');
+    const canvas = page.locator('#hero-canvas');
     const bonfire = page.locator('[data-noir-bonfire]');
     await expect(button).toHaveAttribute(
       'aria-label',
@@ -26,10 +28,16 @@ for (const route of ['/', '/es/']) {
       'signal-travel',
     );
     const theme = await root.getAttribute('data-theme');
+    await expect(progress).toBeVisible();
+    await progress.click();
+    await expect(progress).toHaveAttribute('aria-pressed', 'true');
     for (const mode of ['noir', 'original', 'editorial', 'technical']) {
       await button.focus();
       await page.keyboard.press('Enter');
       await expect(root).toHaveAttribute('data-style', mode);
+      if (mode === 'original') {
+        await expect(canvas).toHaveAttribute('data-ready', 'true', { timeout: 10000 });
+      }
       expect(await root.getAttribute('data-theme')).toBe(theme);
       await expect(page.locator('.hero-name')).toBeVisible();
       await expect(button).toHaveAttribute('data-style', mode);
@@ -56,6 +64,41 @@ for (const route of ['/', '/es/']) {
     await expect(graph.locator('[data-signal]').first()).toHaveCSS('animation-name', 'none');
   });
 }
+
+test('automatically cycles styles and the progress control pauses and resumes the remaining time', async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  const root = page.locator('html');
+  const progress = page.locator('[data-style-progress]');
+  const track = page.locator('[data-style-progress-track]');
+
+  await expect(root).toHaveAttribute('data-style', 'technical');
+  await expect(progress).toHaveAttribute('aria-pressed', 'false');
+  await expect
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 4_000 })
+    .toBeGreaterThan(0);
+
+  await progress.click();
+  await expect(progress).toHaveAttribute('aria-pressed', 'true');
+  const pausedValue = await track.getAttribute('aria-valuenow');
+  await page.waitForTimeout(1_000);
+  await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
+  await expect(root).toHaveAttribute('data-style', 'technical');
+
+  await page.waitForTimeout(1_000);
+  await expect(progress).toHaveCount(1);
+  await expect(progress).toBeVisible();
+  await progress.click();
+  await expect(progress).toHaveAttribute('aria-pressed', 'false');
+  await expect
+    .poll(() => root.getAttribute('data-style'), { timeout: 16_000 })
+    .toBe('noir');
+});
 
 test('chooses a fresh random style on every load instead of restoring storage', async ({
   page,
@@ -157,6 +200,12 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
       await page.goto('/');
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
+      if (mode === 'original') {
+        await expect(page.locator('#hero-canvas')).toHaveAttribute('data-ready', 'true', {
+          timeout: 10000,
+        });
+        await page.waitForTimeout(500);
+      }
       await expect(page).toHaveScreenshot(`${mode}-${colorScheme}.png`, {
         timeout: 30000,
         animations: 'disabled',

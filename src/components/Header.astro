@@ -144,6 +144,27 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
     >
       <Icon name="images" />
     </button>
+    <button
+      type="button"
+      class="style-progress"
+      data-style-progress
+      data-label-running={lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'}
+      data-label-paused={lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'}
+      aria-label={lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'}
+      aria-pressed="false"
+    >
+      <span
+        class="style-progress-track"
+        data-style-progress-track
+        role="progressbar"
+        aria-label={lang === 'es' ? 'Progreso hasta el siguiente estilo' : 'Progress to next style'}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      >
+        <span class="style-progress-fill" aria-hidden="true"></span>
+      </span>
+    </button>
   </div>
 
   <nav id="navmenu" class="navmenu">
@@ -226,6 +247,59 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
   .style-toggle:hover {
     color: var(--nav-hover-color);
     border-color: var(--accent-color);
+  }
+  .style-progress {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 34px;
+    padding: 0 0.45rem;
+    border: 1px solid color-mix(in srgb, var(--nav-color), transparent 70%);
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--nav-color);
+    cursor: pointer;
+    transition:
+      color 0.3s,
+      border-color 0.3s,
+      background-color 0.3s;
+  }
+  .style-progress:hover,
+  .style-progress:focus-visible,
+  .style-progress[aria-pressed='true'] {
+    color: var(--nav-hover-color);
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 90%);
+  }
+  .style-progress-track {
+    display: block;
+    width: 100%;
+    height: 0.28rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--nav-color), transparent 78%);
+  }
+  .style-progress-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent-fill);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .style-progress--running .style-progress-fill {
+    animation: style-progress-fill var(--style-progress-duration, 15000ms) linear forwards;
+    animation-play-state: running;
+  }
+  .style-progress--paused .style-progress-fill {
+    animation-play-state: paused;
+  }
+  @keyframes style-progress-fill {
+    to {
+      transform: scaleX(1);
+    }
   }
   .theme-toggle :global(.theme-icon--sun) {
     display: none;
