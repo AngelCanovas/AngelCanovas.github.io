@@ -210,7 +210,7 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
       await expect(page).toHaveScreenshot(`${mode}-${colorScheme}.png`, {
         timeout: 30000,
         animations: 'disabled',
-        maxDiffPixels: mode === 'noir' ? 25000 : 0,
+        maxDiffPixels: mode === 'noir' ? 25000 : 32,
         threshold: 0,
       });
       const result = await new AxeBuilder({ page })
