@@ -196,6 +196,9 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
         });
       }, mode);
       await page.goto('/');
+      const progress = page.locator('[data-style-progress]');
+      await expect(progress).toBeVisible();
+      await progress.click();
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
       if (mode === 'original') {

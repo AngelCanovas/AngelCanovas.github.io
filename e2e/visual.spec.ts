@@ -9,6 +9,15 @@ const viewports = [
 ];
 
 async function ready(page: Page) {
+  const progress = page.locator('[data-style-progress]');
+  if (await progress.count()) {
+    await progress.evaluate((element) => {
+      const button = element as HTMLButtonElement;
+      if (button.getAttribute('aria-pressed') !== 'true') button.click();
+    });
+    await expect(progress).toHaveAttribute('aria-pressed', 'true');
+  }
+
   // The canvas is painted in an idle callback. Its ready signal, rather than
   // machine speed, determines when the visual reference is meaningful.
   const canvas = page.locator('#hero-canvas');
