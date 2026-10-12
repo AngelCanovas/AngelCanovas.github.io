@@ -152,6 +152,48 @@ test('original keeps shared button and section geometry across visual styles', a
   }
 });
 
+test('theme changes show a visual transition and the progress pipe stays visible', async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  const root = page.locator('html');
+  const button = page.locator('[data-style-toggle]');
+  const tube = page.locator('[data-style-progress-tube]');
+  const tubeCanvas = page.locator('[data-style-progress-tube-canvas]');
+
+  await expect(tube).toBeVisible();
+  if (pageErrors.length) throw new Error(pageErrors.join('\n'));
+  await expect(tubeCanvas).toHaveJSProperty('width', 48);
+  const transitionStarted = page.evaluate(
+    () =>
+      new Promise<boolean>((resolve) => {
+        const element = document.documentElement;
+        if (element.hasAttribute('data-style-transition')) {
+          resolve(true);
+          return;
+        }
+        const observer = new MutationObserver(() => {
+          if (element.hasAttribute('data-style-transition')) {
+            observer.disconnect();
+            resolve(true);
+          }
+        });
+        observer.observe(element, { attributes: true, attributeFilter: ['data-style-transition'] });
+      }),
+  );
+  await button.click();
+  await expect(root).toHaveAttribute('data-style', 'noir');
+  expect(await transitionStarted).toBe(true);
+  await expect
+    .poll(() => root.getAttribute('data-style-transition'), { timeout: 2_000 })
+    .toBeNull();
+});
+
 test('chooses a fresh random style on every load instead of restoring storage', async ({
   page,
 }) => {

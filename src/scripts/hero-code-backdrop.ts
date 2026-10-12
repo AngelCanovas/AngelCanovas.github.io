@@ -191,9 +191,9 @@ function initLabelBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => 
 
     const placements = layoutLabels({
       areaWidth: width,
-      // Keep the first idle paint bounded on slower devices; the masked field
-      // only needs to cover the upper Hero copy, not the whole canvas height.
-      areaHeight: Math.min(height, 560),
+      // Tile the full Hero so the code field remains present below the copy
+      // instead of ending halfway down the section.
+      areaHeight: height,
       rowHeight: canvasStyle.lineHeight,
       columnGap: canvasStyle.columnGap,
       rowGap: canvasStyle.rowGap,
@@ -643,24 +643,17 @@ function initLabelBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => 
   };
 }
 
-/** CSS supplies the touch halos even without JS. Allocate the two canvas
- * buffers only when the primary input supports the interactive label field. */
+/** CSS supplies the touch halos even without JS. The code field is painted
+ * on every input type; touch devices simply skip pointer heat interaction. */
 export function initHeroCodeBackdrop(root: HTMLElement, canvas: HTMLCanvasElement): () => void {
-  const touchQuery = window.matchMedia('(hover: none), (pointer: coarse)');
   let cleanupLabels: (() => void) | undefined;
   let visible = true;
 
   function syncInput() {
-    if (touchQuery.matches) {
-      cleanupLabels?.();
-      cleanupLabels = undefined;
-      // Release an existing bitmap when the input changes to touch.
-      canvas.width = 300;
-      canvas.height = 150;
-      delete canvas.dataset.ready;
-    } else {
-      cleanupLabels ??= initLabelBackdrop(root, canvas);
-    }
+    // The code field is also useful on touch screens. Pointer heat remains
+    // disabled there by `onPointerMove`, but the resting canvas and its slow
+    // drift still provide the requested full Hero background.
+    cleanupLabels ??= initLabelBackdrop(root, canvas);
   }
 
   function syncVisibility() {
@@ -675,7 +668,6 @@ export function initHeroCodeBackdrop(root: HTMLElement, canvas: HTMLCanvasElemen
         })
       : null;
   observer?.observe(root);
-  touchQuery.addEventListener('change', syncInput);
   document.addEventListener('visibilitychange', syncVisibility);
   syncVisibility();
   syncInput();
@@ -683,7 +675,6 @@ export function initHeroCodeBackdrop(root: HTMLElement, canvas: HTMLCanvasElemen
   return () => {
     cleanupLabels?.();
     observer?.disconnect();
-    touchQuery.removeEventListener('change', syncInput);
     document.removeEventListener('visibilitychange', syncVisibility);
     root.removeAttribute('data-hero-paused');
   };

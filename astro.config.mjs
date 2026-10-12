@@ -137,7 +137,20 @@ export default defineConfig({
     // pseudo-class/attribute selectors with no class token for the extractor, so
     // PurgeCSS would drop them. Keep them: they carry the focus ring, the
     // scroll-reveal, the theme and the hero backdrop fade-in.
-    purgecss({ safelist: { standard: [/focus-visible/, /aos/, /data-theme/, /data-ready/] } }),
+    purgecss({
+      safelist: {
+        standard: [
+          /focus-visible/,
+          /aos/,
+          /data-theme/,
+          /data-ready/,
+          /data-hero-backdrop-mode/,
+          /data-hero-paused/,
+          /data-style-transition/,
+          /style-progress/,
+        ],
+      },
+    }),
     inlineScriptCspHashes(),
   ],
   security: {

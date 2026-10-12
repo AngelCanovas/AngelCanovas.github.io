@@ -74,6 +74,8 @@ test.beforeEach(async ({ page }) => {
   // Visual references use the technical style baseline; product loads remain random.
   await page.addInitScript(() => {
     Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
   });
 });
 

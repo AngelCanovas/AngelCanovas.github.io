@@ -53,21 +53,24 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
       }
     >
       <canvas class="style-progress-canvas" data-style-progress-canvas aria-hidden="true"></canvas>
-      <button
-        type="button"
-        class="style-progress-backdrop-control"
-        data-style-progress-control
-        aria-label={
-          lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
-        }
-        aria-pressed="false"
-      >
-        <span class="visually-hidden">
-          {lang === 'es'
-            ? 'Pausar o reanudar el cambio automático de estilo'
-            : 'Pause or resume automatic style changes'}
-        </span>
-      </button>
+      <div class="style-progress-tube" data-style-progress-tube>
+        <canvas class="style-progress-tube-canvas" data-style-progress-tube-canvas></canvas>
+        <button
+          type="button"
+          class="style-progress-backdrop-control"
+          data-style-progress-control
+          aria-label={
+            lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
+          }
+          aria-pressed="false"
+        >
+          <span class="visually-hidden">
+            {lang === 'es'
+              ? 'Pausar o reanudar el cambio automático de estilo'
+              : 'Pause or resume automatic style changes'}
+          </span>
+        </button>
+      </div>
       <span
         class="visually-hidden"
         data-style-progress-track

@@ -19,12 +19,22 @@ export function initStyleToggle(): void {
 
   let style = resolveStyle(document.documentElement.dataset.style);
   let paused = false;
+  let transitionTimer: number | undefined;
   const restartProgressRef: { current?: () => void } = {};
   const nextStyle = (): PageStyle => {
     const index = (STYLES.indexOf(style) + 1) % STYLES.length;
     return STYLES[index] ?? STYLES[0];
   };
-  const apply = () => {
+  const triggerStyleTransition = () => {
+    if (transitionTimer !== undefined) window.clearTimeout(transitionTimer);
+    document.documentElement.dataset.styleTransition = 'true';
+    document.documentElement.dispatchEvent(new CustomEvent('styletransitionchange'));
+    transitionTimer = window.setTimeout(() => {
+      delete document.documentElement.dataset.styleTransition;
+      transitionTimer = undefined;
+    }, 700);
+  };
+  const apply = (withTransition = false) => {
     document.documentElement.dataset.style = style;
     button.dataset.style = style;
     const next = nextStyle();
@@ -33,10 +43,11 @@ export function initStyleToggle(): void {
     const label = `${styleLabel}. ${nextLabel}`;
     button.setAttribute('aria-label', label);
     button.title = label;
+    if (withTransition) triggerStyleTransition();
   };
   const cycleManually = () => {
     style = nextStyle();
-    apply();
+    apply(true);
     // Manual changes reset an active countdown but never unfreeze a paused one.
     if (!paused) restartProgressRef.current?.();
   };
@@ -97,9 +108,19 @@ export function initStyleToggle(): void {
     );
   };
 
+  const signalProgressCompletion = () => {
+    progressElement.style.setProperty('--style-progress-ratio', '1');
+    progressElement.dispatchEvent(
+      new CustomEvent('styleprogresschange', {
+        detail: { percent: 100, paused: false, complete: true },
+      }),
+    );
+  };
+
   const advanceStyle = () => {
+    signalProgressCompletion();
     style = nextStyle();
-    apply();
+    apply(true);
     restartProgressRef.current?.();
   };
 
