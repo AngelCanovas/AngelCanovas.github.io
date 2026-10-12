@@ -42,6 +42,42 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
   <Header lang={lang} />
   <div id="mobile-nav-overlay" class="mobile-nav-overlay d-xl-none" aria-hidden="true"></div>
   <main id="main-content" class="main" tabindex="-1">
+    <div
+      class="style-progress-backdrop"
+      data-style-progress
+      data-label-running={
+        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
+      }
+      data-label-paused={
+        lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'
+      }
+    >
+      <canvas class="style-progress-canvas" data-style-progress-canvas aria-hidden="true"></canvas>
+      <button
+        type="button"
+        class="style-progress-backdrop-control"
+        data-style-progress-control
+        aria-label={
+          lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
+        }
+        aria-pressed="false"
+      >
+        <span class="visually-hidden">
+          {lang === 'es'
+            ? 'Pausar o reanudar el cambio automático de estilo'
+            : 'Pause or resume automatic style changes'}
+        </span>
+      </button>
+      <span
+        class="visually-hidden"
+        data-style-progress-track
+        role="progressbar"
+        aria-label={lang === 'es' ? 'Progreso hasta el siguiente estilo' : 'Progress to next style'}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      ></span>
+    </div>
     <Hero lang={lang} />
     <About lang={lang} />
     <Stats lang={lang} />

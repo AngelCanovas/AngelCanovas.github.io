@@ -24,12 +24,6 @@
     --hero-labels-ink: light-dark(#8f9dae, #59626e);
     --nav-color: light-dark(#5c6470, #a8a9b4);
     --nav-hover-color: light-dark(#10161f, #fff);
-    --radius-control: 50rem;
-    --radius-pill: 50rem;
-    --radius-card: 1rem;
-    --section-space: 60px;
-    --title-space: 60px;
-    --title-size: 32px;
   }
   :root[data-style='technical'] .header.header {
     --default-color: light-dark(#344a5d, #c6d5df);
@@ -48,51 +42,60 @@
     color: light-dark(#b6dec7, #20533d);
   }
   :root[data-style='original'] .hero {
-    place-items: center;
     background:
       radial-gradient(ellipse at 20% 20%, light-dark(#d9ecfa, #0b2233), transparent 55%),
       radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030), transparent 60%),
       light-dark(#f2f7fc, #040b14);
   }
-  :root[data-style='original'] .hero-name {
-    max-width: none;
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-  }
-  :root[data-style='original'] .hero-availability {
-    border: 0;
-    margin-bottom: 1.5rem;
-  }
   :root[data-style='original'] .hero-atmosphere {
     display: none;
-  }
-  :root[data-style='original'] .section-title {
-    display: block;
-  }
-  :root[data-style='original'] .section-title h2 {
-    letter-spacing: 0;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    background: linear-gradient(var(--accent-color), var(--accent-color)) left bottom / 50px 3px
-      no-repeat;
-  }
-  :root[data-style='original'] .section-title p {
-    border: 0;
-    padding: 0;
-    max-width: none;
-  }
-  :root[data-style='original'] .sidebar-avatar {
-    border-radius: 50%;
   }
 }
 .style-toggle {
   width: 40px;
   height: 40px;
 }
+
+.style-progress-backdrop {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  color: var(--hero-labels-ink);
+  opacity: 0.9;
+  overflow: hidden;
+}
+
+.style-progress-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.82;
+}
+
+.style-progress-backdrop-control {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(18vw, 220px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.style-progress-backdrop-control:focus-visible {
+  opacity: 0.12;
+  outline: 2px solid var(--accent-ink);
+  outline-offset: -4px;
+  background: var(--accent-ink);
+}
+
 @media (scripting: none) {
   .style-toggle,
-  .style-progress {
+  .style-progress-backdrop {
     display: none;
   }
 }
@@ -159,11 +162,6 @@
     bottom: -8%;
     opacity: 0.25;
     mask-image: linear-gradient(180deg, transparent, #000);
-  }
-  :root[data-style='original'] {
-    --section-space: 48px;
-    --title-space: 36px;
-    --title-size: 26px;
   }
 }
 /* Ink/noir style: monochrome paper, hard contour rules and a hand-animated
@@ -501,6 +499,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .style-progress-canvas {
+    opacity: 0;
+  }
+
   .noir-bonfire * {
     animation: none !important;
     transition: none !important;
@@ -534,7 +536,7 @@
   .technical-graph,
   .noir-bonfire,
   .style-toggle,
-  .style-progress {
+  .style-progress-backdrop {
     display: none !important;
   }
 }

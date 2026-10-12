@@ -19,8 +19,9 @@ beforeEach(() => {
   document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-theme-toggle data-label-light="Light" data-label-dark="Dark"></button>`;
 });
 
-it('accepts exactly four styles and maps random values to each style', () => {
+it('accepts the four styles and a 30-second automatic interval', () => {
   expect(STYLES).toEqual(['original', 'editorial', 'technical', 'noir']);
+  expect(STYLE_AUTO_INTERVAL_MS).toBe(30_000);
   for (const style of STYLES) expect(resolveStyle(style)).toBe(style);
   for (const value of [null, '', 'dark', 'sepia']) expect(resolveStyle(value)).toBe('technical');
   expect(randomStyle(() => 0)).toBe('original');
@@ -92,12 +93,12 @@ it('updates the accessible progress value while running and freezes it when paus
     const track = document.querySelector<HTMLElement>('[data-style-progress-track]')!;
 
     vi.advanceTimersByTime(3_000);
-    expect(track.getAttribute('aria-valuenow')).toBe('20');
+    expect(track.getAttribute('aria-valuenow')).toBe('10');
 
     progress.click();
     expect(progress.getAttribute('aria-pressed')).toBe('true');
     vi.advanceTimersByTime(5_000);
-    expect(track.getAttribute('aria-valuenow')).toBe('20');
+    expect(track.getAttribute('aria-valuenow')).toBe('10');
   } finally {
     vi.useRealTimers();
   }

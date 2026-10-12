@@ -10,12 +10,10 @@ const viewports = [
 
 async function ready(page: Page) {
   const progress = page.locator('[data-style-progress]');
+  const progressControl = page.locator('[data-style-progress-control]');
   if (await progress.count()) {
-    await progress.evaluate((element) => {
-      const button = element as HTMLButtonElement;
-      if (button.getAttribute('aria-pressed') !== 'true') button.click();
-    });
-    await expect(progress).toHaveAttribute('aria-pressed', 'true');
+    await progress.evaluate((element) => (element as HTMLElement).click());
+    await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
   }
 
   // The canvas is painted in an idle callback. Its ready signal, rather than

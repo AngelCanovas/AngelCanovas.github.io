@@ -11,6 +11,7 @@ for (const route of ['/', '/es/']) {
     const root = page.locator('html');
     const button = page.locator('[data-style-toggle]');
     const progress = page.locator('[data-style-progress]');
+    const progressControl = page.locator('[data-style-progress-control]');
     const graph = page.locator('[data-technical-graph]');
     const canvas = page.locator('#hero-canvas');
     const bonfire = page.locator('[data-noir-bonfire]');
@@ -29,8 +30,8 @@ for (const route of ['/', '/es/']) {
     );
     const theme = await root.getAttribute('data-theme');
     await expect(progress).toBeVisible();
-    await progress.click();
-    await expect(progress).toHaveAttribute('aria-pressed', 'true');
+    await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+    await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
     for (const mode of ['noir', 'original', 'editorial', 'technical']) {
       await button.focus();
       await page.keyboard.press('Enter');
@@ -68,23 +69,24 @@ for (const route of ['/', '/es/']) {
 test('automatically cycles styles and the progress control pauses and resumes the remaining time', async ({
   page,
 }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   await page.addInitScript(() => {
     Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
   });
   await page.goto('/');
   const root = page.locator('html');
   const progress = page.locator('[data-style-progress]');
+  const progressControl = page.locator('[data-style-progress-control]');
   const track = page.locator('[data-style-progress-track]');
 
   await expect(root).toHaveAttribute('data-style', 'technical');
-  await expect(progress).toHaveAttribute('aria-pressed', 'false');
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
   await expect
     .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 4_000 })
     .toBeGreaterThan(0);
 
-  await progress.click();
-  await expect(progress).toHaveAttribute('aria-pressed', 'true');
+  await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
   const pausedValue = await track.getAttribute('aria-valuenow');
   await page.waitForTimeout(1_000);
   await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
@@ -93,9 +95,61 @@ test('automatically cycles styles and the progress control pauses and resumes th
   await page.waitForTimeout(1_000);
   await expect(progress).toHaveCount(1);
   await expect(progress).toBeVisible();
-  await progress.click();
-  await expect(progress).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(() => root.getAttribute('data-style'), { timeout: 16_000 }).toBe('noir');
+  await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => root.getAttribute('data-style'), { timeout: 35_000 }).toBe('noir');
+});
+
+test('original keeps shared button and section geometry across visual styles', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.01, configurable: true });
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+
+  const captureGeometry = () =>
+    page.evaluate(() => {
+      const selectors = [
+        '.hero-actions',
+        '.hero-btn',
+        '.section-title',
+        '.section-title h2',
+        '.sidebar-cv',
+        '.sidebar-controls',
+      ];
+      return Object.fromEntries(
+        selectors.map((selector) => {
+          const element = document.querySelector<HTMLElement>(selector);
+          if (!element) throw new Error(`Missing geometry target: ${selector}`);
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return [
+            selector,
+            {
+              top: Math.round(rect.top * 100) / 100,
+              left: Math.round(rect.left * 100) / 100,
+              width: Math.round(rect.width * 100) / 100,
+              height: Math.round(rect.height * 100) / 100,
+              display: style.display,
+              padding: style.padding,
+              borderRadius: style.borderRadius,
+            },
+          ];
+        }),
+      );
+    });
+
+  const original = await captureGeometry();
+  for (const style of ['editorial', 'technical']) {
+    await page.evaluate((nextStyle) => {
+      document.documentElement.dataset.style = nextStyle;
+    }, style);
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+    );
+    expect(await captureGeometry()).toEqual(original);
+  }
 });
 
 test('chooses a fresh random style on every load instead of restoring storage', async ({
@@ -197,8 +251,9 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
       }, mode);
       await page.goto('/');
       const progress = page.locator('[data-style-progress]');
+      const progressControl = page.locator('[data-style-progress-control]');
       await expect(progress).toBeVisible();
-      await progress.click();
+      await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
       if (mode === 'original') {

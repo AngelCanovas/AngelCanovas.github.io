@@ -1,6 +1,6 @@
 export const STYLES = ['original', 'editorial', 'technical', 'noir'] as const;
 export const STYLE_KEY = 'page-style';
-export const STYLE_AUTO_INTERVAL_MS = 15_000;
+export const STYLE_AUTO_INTERVAL_MS = 30_000;
 export type PageStyle = (typeof STYLES)[number];
 
 export function resolveStyle(value: string | null | undefined): PageStyle {
@@ -44,16 +44,19 @@ export function initStyleToggle(): void {
   apply();
   button.addEventListener('click', cycleManually);
 
-  const progressButton = document.querySelector<HTMLButtonElement>('[data-style-progress]');
-  const progressTrack = progressButton?.querySelector<HTMLElement>('[data-style-progress-track]');
-  if (!progressButton || !progressTrack) return;
+  const progressElement = document.querySelector<HTMLElement>('[data-style-progress]');
+  const progressControl = progressElement?.querySelector<HTMLElement>(
+    '[data-style-progress-control]',
+  );
+  const progressTrack = progressElement?.querySelector<HTMLElement>('[data-style-progress-track]');
+  if (!progressElement || !progressTrack) return;
 
   let timer: number | undefined;
   let progressTicker: number | undefined;
   let remaining = STYLE_AUTO_INTERVAL_MS;
   let startedAt = Date.now();
-  const runningLabel = progressButton.dataset.labelRunning ?? 'Pause automatic style changes';
-  const pausedLabel = progressButton.dataset.labelPaused ?? 'Resume automatic style changes';
+  const runningLabel = progressElement.dataset.labelRunning ?? 'Pause automatic style changes';
+  const pausedLabel = progressElement.dataset.labelPaused ?? 'Resume automatic style changes';
   const progressUpdateMs = 250;
 
   const clearScheduledWork = () => {
@@ -78,10 +81,20 @@ export function initStyleToggle(): void {
     const label = paused
       ? pausedLabel
       : `${runningLabel} (${Math.max(1, Math.ceil(remaining / 1000))} s)`;
-    progressButton.setAttribute('aria-label', label);
-    progressButton.setAttribute('aria-pressed', String(paused));
+    progressElement.dataset.styleProgressState = paused ? 'paused' : 'running';
+    progressElement.style.setProperty('--style-progress-ratio', String(percent / 100));
+    if (progressControl) {
+      progressControl.setAttribute('aria-label', label);
+      progressControl.setAttribute('aria-pressed', String(paused));
+    } else {
+      progressElement.setAttribute('aria-label', label);
+      progressElement.setAttribute('aria-pressed', String(paused));
+    }
     progressTrack.setAttribute('aria-label', label);
     progressTrack.setAttribute('aria-valuenow', String(percent));
+    progressElement.dispatchEvent(
+      new CustomEvent('styleprogresschange', { detail: { percent, paused } }),
+    );
   };
 
   const advanceStyle = () => {
@@ -100,7 +113,7 @@ export function initStyleToggle(): void {
     remaining = readRemaining();
     paused = true;
     clearScheduledWork();
-    progressButton.classList.add('style-progress--paused');
+    progressElement.classList.add('style-progress--paused');
     updateProgressA11y();
   };
 
@@ -108,12 +121,12 @@ export function initStyleToggle(): void {
     if (!paused) return;
     paused = false;
     startedAt = Date.now() - (STYLE_AUTO_INTERVAL_MS - remaining);
-    progressButton.classList.remove('style-progress--paused');
+    progressElement.classList.remove('style-progress--paused');
     updateProgressA11y();
     scheduleProgress(remaining);
   };
 
-  progressButton.addEventListener('click', () => {
+  progressElement.addEventListener('click', () => {
     if (paused) resumeProgress();
     else pauseProgress();
   });
@@ -123,10 +136,10 @@ export function initStyleToggle(): void {
     paused = false;
     remaining = STYLE_AUTO_INTERVAL_MS;
     startedAt = Date.now();
-    progressButton.style.setProperty('--style-progress-duration', `${STYLE_AUTO_INTERVAL_MS}ms`);
-    progressButton.classList.remove('style-progress--paused', 'style-progress--running');
-    void progressButton.offsetWidth;
-    progressButton.classList.add('style-progress--running');
+    progressElement.style.setProperty('--style-progress-duration', `${STYLE_AUTO_INTERVAL_MS}ms`);
+    progressElement.classList.remove('style-progress--paused', 'style-progress--running');
+    void progressElement.offsetWidth;
+    progressElement.classList.add('style-progress--running');
     updateProgressA11y();
     scheduleProgress(STYLE_AUTO_INTERVAL_MS);
   };
