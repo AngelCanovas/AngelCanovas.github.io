@@ -9,7 +9,7 @@ const viewports = [
 ];
 
 async function ready(page: Page) {
-  const progress = page.locator('[data-style-progress]');
+  const progress = page.locator('[data-style-progress-backdrop]');
   const progressControl = page.locator('[data-style-progress-control]');
   if (await progress.count()) {
     await progress.evaluate((element) => (element as HTMLElement).click());

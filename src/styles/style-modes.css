@@ -66,6 +66,17 @@
   overflow: hidden;
 }
 
+.style-progress-backdrop[data-hero-visible='true'] {
+  visibility: hidden;
+  opacity: 0;
+}
+
+@media (max-width: 1199px) {
+  .style-progress-backdrop {
+    display: none;
+  }
+}
+
 .style-progress-canvas {
   display: block;
   width: 100%;
@@ -309,8 +320,13 @@ html[data-style-transition] :is(body, .header, .hero, .section, .footer) {
   }
 
   :root[data-style='noir'] .hero-name {
-    max-width: 11ch;
+    max-width: none;
     letter-spacing: -0.055em;
+  }
+
+  :root[data-style='noir'] .hero-name > span {
+    display: block !important;
+    margin-inline-end: 0;
   }
 
   :root[data-style='noir'] .hero-availability {

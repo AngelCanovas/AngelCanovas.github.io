@@ -24,7 +24,7 @@ function clamp(value: number, min: number, max: number): number {
  * edges plus a visible vertical character pipe above the scroll control.
  */
 export function initStyleProgressBackdrop(): () => void {
-  const root = document.querySelector<HTMLElement>('[data-style-progress]');
+  const root = document.querySelector<HTMLElement>('[data-style-progress-backdrop]');
   const backgroundCanvas = root?.querySelector<HTMLCanvasElement>('[data-style-progress-canvas]');
   const tubeCanvas = root?.querySelector<HTMLCanvasElement>('[data-style-progress-tube-canvas]');
   if (!root || !backgroundCanvas || !tubeCanvas) return () => {};
@@ -47,7 +47,10 @@ export function initStyleProgressBackdrop(): () => void {
   let completionTimer: number | undefined;
   let completionUntil = 0;
   let stopped = false;
-  let visible = true;
+  let visible = false;
+  const mobileQuery =
+    typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 1199px)') : null;
+  const printQuery = typeof window.matchMedia === 'function' ? window.matchMedia('print') : null;
   let reducedMotion =
     typeof window.matchMedia === 'function' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,6 +87,9 @@ export function initStyleProgressBackdrop(): () => void {
   }
 
   function resize(): void {
+    if (stopped || !visible) return;
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
     const backgroundRect = progressBackgroundCanvas.getBoundingClientRect();
     width = Math.max(1, backgroundRect.width || window.innerWidth);
     height = Math.max(1, backgroundRect.height || window.innerHeight);
@@ -171,11 +177,6 @@ export function initStyleProgressBackdrop(): () => void {
     else animationFrame = 0;
   }
 
-  function scheduleDraw(): void {
-    if (animationFrame || stopped || !visible) return;
-    animationFrame = requestAnimationFrame(draw);
-  }
-
   function onProgressChange(event?: Event): void {
     const detail = event ? (event as CustomEvent<{ complete?: boolean }>).detail : undefined;
     if (detail?.complete) {
@@ -190,18 +191,45 @@ export function initStyleProgressBackdrop(): () => void {
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animationFrame = 0;
     draw(performance.now());
-    scheduleDraw();
   }
 
   function onVisibilityChange(): void {
-    visible = !document.hidden;
-    if (visible) {
-      resize();
-      scheduleDraw();
-    } else if (animationFrame) {
+    const hidden =
+      progressRoot.dataset.heroVisible === 'true' || mobileQuery?.matches || printQuery?.matches;
+    progressRoot.toggleAttribute('aria-hidden', Boolean(hidden));
+    progressRoot.toggleAttribute('inert', Boolean(hidden));
+    const nextVisible = !document.hidden && !hidden;
+    if (visible === nextVisible || stopped) return;
+    visible = nextVisible;
+    if (animationFrame) {
       cancelAnimationFrame(animationFrame);
       animationFrame = 0;
     }
+    if (visible) resize();
+  }
+
+  function onReducedMotionChange(event: MediaQueryListEvent): void {
+    reducedMotion = event.matches;
+    onProgressChange();
+  }
+
+  const hero = document.querySelector<HTMLElement>('#hero');
+  const heroObserver =
+    hero && typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(
+          ([entry]) => {
+            const heroVisible = entry?.isIntersecting ?? true;
+            progressRoot.dataset.heroVisible = String(heroVisible);
+            onVisibilityChange();
+          },
+          { threshold: 0.01 },
+        )
+      : null;
+  if (hero) {
+    progressRoot.dataset.heroVisible = 'true';
+    progressRoot.setAttribute('aria-hidden', 'true');
+    progressRoot.setAttribute('inert', '');
+    heroObserver?.observe(hero);
   }
 
   const reducedMotionQuery =
@@ -209,26 +237,21 @@ export function initStyleProgressBackdrop(): () => void {
       ? window.matchMedia('(prefers-reduced-motion: reduce)')
       : null;
   const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
-  const themeObserver = new MutationObserver(() => {
-    resize();
-    scheduleDraw();
-  });
+  const themeObserver = new MutationObserver(resize);
 
   progressRoot.addEventListener('styleprogresschange', onProgressChange);
   document.addEventListener('visibilitychange', onVisibilityChange);
   window.addEventListener('resize', resize);
-  reducedMotionQuery?.addEventListener('change', (event) => {
-    reducedMotion = event.matches;
-    onProgressChange();
-  });
+  mobileQuery?.addEventListener('change', onVisibilityChange);
+  printQuery?.addEventListener('change', onVisibilityChange);
+  reducedMotionQuery?.addEventListener('change', onReducedMotionChange);
   resizeObserver?.observe(progressBackgroundCanvas);
   resizeObserver?.observe(progressTubeCanvas);
   themeObserver.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['data-style', 'data-theme'],
   });
-  resize();
-  onProgressChange();
+  onVisibilityChange();
 
   return () => {
     stopped = true;
@@ -237,7 +260,11 @@ export function initStyleProgressBackdrop(): () => void {
     progressRoot.removeEventListener('styleprogresschange', onProgressChange);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     window.removeEventListener('resize', resize);
+    mobileQuery?.removeEventListener('change', onVisibilityChange);
+    printQuery?.removeEventListener('change', onVisibilityChange);
+    reducedMotionQuery?.removeEventListener('change', onReducedMotionChange);
     resizeObserver?.disconnect();
+    heroObserver?.disconnect();
     themeObserver.disconnect();
   };
 }

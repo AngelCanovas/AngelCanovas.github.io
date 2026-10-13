@@ -31,7 +31,14 @@ const t = getContent(lang);
       <span>{t.hero.availability}</span>
     </div>
     <p class="hero-eyebrow">{t.hero.eyebrow}</p>
-    <h1 class="hero-name">{personal.fullName}</h1>
+    <h1 class="hero-name" aria-label={personal.fullName}>
+      {personal.fullName.split(' ').map((word, index, words) => (
+        <span>
+          {word}
+          {index < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </h1>
     <p class="hero-role">
       <span class="hero-role-stack" aria-hidden="true">
         <span class="hero-role-active">
@@ -251,6 +258,13 @@ const t = getContent(lang);
     line-height: 0.98;
     letter-spacing: -0.065em;
     text-wrap: balance;
+  }
+  .hero-name > span {
+    display: inline;
+    margin-inline-end: 0.18em;
+  }
+  .hero-name > span:last-child {
+    margin-inline-end: 0;
   }
   .hero-role {
     font-size: clamp(1.2rem, 2vw, 1.6rem);
