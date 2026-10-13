@@ -31,7 +31,14 @@ const t = getContent(lang);
       <span>{t.hero.availability}</span>
     </div>
     <p class="hero-eyebrow">{t.hero.eyebrow}</p>
-    <h1 class="hero-name">{personal.fullName}</h1>
+    <h1 class="hero-name" aria-label={personal.fullName}>
+      {personal.fullName.split(' ').map((word, index, words) => (
+        <span>
+          {word}
+          {index < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </h1>
     <p class="hero-role">
       <span class="hero-role-stack" aria-hidden="true">
         <span class="hero-role-active">
@@ -66,14 +73,42 @@ const t = getContent(lang);
 </section>
 
 <script>
-  import { initHeroBackdrop } from '../scripts/hero-backdrop';
+  import { initHeroCodeBackdrop } from '../scripts/hero-code-backdrop';
+  import { initHeroBackdrop as initHeroWaveBackdrop } from '../scripts/hero-backdrop';
   import { safeInit } from '../scripts/safe-init';
   import { initTypedText } from '../scripts/typed-text';
 
   safeInit(() => {
     const root = document.getElementById('hero');
     const canvas = document.getElementById('hero-canvas');
-    if (root && canvas instanceof HTMLCanvasElement) initHeroBackdrop(root, canvas);
+    if (!(root && canvas instanceof HTMLCanvasElement)) return;
+
+    let cleanup = () => {};
+    let activeStyle = '';
+    const syncBackdrop = () => {
+      const style = document.documentElement.dataset.style ?? 'technical';
+      if (style === activeStyle) return;
+      cleanup();
+      activeStyle = style;
+      root.dataset.heroBackdropMode =
+        style === 'original' ? 'code' : style === 'editorial' ? 'waves' : 'none';
+      if (style === 'original') cleanup = initHeroCodeBackdrop(root, canvas);
+      else if (style === 'editorial') cleanup = initHeroWaveBackdrop(root, canvas);
+      else {
+        canvas.width = 300;
+        canvas.height = 150;
+        if (window.matchMedia('(hover: none), (pointer: coarse)').matches)
+          delete canvas.dataset.ready;
+        else canvas.dataset.ready = 'true';
+      }
+    };
+
+    const styleObserver = new MutationObserver(syncBackdrop);
+    styleObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-style'],
+    });
+    syncBackdrop();
   });
   safeInit(() => {
     const typed = document.querySelector<HTMLElement>('.typed');
@@ -103,6 +138,60 @@ const t = getContent(lang);
   }
   .hero-canvas[data-ready] {
     opacity: 0.65;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-backdrop {
+    z-index: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 3%, #000 22%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 3%,
+      #000 22%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-composite: initial;
+    -webkit-mask-composite: source-over;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-backdrop-drift {
+    inset: min(-14%, -48px) min(-10%, -80px);
+    animation: hero-code-backdrop-drift 48s ease-in-out infinite;
+    will-change: transform;
+  }
+  .hero[data-hero-backdrop-mode='code'] .hero-canvas {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.6s ease;
+    color: var(--hero-labels-ink);
+    outline-color: var(--accent-ink);
+    font-family: var(--mono-font);
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    column-gap: 14px;
+    row-gap: 3px;
+  }
+  @media (min-width: 768px) {
+    .hero[data-hero-backdrop-mode='code'] .hero-canvas {
+      font-size: 12px;
+      column-gap: 16px;
+      row-gap: 4px;
+    }
+  }
+  @keyframes hero-code-backdrop-drift {
+    0%,
+    100% {
+      transform: translate3d(-66px, 0, 0);
+    }
+    25% {
+      transform: translate3d(0, -40px, 0);
+    }
+    50% {
+      transform: translate3d(66px, 0, 0);
+    }
+    75% {
+      transform: translate3d(0, 40px, 0);
+    }
   }
   .hero-atmosphere {
     position: absolute;
@@ -169,6 +258,13 @@ const t = getContent(lang);
     line-height: 0.98;
     letter-spacing: -0.065em;
     text-wrap: balance;
+  }
+  .hero-name > span {
+    display: inline;
+    margin-inline-end: 0.18em;
+  }
+  .hero-name > span:last-child {
+    margin-inline-end: 0;
   }
   .hero-role {
     font-size: clamp(1.2rem, 2vw, 1.6rem);
@@ -243,6 +339,18 @@ const t = getContent(lang);
     .hero-backdrop {
       mask-image: linear-gradient(180deg, transparent 68%, #000);
     }
+    .hero[data-hero-backdrop-mode='code'] .hero-backdrop {
+      mask-image: linear-gradient(90deg, transparent 3%, #000 22%, #000 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 3%,
+        #000 22%,
+        #000 92%,
+        transparent 100%
+      );
+      mask-composite: initial;
+      -webkit-mask-composite: source-over;
+    }
     .hero-glow {
       background: linear-gradient(180deg, transparent 55%, var(--background-color));
     }
@@ -251,7 +359,15 @@ const t = getContent(lang);
       max-width: calc(100% - 3rem);
     }
   }
-  @media (hover: none), (pointer: coarse), (scripting: none) {
+  @media (hover: none), (pointer: coarse) {
+    .hero-backdrop {
+      display: none;
+    }
+    .hero[data-hero-backdrop-mode='code'] .hero-backdrop {
+      display: block;
+    }
+  }
+  @media (scripting: none) {
     .hero-backdrop {
       display: none;
     }
@@ -266,6 +382,11 @@ const t = getContent(lang);
     .hero[data-hero-paused] .hero-atmosphere::before,
     .hero[data-hero-paused] .hero-atmosphere::after {
       animation-play-state: paused;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero[data-hero-backdrop-mode='code'] .hero-backdrop-drift {
+      animation: none;
     }
   }
   @keyframes ink-register-front {

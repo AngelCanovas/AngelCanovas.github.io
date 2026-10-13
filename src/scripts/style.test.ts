@@ -1,6 +1,13 @@
 // @vitest-environment jsdom
 import { beforeEach, expect, it, vi } from 'vitest';
-import { initStyleToggle, randomStyle, resolveStyle, STYLES, STYLE_KEY } from './style';
+import {
+  initStyleToggle,
+  randomStyle,
+  resolveStyle,
+  STYLE_AUTO_INTERVAL_MS,
+  STYLES,
+  STYLE_KEY,
+} from './style';
 import { initThemeToggle } from './theme';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -12,8 +19,9 @@ beforeEach(() => {
   document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-theme-toggle data-label-light="Light" data-label-dark="Dark"></button>`;
 });
 
-it('accepts exactly four styles and maps random values to each style', () => {
+it('accepts the four styles and a 30-second automatic interval', () => {
   expect(STYLES).toEqual(['original', 'editorial', 'technical', 'noir']);
+  expect(STYLE_AUTO_INTERVAL_MS).toBe(30_000);
   for (const style of STYLES) expect(resolveStyle(style)).toBe(style);
   for (const value of [null, '', 'dark', 'sepia']) expect(resolveStyle(value)).toBe('technical');
   expect(randomStyle(() => 0)).toBe('original');
@@ -41,6 +49,59 @@ it('cycles through all styles and ignores the previous stored style independentl
   document.querySelector<HTMLButtonElement>('[data-theme-toggle]')!.click();
   expect(document.documentElement.dataset.theme).toBe('dark');
   expect(document.documentElement.dataset.style).toBe('technical');
+});
+
+it('automatically cycles styles and lets the progress bar freeze and resume it', () => {
+  vi.useFakeTimers();
+  try {
+    document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-style-progress data-label-running="Pause" data-label-paused="Resume" aria-pressed="false"><span data-style-progress-track></span></button>`;
+    initStyleToggle();
+    const styleButton = document.querySelector<HTMLButtonElement>('[data-style-toggle]')!;
+    const progress = document.querySelector<HTMLButtonElement>('[data-style-progress]')!;
+
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS - 1);
+    expect(document.documentElement.dataset.style).toBe('technical');
+    progress.click();
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS * 2);
+    expect(document.documentElement.dataset.style).toBe('technical');
+
+    styleButton.click();
+    expect(document.documentElement.dataset.style).toBe('noir');
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS);
+    expect(document.documentElement.dataset.style).toBe('noir');
+
+    progress.click();
+    expect(progress.getAttribute('aria-pressed')).toBe('false');
+    vi.advanceTimersByTime(1);
+    expect(document.documentElement.dataset.style).toBe('original');
+
+    styleButton.click();
+    expect(document.documentElement.dataset.style).toBe('editorial');
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('updates the accessible progress value while running and freezes it when paused', () => {
+  vi.useFakeTimers();
+  try {
+    document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-style-progress data-label-running="Pause" data-label-paused="Resume" aria-pressed="false"><span data-style-progress-track role="progressbar" aria-valuenow="0"></span></button>`;
+    initStyleToggle();
+    const progress = document.querySelector<HTMLButtonElement>('[data-style-progress]')!;
+    const track = document.querySelector<HTMLElement>('[data-style-progress-track]')!;
+
+    vi.advanceTimersByTime(3_000);
+    expect(track.getAttribute('aria-valuenow')).toBe('10');
+
+    progress.click();
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    vi.advanceTimersByTime(5_000);
+    expect(track.getAttribute('aria-valuenow')).toBe('10');
+  } finally {
+    vi.useRealTimers();
+  }
 });
 
 it('tolerates unavailable storage', () => {

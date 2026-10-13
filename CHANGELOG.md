@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.3.0 — 2026-10-13
+
+Cycle the four visual styles automatically every 30 seconds with a themed
+progress indicator, and let any visitor pause or resume the cycle from that
+indicator without losing the remaining time. Replace the sidebar progress bar
+with a subtle ASCII character field that grows across the page background once
+the hero leaves the viewport, plus a vertical character pipe above the scroll
+control that fills row by row and resets exactly when the style changes.
+Restore the interactive code artwork across the whole hero of the blue
+`original` style, and render the `noir` name on three independent rows.
+
+Keep the automatic cycle frozen out of the visual references, make the ASCII
+backdrop suspend its drawing while hidden behind the hero, the mobile
+breakpoint or print (resuming without a reload), and add an accessible label
+with the full name for the split hero heading. Normalize the shared control and
+section geometry across styles, add geometry and print-heading regressions plus
+frozen reference snapshots, and refresh the affected style and viewport
+references from the CI font stack.
+
 ## 1.2.0 — 2026-10-09
 
 Add the fourth `noir` visual style: a grayscale ink/comic presentation with an original

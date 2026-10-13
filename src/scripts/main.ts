@@ -8,6 +8,7 @@ import { initScrollTop } from './scroll-top';
 import { initScrollspy } from './scrollspy';
 import { initThemeToggle } from './theme';
 import { initStyleToggle } from './style';
+import { initStyleProgressBackdrop } from './style-progress-backdrop';
 import { initEditorialMotion } from './editorial-motion';
 
 /** The build bakes a year into the static HTML; keep it current on long-lived visits. */
@@ -26,6 +27,7 @@ function bootstrap(): void {
   safeInit(syncFooterYear);
   safeInit(initThemeToggle);
   safeInit(initStyleToggle);
+  safeInit(initStyleProgressBackdrop);
   safeInit(upgradeEmailLinks);
   safeInit(initMobileNav);
   safeInit(initScrollTop);

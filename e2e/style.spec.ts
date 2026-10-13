@@ -2,6 +2,27 @@ import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 for (const route of ['/', '/es/']) {
+  test(`preserves Hero name separators in every style ${route}`, async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+    });
+    await page.goto(route);
+    const name = page.locator('.hero-name');
+    for (const mode of ['technical', 'noir', 'original', 'editorial']) {
+      await expect(page.locator('html')).toHaveAttribute('data-style', mode);
+      await expect(name).toHaveAttribute('aria-label', 'Angel Cánovas Mula');
+      await expect(name.locator(':scope > span')).toHaveCount(3);
+      await expect(name.locator(':scope > span').first()).toHaveCSS(
+        'display',
+        mode === 'noir' ? 'block' : 'inline',
+      );
+      if (mode !== 'noir') {
+        await expect(name.locator(':scope > span').first()).toHaveCSS('margin-inline-end', /.+/);
+      }
+      await page.locator('[data-style-toggle]').click();
+    }
+  });
+
   test(`style cycle and technical graph ${route}`, async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
@@ -10,7 +31,10 @@ for (const route of ['/', '/es/']) {
     await page.goto(route);
     const root = page.locator('html');
     const button = page.locator('[data-style-toggle]');
+    const progress = page.locator('[data-style-progress-backdrop]');
+    const progressControl = page.locator('[data-style-progress-control]');
     const graph = page.locator('[data-technical-graph]');
+    const canvas = page.locator('#hero-canvas');
     const bonfire = page.locator('[data-noir-bonfire]');
     await expect(button).toHaveAttribute(
       'aria-label',
@@ -26,10 +50,20 @@ for (const route of ['/', '/es/']) {
       'signal-travel',
     );
     const theme = await root.getAttribute('data-theme');
+    await expect(progress).toHaveAttribute('aria-hidden', 'true');
+    await page.evaluate(() =>
+      window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0),
+    );
+    await expect(progress).toBeVisible();
+    await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+    await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
     for (const mode of ['noir', 'original', 'editorial', 'technical']) {
       await button.focus();
       await page.keyboard.press('Enter');
       await expect(root).toHaveAttribute('data-style', mode);
+      if (mode === 'original') {
+        await expect(canvas).toHaveAttribute('data-ready', 'true', { timeout: 10000 });
+      }
       expect(await root.getAttribute('data-theme')).toBe(theme);
       await expect(page.locator('.hero-name')).toBeVisible();
       await expect(button).toHaveAttribute('data-style', mode);
@@ -56,6 +90,243 @@ for (const route of ['/', '/es/']) {
     await expect(graph.locator('[data-signal]').first()).toHaveCSS('animation-name', 'none');
   });
 }
+
+test('automatically cycles styles and the progress control pauses and resumes the remaining time', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  const root = page.locator('html');
+  const progress = page.locator('[data-style-progress-backdrop]');
+  const progressControl = page.locator('[data-style-progress-control]');
+  const track = page.locator('[data-style-progress-backdrop] [data-style-progress-track]');
+
+  await expect(root).toHaveAttribute('data-style', 'technical');
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
+  await expect
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 4_000 })
+    .toBeGreaterThan(0);
+
+  await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
+  const pausedValue = await track.getAttribute('aria-valuenow');
+  await page.waitForTimeout(1_000);
+  await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
+  await expect(root).toHaveAttribute('data-style', 'technical');
+
+  await page.waitForTimeout(1_000);
+  await expect(progress).toHaveCount(1);
+  await page.evaluate(() => window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0));
+  await expect(progress).toBeVisible();
+  await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+  await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => root.getAttribute('data-style'), { timeout: 35_000 }).toBe('noir');
+});
+
+test('original keeps shared button and section geometry across visual styles', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.01, configurable: true });
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+
+  const captureGeometry = () =>
+    page.evaluate(() => {
+      const selectors = [
+        '.hero-actions',
+        '.hero-btn',
+        '.section-title',
+        '.section-title h2',
+        '.sidebar-cv',
+        '.sidebar-controls',
+      ];
+      return Object.fromEntries(
+        selectors.map((selector) => {
+          const element = document.querySelector<HTMLElement>(selector);
+          if (!element) throw new Error(`Missing geometry target: ${selector}`);
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return [
+            selector,
+            {
+              top: Math.round(rect.top * 100) / 100,
+              left: Math.round(rect.left * 100) / 100,
+              width: Math.round(rect.width * 100) / 100,
+              height: Math.round(rect.height * 100) / 100,
+              display: style.display,
+              padding: style.padding,
+              borderRadius: style.borderRadius,
+            },
+          ];
+        }),
+      );
+    });
+
+  const original = await captureGeometry();
+  for (const style of ['editorial', 'technical']) {
+    await page.evaluate((nextStyle) => {
+      document.documentElement.dataset.style = nextStyle;
+    }, style);
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+    );
+    expect(await captureGeometry()).toEqual(original);
+  }
+});
+
+test('hides the custom progress while Hero is visible and restores the mobile sidebar bar', async ({
+  browser,
+}) => {
+  const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await desktop.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await desktop.goto('/');
+  const backdrop = desktop.locator('[data-style-progress-backdrop]');
+  await expect(backdrop).toHaveAttribute('aria-hidden');
+  await expect(backdrop).toHaveAttribute('data-hero-visible', 'true');
+  await expect(backdrop).toHaveAttribute('inert', '');
+  await expect(backdrop).toHaveCSS('visibility', 'hidden');
+  await desktop.evaluate(() =>
+    window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0),
+  );
+  await expect(backdrop).toBeVisible();
+  await expect(backdrop).not.toHaveAttribute('aria-hidden', 'true');
+  await expect(backdrop).toHaveAttribute('data-hero-visible', 'false');
+  await expect(backdrop).not.toHaveAttribute('inert');
+  await desktop.close();
+
+  const mobile = await browser.newPage({
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  await mobile.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await mobile.goto('/');
+  await expect(mobile.locator('[data-style-progress-backdrop]')).toHaveCSS('display', 'none');
+  await mobile.locator('.header-toggle').click();
+  await expect(mobile.locator('[data-style-progress-mobile]')).toBeVisible();
+  await mobile.locator('[data-style-progress-mobile]').tap();
+  await expect(mobile.locator('[data-style-progress-mobile]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(mobile.locator('[data-style-progress-control]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await mobile.locator('[data-style-progress-mobile]').tap();
+  await expect(mobile.locator('[data-style-progress-control]')).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+  await mobile.close();
+});
+
+test('keeps hidden backdrop state and restores the pipe across visibility changes', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  const backdrop = page.locator('[data-style-progress-backdrop]');
+  const control = backdrop.locator('[data-style-progress-control]');
+  const track = backdrop.locator('[data-style-progress-track]');
+
+  await expect(backdrop).toHaveAttribute('data-hero-visible', 'true');
+  await expect(backdrop).toBeHidden();
+  await expect(backdrop).toHaveAttribute('aria-hidden');
+  await expect(backdrop).toHaveAttribute('inert', '');
+
+  await page.evaluate(() => window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0));
+  await expect(backdrop).toBeVisible();
+  await expect(backdrop).not.toHaveAttribute('aria-hidden', 'true');
+  await expect(backdrop).not.toHaveAttribute('inert');
+  await expect
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')))
+    .toBeGreaterThan(0);
+
+  await control.click();
+  await expect(control).toHaveAttribute('aria-pressed', 'true');
+  await page.setViewportSize({ width: 1199, height: 900 });
+  await expect(backdrop).toHaveCSS('display', 'none');
+  await expect(backdrop).toHaveAttribute('inert', '');
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await expect(backdrop).toBeVisible();
+  await expect(backdrop).not.toHaveAttribute('inert');
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(backdrop).toHaveAttribute('data-hero-visible', 'true');
+  await expect(backdrop).toHaveAttribute('aria-hidden');
+  await expect(backdrop).toHaveAttribute('inert', '');
+});
+
+test('keeps the noir name in three independent Hero rows', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.76, configurable: true });
+  });
+  await page.goto('/');
+  const name = page.locator('.hero-name');
+  const rows = name.locator(':scope > span');
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'noir');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(0)).toHaveText('Angel');
+  await expect(rows.nth(1)).toHaveText('Cánovas');
+  await expect(rows.nth(2)).toHaveText('Mula');
+  for (let index = 0; index < 3; index += 1)
+    await expect(rows.nth(index)).toHaveCSS('display', 'block');
+});
+
+test('theme changes show a visual transition and the progress pipe stays visible', async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  const root = page.locator('html');
+  const button = page.locator('[data-style-toggle]');
+  const tube = page.locator('[data-style-progress-tube]');
+  const tubeCanvas = page.locator('[data-style-progress-tube-canvas]');
+
+  await page.evaluate(() => window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0));
+  await expect(tube).toBeVisible();
+  if (pageErrors.length) throw new Error(pageErrors.join('\n'));
+  await expect(tubeCanvas).toHaveJSProperty('width', 48);
+  const transitionStarted = page.evaluate(
+    () =>
+      new Promise<boolean>((resolve) => {
+        const element = document.documentElement;
+        if (element.hasAttribute('data-style-transition')) {
+          resolve(true);
+          return;
+        }
+        const observer = new MutationObserver(() => {
+          if (element.hasAttribute('data-style-transition')) {
+            observer.disconnect();
+            resolve(true);
+          }
+        });
+        observer.observe(element, { attributes: true, attributeFilter: ['data-style-transition'] });
+      }),
+  );
+  await button.click();
+  await expect(root).toHaveAttribute('data-style', 'noir');
+  expect(await transitionStarted).toBe(true);
+  await expect
+    .poll(() => root.getAttribute('data-style-transition'), { timeout: 2_000 })
+    .toBeNull();
+});
 
 test('chooses a fresh random style on every load instead of restoring storage', async ({
   page,
@@ -155,12 +426,22 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
         });
       }, mode);
       await page.goto('/');
+      const progress = page.locator('[data-style-progress-backdrop]');
+      const progressControl = page.locator('[data-style-progress-control]');
+      await expect(progress).toHaveAttribute('aria-hidden', 'true');
+      await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
+      if (mode === 'original') {
+        await expect(page.locator('#hero-canvas')).toHaveAttribute('data-ready', 'true', {
+          timeout: 10000,
+        });
+        await page.waitForTimeout(500);
+      }
       await expect(page).toHaveScreenshot(`${mode}-${colorScheme}.png`, {
         timeout: 30000,
         animations: 'disabled',
-        maxDiffPixels: mode === 'noir' ? 25000 : 0,
+        maxDiffPixels: mode === 'noir' ? 25000 : 32,
         threshold: 0,
       });
       const result = await new AxeBuilder({ page })

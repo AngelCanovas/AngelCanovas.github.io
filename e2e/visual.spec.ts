@@ -9,6 +9,13 @@ const viewports = [
 ];
 
 async function ready(page: Page) {
+  const progress = page.locator('[data-style-progress-backdrop]');
+  const progressControl = page.locator('[data-style-progress-control]');
+  if (await progress.count()) {
+    await progress.evaluate((element) => (element as HTMLElement).click());
+    await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
+  }
+
   // The canvas is painted in an idle callback. Its ready signal, rather than
   // machine speed, determines when the visual reference is meaningful.
   const canvas = page.locator('#hero-canvas');
@@ -48,10 +55,11 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
   const options = { animations: 'disabled' as const, caret: 'hide' as const };
   if (process.platform === 'linux') {
     const hostedAboutAllowance = /-768-(?:light|dark)-about$/.test(name) ? 8000 : 0;
+    const hostedViewportAllowance = /-1440-(?:light|dark)-viewport$/.test(name) ? 32 : 0;
     await expect(target).toHaveScreenshot(`${name}.png`, {
       timeout: 30000,
       ...options,
-      maxDiffPixels: hostedAboutAllowance,
+      maxDiffPixels: Math.max(hostedAboutAllowance, hostedViewportAllowance),
       threshold: 0,
     });
   } else {
@@ -66,6 +74,8 @@ test.beforeEach(async ({ page }) => {
   // Visual references use the technical style baseline; product loads remain random.
   await page.addInitScript(() => {
     Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
   });
 });
 

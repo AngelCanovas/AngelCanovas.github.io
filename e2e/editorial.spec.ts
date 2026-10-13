@@ -60,7 +60,9 @@ test('the new canvas is linework rather than a text label field', async ({ page 
   await page.addInitScript(() => {
     const original = CanvasRenderingContext2D.prototype.fillText;
     CanvasRenderingContext2D.prototype.fillText = function (...args) {
-      document.getElementById('hero')?.setAttribute('data-text-painted', 'true');
+      if (this.canvas?.id === 'hero-canvas') {
+        document.getElementById('hero')?.setAttribute('data-text-painted', 'true');
+      }
       original.apply(this, args);
     };
   });
