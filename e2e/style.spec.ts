@@ -144,7 +144,14 @@ test('automatically cycles styles and the progress control pauses and resumes th
   const scrollBeforeChange = await page.evaluate(() => Math.round(window.scrollY));
   await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
   await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(() => root.getAttribute('data-style'), { timeout: 35_000 }).toBe('noir');
+
+  // The indicator warns during the last five seconds and never steals the scroll.
+  await expect
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 32_000 })
+    .toBeGreaterThanOrEqual(83);
+  await expect(progress).toHaveClass(/style-progress--warning/);
+  await expect.poll(() => root.getAttribute('data-style'), { timeout: 10_000 }).toBe('noir');
+  await expect(progress).not.toHaveClass(/style-progress--warning/);
   await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(scrollBeforeChange);
 });
 

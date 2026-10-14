@@ -5,6 +5,7 @@ import {
   randomStyle,
   resolveStyle,
   STYLE_AUTO_INTERVAL_MS,
+  STYLE_PROGRESS_WARNING_MS,
   STYLES,
   STYLE_KEY,
 } from './style';
@@ -22,6 +23,7 @@ beforeEach(() => {
 it('accepts the four styles and a 30-second automatic interval', () => {
   expect(STYLES).toEqual(['original', 'editorial', 'technical', 'noir']);
   expect(STYLE_AUTO_INTERVAL_MS).toBe(30_000);
+  expect(STYLE_PROGRESS_WARNING_MS).toBe(5_000);
   for (const style of STYLES) expect(resolveStyle(style)).toBe(style);
   for (const value of [null, '', 'dark', 'sepia']) expect(resolveStyle(value)).toBe('technical');
   expect(randomStyle(() => 0)).toBe('original');
@@ -99,6 +101,35 @@ it('updates the accessible progress value while running and freezes it when paus
     expect(progress.getAttribute('aria-pressed')).toBe('true');
     vi.advanceTimersByTime(5_000);
     expect(track.getAttribute('aria-valuenow')).toBe('10');
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('warns on the progress indicator during the last five seconds and pauses the warning', () => {
+  vi.useFakeTimers();
+  try {
+    document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-style-progress data-label-running="Pause" data-label-paused="Resume" aria-pressed="false"><span data-style-progress-track role="progressbar" aria-valuenow="0"></span></button>`;
+    initStyleToggle();
+    const progress = document.querySelector<HTMLElement>('[data-style-progress]')!;
+
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS - STYLE_PROGRESS_WARNING_MS - 1_000);
+    expect(progress.classList.contains('style-progress--warning')).toBe(false);
+
+    vi.advanceTimersByTime(1_000);
+    expect(progress.classList.contains('style-progress--warning')).toBe(true);
+
+    progress.click();
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    expect(progress.classList.contains('style-progress--warning')).toBe(false);
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS);
+    expect(document.documentElement.dataset.style).toBe('technical');
+
+    progress.click();
+    expect(progress.classList.contains('style-progress--warning')).toBe(true);
+    vi.advanceTimersByTime(STYLE_PROGRESS_WARNING_MS);
+    expect(document.documentElement.dataset.style).toBe('noir');
+    expect(progress.classList.contains('style-progress--warning')).toBe(false);
   } finally {
     vi.useRealTimers();
   }

@@ -105,6 +105,23 @@
   opacity: 0.92;
 }
 
+/* Last seconds of the countdown: a slow opacity pulse warns about the change. */
+.style-progress-backdrop.style-progress--warning .style-progress-tube {
+  animation: style-progress-blink 1.05s ease-in-out infinite;
+}
+
+@keyframes style-progress-blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .style-progress-backdrop.style-progress--warning .style-progress-tube {
+    animation: none;
+  }
+}
+
 .style-progress-backdrop-control {
   position: absolute;
   inset: 0;

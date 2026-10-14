@@ -2,6 +2,8 @@ export const STYLES = ['original', 'editorial', 'technical', 'noir'] as const;
 export const STYLE_KEY = 'page-style';
 /** Wait between automatic style changes. */
 export const STYLE_AUTO_INTERVAL_MS = 30_000;
+/** The progress indicator warns this long before the automatic change. */
+export const STYLE_PROGRESS_WARNING_MS = 5_000;
 export type PageStyle = (typeof STYLES)[number];
 
 /** Length of the colour wash; the scroll guard stays alive a little longer. */
@@ -140,6 +142,7 @@ export function initStyleToggle(): void {
       0,
       Math.min(100, Math.round((1 - remaining / STYLE_AUTO_INTERVAL_MS) * 100)),
     );
+    const warning = !paused && remaining <= STYLE_PROGRESS_WARNING_MS;
     const label = paused
       ? pausedLabel
       : `${runningLabel} (${Math.max(1, Math.ceil(remaining / 1000))} s)`;
@@ -148,6 +151,7 @@ export function initStyleToggle(): void {
       const progressTrack = progressTracks[index];
       progressElement.dataset.styleProgressState = paused ? 'paused' : 'running';
       progressElement.style.setProperty('--style-progress-ratio', String(percent / 100));
+      progressElement.classList.toggle('style-progress--warning', warning);
       if (progressControl) {
         progressControl.setAttribute('aria-label', label);
         progressControl.setAttribute('aria-pressed', String(paused));
