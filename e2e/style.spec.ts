@@ -91,6 +91,26 @@ for (const route of ['/', '/es/']) {
   });
 }
 
+test('restores the reading position when the viewport moves while a style change settles', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+  });
+  await page.goto('/');
+  await page.evaluate(() => window.scrollTo({ top: 4_000, behavior: 'instant' }));
+  await page.evaluate(() => {
+    // Scroll anchoring would itself protect the view, so the check owns the move.
+    document.documentElement.style.overflowAnchor = 'none';
+    document.querySelector<HTMLButtonElement>('[data-style-toggle]')?.click();
+    // A reflow moves the document while the new style settles.
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+  await expect(page.locator('html')).toHaveAttribute('data-style', 'noir');
+  await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(4_000);
+});
+
 test('automatically cycles styles and the progress control pauses and resumes the remaining time', async ({
   page,
 }) => {
@@ -119,11 +139,20 @@ test('automatically cycles styles and the progress control pauses and resumes th
 
   await page.waitForTimeout(1_000);
   await expect(progress).toHaveCount(1);
-  await page.evaluate(() => window.scrollTo(0, document.querySelector('#hero')?.clientHeight ?? 0));
+  await page.evaluate(() => window.scrollTo({ top: 4_000, behavior: 'instant' }));
   await expect(progress).toBeVisible();
+  const scrollBeforeChange = await page.evaluate(() => Math.round(window.scrollY));
   await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
   await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(() => root.getAttribute('data-style'), { timeout: 35_000 }).toBe('noir');
+
+  // The indicator warns during the last five seconds and never steals the scroll.
+  await expect
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 32_000 })
+    .toBeGreaterThanOrEqual(83);
+  await expect(progress).toHaveClass(/style-progress--warning/);
+  await expect.poll(() => root.getAttribute('data-style'), { timeout: 10_000 }).toBe('noir');
+  await expect(progress).not.toHaveClass(/style-progress--warning/);
+  await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(scrollBeforeChange);
 });
 
 test('original keeps shared button and section geometry across visual styles', async ({ page }) => {

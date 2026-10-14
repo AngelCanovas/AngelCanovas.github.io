@@ -303,9 +303,23 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
   .style-progress--paused .style-progress-fill {
     animation-play-state: paused;
   }
+  /* Last seconds of the countdown: a slow opacity pulse warns about the change. */
+  .style-progress.style-progress--warning {
+    animation: style-progress-blink 1.05s ease-in-out infinite;
+  }
   @keyframes style-progress-fill {
     to {
       transform: scaleX(1);
+    }
+  }
+  @keyframes style-progress-blink {
+    50% {
+      opacity: 0.5;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .style-progress.style-progress--warning {
+      animation: none;
     }
   }
   @media (max-width: 1199px) {
