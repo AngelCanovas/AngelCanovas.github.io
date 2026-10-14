@@ -104,6 +104,41 @@ it('updates the accessible progress value while running and freezes it when paus
   }
 });
 
+it('keeps the reading position when the layout moves the viewport during a style change', () => {
+  vi.useFakeTimers();
+  try {
+    document.body.innerHTML = `<button data-style-toggle data-label-technical="Blue and green" data-label-original="Original blue" data-label-editorial="Orange" data-label-noir="Ink grayscale"></button><button data-style-progress data-label-running="Pause" data-label-paused="Resume" aria-pressed="false"><span data-style-progress-track role="progressbar" aria-valuenow="0"></span></button>`;
+    let scrollY = 2_400;
+    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scrollY });
+    Object.defineProperty(window, 'scrollX', { configurable: true, get: () => 0 });
+    const scrollTo = vi.fn();
+    Object.defineProperty(window, 'scrollTo', {
+      configurable: true,
+      writable: true,
+      value: scrollTo,
+    });
+
+    initStyleToggle();
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS);
+    expect(document.documentElement.dataset.style).toBe('noir');
+    expect(scrollTo).not.toHaveBeenCalled();
+
+    // The engine moves the document while the new style settles.
+    scrollY = 0;
+    vi.advanceTimersByTime(16);
+    expect(scrollTo).toHaveBeenCalledWith({ left: 0, top: 2_400, behavior: 'instant' });
+
+    // A visitor scroll gesture hands the viewport back before the guard expires.
+    window.dispatchEvent(new Event('wheel'));
+    scrollY = 900;
+    vi.advanceTimersByTime(1_000);
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+  } finally {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  }
+});
+
 it('tolerates unavailable storage', () => {
   localStorage.setItem(STYLE_KEY, 'editorial');
   initStyleToggle();

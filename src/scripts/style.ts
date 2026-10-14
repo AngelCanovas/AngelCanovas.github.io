@@ -1,7 +1,18 @@
 export const STYLES = ['original', 'editorial', 'technical', 'noir'] as const;
 export const STYLE_KEY = 'page-style';
+/** Wait between automatic style changes. */
 export const STYLE_AUTO_INTERVAL_MS = 30_000;
 export type PageStyle = (typeof STYLES)[number];
+
+/** Length of the colour wash; the scroll guard stays alive a little longer. */
+const STYLE_TRANSITION_MS = 700;
+/** Gestures that mean the visitor has taken the scroll back while a change settles. */
+const SCROLL_GESTURES: ReadonlyArray<[keyof WindowEventMap, AddEventListenerOptions]> = [
+  ['wheel', { passive: true, capture: true }],
+  ['touchmove', { passive: true, capture: true }],
+  ['pointerdown', { capture: true }],
+  ['keydown', {}],
+];
 
 export function resolveStyle(value: string | null | undefined): PageStyle {
   return STYLES.find((style) => style === value) ?? 'technical';
@@ -32,7 +43,7 @@ export function initStyleToggle(): void {
     transitionTimer = window.setTimeout(() => {
       delete document.documentElement.dataset.styleTransition;
       transitionTimer = undefined;
-    }, 700);
+    }, STYLE_TRANSITION_MS);
   };
   const apply = (withTransition = false) => {
     document.documentElement.dataset.style = style;
@@ -45,9 +56,40 @@ export function initStyleToggle(): void {
     button.title = label;
     if (withTransition) triggerStyleTransition();
   };
+  /**
+   * Every style rewrites the page geometry, so a change can leave the document
+   * at another offset. The reading position wins: it is captured, the change is
+   * applied and the viewport is put back once the layout settled, unless the
+   * visitor is scrolling themselves.
+   */
+  const preserveViewport = (change: () => void) => {
+    const left = window.scrollX;
+    const top = window.scrollY;
+    let visitorDriving = false;
+    const markVisitorDriving = () => {
+      visitorDriving = true;
+    };
+    const restore = () => {
+      if (!visitorDriving && (window.scrollX !== left || window.scrollY !== top)) {
+        window.scrollTo({ left, top, behavior: 'instant' });
+      }
+    };
+    for (const [type, options] of SCROLL_GESTURES) {
+      window.addEventListener(type, markVisitorDriving, options);
+    }
+    change();
+    restore();
+    requestAnimationFrame(restore);
+    window.setTimeout(() => {
+      restore();
+      for (const [type, options] of SCROLL_GESTURES) {
+        window.removeEventListener(type, markVisitorDriving, options);
+      }
+    }, STYLE_TRANSITION_MS + 250);
+  };
   const cycleManually = () => {
     style = nextStyle();
-    apply(true);
+    preserveViewport(() => apply(true));
     // Manual changes reset an active countdown but never unfreeze a paused one.
     if (!paused) restartProgressRef.current?.();
   };
@@ -135,8 +177,10 @@ export function initStyleToggle(): void {
   const advanceStyle = () => {
     signalProgressCompletion();
     style = nextStyle();
-    apply(true);
-    restartProgressRef.current?.();
+    preserveViewport(() => {
+      apply(true);
+      restartProgressRef.current?.();
+    });
   };
 
   const scheduleProgress = (delay: number) => {
