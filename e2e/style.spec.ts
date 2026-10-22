@@ -155,6 +155,38 @@ test('automatically cycles styles and the progress control pauses and resumes th
   await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(scrollBeforeChange);
 });
 
+for (const initial of [true, false]) {
+  test(`reduced motion pauses style rotation and typing, initially ${initial}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
+    });
+    await page.emulateMedia({ reducedMotion: initial ? 'reduce' : 'no-preference' });
+    await page.clock.install();
+    await page.goto('/');
+    if (!initial) {
+      await page.clock.runFor(4_000);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+    }
+    const control = page.locator('[data-style-progress-control]');
+    const typed = page.locator('[data-typed-items]');
+    await expect(control).toHaveAttribute('aria-pressed', 'true');
+    const text = await typed.textContent();
+    const roles: string[] = JSON.parse((await typed.getAttribute('data-typed-items')) ?? '[]');
+    expect(roles).toContain(text);
+    await page.clock.fastForward(60_000);
+    await expect(page.locator('html')).toHaveAttribute('data-style', 'technical');
+    await expect(typed).toHaveText(text ?? '');
+
+    await page.locator('[data-style-toggle]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-style', 'noir');
+    await page.clock.fastForward(60_000);
+    await expect(page.locator('html')).toHaveAttribute('data-style', 'noir');
+    await expect(control).toHaveAttribute('aria-pressed', 'true');
+  });
+}
+
 test('original keeps shared button and section geometry across visual styles', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(Math, 'random', { value: () => 0.01, configurable: true });
@@ -444,7 +476,7 @@ test('original style keeps section headings compact and stacked for print', asyn
 
 for (const mode of ['original', 'editorial', 'technical', 'noir']) {
   for (const colorScheme of ['light', 'dark'] as const) {
-    test(`style rendering ${mode} ${colorScheme}`, async ({ page }) => {
+    test(`style rendering ${mode} ${colorScheme}`, async ({ page }, info) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
       await page.addInitScript((style) => {
@@ -458,7 +490,7 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
       const progress = page.locator('[data-style-progress-backdrop]');
       const progressControl = page.locator('[data-style-progress-control]');
       await expect(progress).toHaveAttribute('aria-hidden', 'true');
-      await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
+      await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
       if (mode === 'original') {
@@ -467,12 +499,19 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
         });
         await page.waitForTimeout(500);
       }
-      await expect(page).toHaveScreenshot(`${mode}-${colorScheme}.png`, {
-        timeout: 30000,
-        animations: 'disabled',
-        maxDiffPixels: mode === 'noir' ? 25000 : 32,
-        threshold: 0,
-      });
+      const name = `${mode}-${colorScheme}`;
+      if (process.platform === 'linux') {
+        await expect(page).toHaveScreenshot(`${name}.png`, {
+          timeout: 30000,
+          animations: 'disabled',
+          maxDiffPixels: mode === 'noir' ? 25000 : 32,
+          threshold: 0,
+        });
+      } else {
+        const path = info.outputPath(`${name}-windows-review.png`);
+        await page.screenshot({ path, animations: 'disabled' });
+        await info.attach(name, { path, contentType: 'image/png' });
+      }
       const result = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
         .analyze();

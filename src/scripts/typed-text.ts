@@ -1,5 +1,3 @@
-import { prefersReducedMotion } from './scroll-utils';
-
 const TYPE_DELAY = 85;
 const DELETE_DELAY = 40;
 const HOLD_DELAY = 1800;
@@ -25,7 +23,12 @@ function readItems(element: HTMLElement): string[] {
 
 export function initTypedText(element: HTMLElement): () => void {
   const items = readItems(element);
-  if (items.length < 2 || prefersReducedMotion()) return () => {};
+  if (items.length < 2) return () => {};
+
+  const motion =
+    typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : undefined;
 
   let itemIndex = 0;
   let charIndex = items[0].length;
@@ -49,6 +52,17 @@ export function initTypedText(element: HTMLElement): () => void {
     timer = window.setTimeout(tick, delay);
   }
 
-  timer = window.setTimeout(tick, INITIAL_DELAY);
-  return () => window.clearTimeout(timer);
+  const onMotionChange = () => {
+    window.clearTimeout(timer);
+    charIndex = items[itemIndex].length;
+    deleting = false;
+    element.textContent = items[itemIndex];
+    if (!motion?.matches) timer = window.setTimeout(tick, INITIAL_DELAY);
+  };
+  motion?.addEventListener('change', onMotionChange);
+  if (!motion?.matches) timer = window.setTimeout(tick, INITIAL_DELAY);
+  return () => {
+    window.clearTimeout(timer);
+    motion?.removeEventListener('change', onMotionChange);
+  };
 }
