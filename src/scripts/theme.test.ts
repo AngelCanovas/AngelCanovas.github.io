@@ -49,6 +49,45 @@ describe('initThemeToggle', () => {
     expect(button.getAttribute('aria-label')).toBe('Switch to light');
   });
 
+  it('synchronizes a choice from another tab before the next toggle', () => {
+    const button = setup();
+    initThemeToggle();
+    button.click();
+    localStorage.setItem(THEME_KEY, 'light');
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: THEME_KEY, newValue: 'light', storageArea: localStorage }),
+    );
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(button.getAttribute('aria-pressed')).toBe('false');
+    expect(button.getAttribute('aria-label')).toBe('Switch to dark');
+    button.click();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+  });
+
+  it.each([THEME_KEY, null])('returns to the system when storage is cleared for %s', (key) => {
+    const button = setup();
+    initThemeToggle();
+    button.click();
+    localStorage.clear();
+    window.dispatchEvent(new StorageEvent('storage', { key, storageArea: localStorage }));
+    expect(document.documentElement.dataset.theme).toBeUndefined();
+    expect(button.getAttribute('aria-pressed')).toBe('false');
+    expect(button.getAttribute('aria-label')).toBe('Switch to dark');
+  });
+
+  it.each([true, false])(
+    'toggles the visible theme before a storage event, explicit %s',
+    (explicit) => {
+      const button = setup();
+      initThemeToggle();
+      if (explicit) button.click();
+      const next = explicit ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      button.click();
+      expect(document.documentElement.dataset.theme).toBe(next);
+    },
+  );
+
   it('ignores junk stored values and does nothing without a button', () => {
     localStorage.setItem(THEME_KEY, 'sepia');
     setup();
