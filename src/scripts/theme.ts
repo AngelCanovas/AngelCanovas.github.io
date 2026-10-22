@@ -23,12 +23,12 @@ function systemTheme(): Theme {
     : 'light';
 }
 
-/** The theme actually in effect: stored choice first, then system. */
+/** The theme actually in effect: applied choice, stored choice, then system. */
 function currentTheme(): Theme {
-  const stored = readStoredTheme();
-  if (stored) return stored;
   const applied = document.documentElement.dataset.theme;
   if (applied === 'light' || applied === 'dark') return applied;
+  const stored = readStoredTheme();
+  if (stored) return stored;
   return systemTheme();
 }
 
@@ -68,13 +68,25 @@ export function initThemeToggle(): void {
   };
 
   button.addEventListener('click', () => {
-    const next = currentTheme() === 'dark' ? 'light' : 'dark';
+    const applied = document.documentElement.dataset.theme;
+    const theme = applied === 'light' || applied === 'dark' ? applied : systemTheme();
+    const next = theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem(THEME_KEY, next);
     } catch {
       /* storage can be unavailable (private mode) */
     }
+    sync();
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (event.storageArea !== localStorage || (event.key !== THEME_KEY && event.key !== null)) {
+      return;
+    }
+    const stored = readStoredTheme();
+    if (stored) document.documentElement.dataset.theme = stored;
+    else delete document.documentElement.dataset.theme;
     sync();
   });
 

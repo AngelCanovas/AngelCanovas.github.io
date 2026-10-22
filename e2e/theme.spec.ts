@@ -9,6 +9,38 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('theme toggle', () => {
+  test('synchronizes changes and cleared preferences across tabs', async ({ page, context }) => {
+    await page.goto('/');
+    const other = await context.newPage();
+    await other.goto('/');
+    const toggle = page.locator('[data-theme-toggle]');
+    const root = page.locator('html');
+    await other.locator('[data-theme-toggle]').click();
+    await expect(root).toHaveAttribute('data-theme', 'dark');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light theme');
+
+    await toggle.click();
+    await expect(root).toHaveAttribute('data-theme', 'light');
+    await expect(other.locator('html')).toHaveAttribute('data-theme', 'light');
+    await other.evaluate(() => localStorage.removeItem('theme'));
+    await expect(root).not.toHaveAttribute('data-theme');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+      'media',
+      '(prefers-color-scheme: light)',
+    );
+
+    await other.evaluate(() => localStorage.setItem('theme', 'dark'));
+    await expect(root).toHaveAttribute('data-theme', 'dark');
+    await other.evaluate(() => localStorage.clear());
+    await expect(root).not.toHaveAttribute('data-theme');
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(25, 26, 24)');
+    await other.close();
+  });
+
   test('starts from the system preference, toggles and persists the choice', async ({ page }) => {
     await page.goto('/');
     const toggle = page.locator('[data-theme-toggle]');

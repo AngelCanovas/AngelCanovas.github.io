@@ -3,9 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initTypedText } from './typed-text';
 
+let motion: EventTarget & { matches: boolean };
+
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.stubGlobal('matchMedia', () => ({ matches: false }));
+  motion = Object.assign(new EventTarget(), { matches: false });
+  vi.stubGlobal('matchMedia', () => motion);
 });
 
 afterEach(() => {
@@ -47,19 +50,45 @@ describe('typed roles', () => {
   );
 
   it('keeps the server text with reduced motion', () => {
-    vi.stubGlobal('matchMedia', () => ({ matches: true }));
+    motion.matches = true;
     const element = setup();
     initTypedText(element);
     expect(vi.getTimerCount()).toBe(0);
     expect(element.textContent).toBe('AB');
   });
 
-  it('cancels pending changes on cleanup', () => {
+  it('finishes the current role and stops when reduced motion is enabled live', () => {
     const element = setup();
     const cleanup = initTypedText(element);
-    cleanup();
+    vi.advanceTimersByTime(1400 + 1800 + 40);
+    expect(element.textContent).toBe('A');
+
+    motion.matches = true;
+    motion.dispatchEvent(new Event('change'));
+    expect(element.textContent).toBe('AB');
     vi.advanceTimersByTime(10000);
     expect(element.textContent).toBe('AB');
     expect(vi.getTimerCount()).toBe(0);
+
+    motion.matches = false;
+    motion.dispatchEvent(new Event('change'));
+    vi.advanceTimersByTime(1400 + 1800 + 40);
+    expect(element.textContent).toBe('A');
+    cleanup();
   });
+
+  it.each([true, false])(
+    'cancels timers and listeners on cleanup, reduced motion %s',
+    (initial) => {
+      motion.matches = initial;
+      const element = setup();
+      const cleanup = initTypedText(element);
+      cleanup();
+      motion.matches = false;
+      motion.dispatchEvent(new Event('change'));
+      vi.advanceTimersByTime(10000);
+      expect(element.textContent).toBe('AB');
+      expect(vi.getTimerCount()).toBe(0);
+    },
+  );
 });

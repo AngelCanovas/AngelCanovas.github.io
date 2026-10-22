@@ -106,6 +106,42 @@ it('updates the accessible progress value while running and freezes it when paus
   }
 });
 
+it.each([true, false])('pauses automatic styles for reduced motion, initially %s', (initial) => {
+  vi.useFakeTimers();
+  const motion = Object.assign(new EventTarget(), { matches: initial });
+  vi.stubGlobal('matchMedia', () => motion);
+  try {
+    document.body.innerHTML = `<button data-style-toggle></button><button data-style-progress data-label-running="Pause" data-label-paused="Resume"><span data-style-progress-track></span></button>`;
+    initStyleToggle();
+    const progress = document.querySelector<HTMLButtonElement>('[data-style-progress]')!;
+    if (!initial) {
+      vi.advanceTimersByTime(5_000);
+      motion.matches = true;
+      motion.dispatchEvent(new Event('change'));
+    }
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    expect(progress.getAttribute('aria-label')).toBe('Resume');
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS * 2);
+    expect(document.documentElement.dataset.style).toBe('technical');
+
+    document.querySelector<HTMLButtonElement>('[data-style-toggle]')!.click();
+    expect(document.documentElement.dataset.style).toBe('noir');
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS * 2);
+    expect(document.documentElement.dataset.style).toBe('noir');
+
+    motion.matches = false;
+    motion.dispatchEvent(new Event('change'));
+    expect(progress.getAttribute('aria-pressed')).toBe('true');
+    progress.click();
+    vi.advanceTimersByTime(STYLE_AUTO_INTERVAL_MS);
+    expect(document.documentElement.dataset.style).toBe('original');
+  } finally {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  }
+});
+
 it('warns on the progress indicator during the last five seconds and pauses the warning', () => {
   vi.useFakeTimers();
   try {

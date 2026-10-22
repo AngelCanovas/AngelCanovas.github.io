@@ -233,4 +233,14 @@ export function initStyleToggle(): void {
   };
 
   restartProgressRef.current();
+
+  const motion =
+    typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : undefined;
+  const pauseForReducedMotion = () => {
+    if (motion?.matches && !paused) toggleProgress();
+  };
+  motion?.addEventListener('change', pauseForReducedMotion);
+  pauseForReducedMotion();
 }
