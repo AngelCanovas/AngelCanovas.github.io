@@ -9,6 +9,34 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('theme toggle', () => {
+  test('keeps browser metadata in sync when theme persistence is unavailable', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.addInitScript(() => {
+      const setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === 'theme') throw new DOMException('Storage unavailable', 'QuotaExceededError');
+        setItem.call(this, key, value);
+      };
+    });
+    await page.goto('/');
+    const toggle = page.locator('[data-theme-toggle]');
+    const lightMeta = page.locator('meta[name="theme-color"]').first();
+    const darkMeta = page.locator('meta[name="theme-color"]').nth(1);
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(lightMeta).toHaveAttribute('media', 'not all');
+    await expect(darkMeta).toHaveAttribute('media', 'all');
+    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeNull();
+
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await toggle.click();
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(246, 243, 235)');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(lightMeta).toHaveAttribute('media', 'all');
+    await expect(darkMeta).toHaveAttribute('media', 'not all');
+  });
+
   test('synchronizes changes and cleared preferences across tabs', async ({ page, context }) => {
     await page.goto('/');
     const other = await context.newPage();
@@ -71,6 +99,34 @@ test.describe('theme toggle', () => {
 
   test.describe('dark system preference', () => {
     test.use({ colorScheme: 'dark' });
+
+    test('removing a light choice in another tab immediately restores the dark system', async ({
+      page,
+      context,
+    }) => {
+      await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+      await page.goto('/');
+      await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(246, 243, 235)');
+      const other = await context.newPage();
+      await other.goto('/');
+      await other.evaluate(() => localStorage.removeItem('theme'));
+      await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+      await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(25, 26, 24)');
+      await expect(page.locator('[data-theme-toggle]')).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('[data-theme-toggle]')).toHaveAttribute(
+        'aria-label',
+        'Switch to light theme',
+      );
+      await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+        'media',
+        '(prefers-color-scheme: light)',
+      );
+      await expect(page.locator('meta[name="theme-color"]').nth(1)).toHaveAttribute(
+        'media',
+        '(prefers-color-scheme: dark)',
+      );
+      await other.close();
+    });
 
     test('an explicit light choice overrides the system', async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('theme', 'light'));
