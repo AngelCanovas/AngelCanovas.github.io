@@ -138,6 +138,8 @@ export default defineConfig({
     // PurgeCSS would drop them. Keep them: they carry the focus ring, the
     // scroll-reveal, the theme and the hero backdrop fade-in.
     purgecss({
+      variables: true,
+      keyframes: true,
       safelist: {
         standard: [
           /focus-visible/,
@@ -152,6 +154,7 @@ export default defineConfig({
           /data-hero-visible/,
           /style-progress/,
         ],
+        variables: [/^--(?!bs-)/],
       },
     }),
     inlineScriptCspHashes(),
