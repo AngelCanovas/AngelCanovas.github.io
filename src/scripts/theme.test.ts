@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initThemeToggle, THEME_KEY } from './theme';
 
 function setup(): HTMLButtonElement {
   document.documentElement.removeAttribute('data-theme');
+  document.head.innerHTML = `
+    <meta name="theme-color" content="#f6f3eb" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#191a18" media="(prefers-color-scheme: dark)">`;
   document.body.innerHTML = `
     <button
       type="button"
@@ -20,6 +23,11 @@ function setup(): HTMLButtonElement {
 
 beforeEach(() => {
   localStorage.clear();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe('initThemeToggle', () => {
@@ -49,6 +57,32 @@ describe('initThemeToggle', () => {
     expect(button.getAttribute('aria-label')).toBe('Switch to light');
   });
 
+  it.each([null, 'light', 'dark'] as const)(
+    'keeps browser metadata aligned with the visible theme when storage writes fail (%s)',
+    (initial) => {
+      const button = setup();
+      if (initial) {
+        localStorage.setItem(THEME_KEY, initial);
+        document.documentElement.dataset.theme = initial;
+      }
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('storage unavailable');
+      });
+      initThemeToggle();
+      button.click();
+      const next = initial === 'dark' ? 'light' : 'dark';
+      expect(document.documentElement.dataset.theme).toBe(next);
+      expect(localStorage.getItem(THEME_KEY)).toBe(initial);
+      expect(button.getAttribute('aria-pressed')).toBe(String(next === 'dark'));
+      expect(
+        Array.from(
+          document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
+          (meta) => meta.media,
+        ),
+      ).toEqual(next === 'dark' ? ['not all', 'all'] : ['all', 'not all']);
+    },
+  );
+
   it('synchronizes a choice from another tab before the next toggle', () => {
     const button = setup();
     initThemeToggle();
@@ -74,6 +108,29 @@ describe('initThemeToggle', () => {
     expect(button.getAttribute('aria-pressed')).toBe('false');
     expect(button.getAttribute('aria-label')).toBe('Switch to dark');
   });
+
+  it.each([THEME_KEY, null])(
+    'immediately restores a dark system when an explicit light choice is cleared for %s',
+    (key) => {
+      vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: vi.fn() }));
+      const button = setup();
+      localStorage.setItem(THEME_KEY, 'light');
+      document.documentElement.dataset.theme = 'light';
+      initThemeToggle();
+      if (key) localStorage.removeItem(key);
+      else localStorage.clear();
+      window.dispatchEvent(new StorageEvent('storage', { key, storageArea: localStorage }));
+      expect(document.documentElement.dataset.theme).toBeUndefined();
+      expect(button.getAttribute('aria-pressed')).toBe('true');
+      expect(button.getAttribute('aria-label')).toBe('Switch to light');
+      expect(
+        Array.from(
+          document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
+          (meta) => meta.media,
+        ),
+      ).toEqual(['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)']);
+    },
+  );
 
   it.each([true, false])(
     'toggles the visible theme before a storage event, explicit %s',

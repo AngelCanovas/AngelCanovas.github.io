@@ -37,7 +37,7 @@ function currentTheme(): Theme {
  * explicit choice in `localStorage`. A tiny inline script in `Layout.astro`
  * applies the stored theme before first paint, so there is no flash; this
  * module only keeps the button state and the theme-color metas in sync. With no
- * stored choice the metas keep their system media queries, so a live system
+ * explicit choice the metas keep their system media queries, so a live system
  * change still reaches the browser chrome.
  */
 export function initThemeToggle(): void {
@@ -52,9 +52,10 @@ export function initThemeToggle(): void {
   }));
 
   const syncThemeColorMeta = () => {
-    const stored = readStoredTheme();
+    const applied = document.documentElement.dataset.theme;
+    const choice = applied === 'light' || applied === 'dark' ? applied : readStoredTheme();
     for (const { meta, theme } of metas) {
-      meta.media = stored ? (theme === stored ? 'all' : 'not all') : SYSTEM_MEDIA[theme];
+      meta.media = choice ? (theme === choice ? 'all' : 'not all') : SYSTEM_MEDIA[theme];
     }
   };
 

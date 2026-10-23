@@ -77,6 +77,20 @@ describe('typed roles', () => {
     cleanup();
   });
 
+  it('finishes the second role rather than restoring the first when reduced motion is enabled', () => {
+    const element = setup();
+    const cleanup = initTypedText(element);
+    vi.advanceTimersByTime(1400 + 1800 + 40 + 40 + 350);
+    expect(element.textContent).toBe('C');
+    motion.matches = true;
+    motion.dispatchEvent(new Event('change'));
+    expect(element.textContent).toBe('CD');
+    vi.advanceTimersByTime(10000);
+    expect(element.textContent).toBe('CD');
+    expect(vi.getTimerCount()).toBe(0);
+    cleanup();
+  });
+
   it.each([true, false])(
     'cancels timers and listeners on cleanup, reduced motion %s',
     (initial) => {
