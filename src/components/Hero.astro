@@ -73,8 +73,7 @@ const t = getContent(lang);
 </section>
 
 <script>
-  import { initHeroCodeBackdrop } from '../scripts/hero-code-backdrop';
-  import { initHeroBackdrop as initHeroWaveBackdrop } from '../scripts/hero-backdrop';
+  import { initHeroBackdropController } from '../scripts/hero-backdrop-controller';
   import { safeInit } from '../scripts/safe-init';
   import { initTypedText } from '../scripts/typed-text';
 
@@ -83,32 +82,7 @@ const t = getContent(lang);
     const canvas = document.getElementById('hero-canvas');
     if (!(root && canvas instanceof HTMLCanvasElement)) return;
 
-    let cleanup = () => {};
-    let activeStyle = '';
-    const syncBackdrop = () => {
-      const style = document.documentElement.dataset.style ?? 'technical';
-      if (style === activeStyle) return;
-      cleanup();
-      activeStyle = style;
-      root.dataset.heroBackdropMode =
-        style === 'original' ? 'code' : style === 'editorial' ? 'waves' : 'none';
-      if (style === 'original') cleanup = initHeroCodeBackdrop(root, canvas);
-      else if (style === 'editorial') cleanup = initHeroWaveBackdrop(root, canvas);
-      else {
-        canvas.width = 300;
-        canvas.height = 150;
-        if (window.matchMedia('(hover: none), (pointer: coarse)').matches)
-          delete canvas.dataset.ready;
-        else canvas.dataset.ready = 'true';
-      }
-    };
-
-    const styleObserver = new MutationObserver(syncBackdrop);
-    styleObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-style'],
-    });
-    syncBackdrop();
+    initHeroBackdropController(root, canvas);
   });
   safeInit(() => {
     const typed = document.querySelector<HTMLElement>('.typed');
