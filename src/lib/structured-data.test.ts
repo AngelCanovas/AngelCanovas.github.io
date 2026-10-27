@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { content, personal } from '../data/site';
-import { buildPersonSchema, buildWebSiteSchema, currentEmployer } from './structured-data';
+import {
+  buildPersonSchema,
+  buildProfilePageSchema,
+  buildWebSiteSchema,
+  currentEmployer,
+} from './structured-data';
 
 const base = buildPersonSchema({
   lang: 'en',
@@ -42,22 +47,24 @@ describe('buildPersonSchema', () => {
     expect(base.hasOccupation.name).toBe(base.jobTitle);
   });
 
-  it('describes the occupation with skills and experience requirements', () => {
+  it('describes the occupation with the published role and skills', () => {
     expect(base.hasOccupation['@type']).toBe('Occupation');
     expect(base.hasOccupation.name).toBe(content.en.about.role);
     expect(base.hasOccupation.skills.length).toBeGreaterThan(0);
-    expect(base.hasOccupation.experienceRequirements.monthsOfExperience).toBeGreaterThanOrEqual(48);
   });
 
-  it('counts whole months from the earliest documented start date', () => {
-    const schema = buildPersonSchema({
-      lang: 'en',
-      url: 'u',
-      image: 'i',
-      now: new Date(2026, 5, 1),
-    });
-    expect(schema.hasOccupation.experienceRequirements.monthsOfExperience).toBe(63);
-  });
+  it.each(['en', 'es'] as const)(
+    'does not model personal tenure as job requirements in %s',
+    (lang) => {
+      const schema = buildPersonSchema({
+        lang,
+        url: 'u',
+        image: 'i',
+      });
+      expect(schema.hasOccupation).not.toHaveProperty('experienceRequirements');
+      expect(JSON.stringify(schema)).not.toContain('monthsOfExperience');
+    },
+  );
 
   it('never exposes data the CV omits', () => {
     const serialized = JSON.stringify(base);
@@ -89,6 +96,46 @@ describe('buildPersonSchema', () => {
     const names = base.alumniOf.map((school) => school.name);
     expect(new Set(names).size).toBe(names.length);
     expect(names).toContain('IES Ingeniero de la Cierva');
+  });
+});
+
+describe('buildProfilePageSchema', () => {
+  it.each([
+    ['en', '/'],
+    ['es', '/es/'],
+    ['en', '/cv/'],
+    ['es', '/cv/es/'],
+  ] as const)('keeps a common Person identity on the %s profile %s', (lang, path) => {
+    const personUrl = 'https://example.test/';
+    const url = new URL(path, personUrl).href;
+    const schema = buildProfilePageSchema({ lang, url, personUrl, image: `${personUrl}image.jpg` });
+    expect(schema['@context']).toBe('https://schema.org');
+    expect(schema['@type']).toBe('ProfilePage');
+    expect(schema['@id']).toBe(`${url}#profile`);
+    expect(schema.url).toBe(url);
+    expect(schema.inLanguage).toBe(lang);
+    expect(schema.mainEntity['@type']).toBe('Person');
+    expect(schema.mainEntity['@id']).toBe(`${personUrl}#person`);
+    expect(schema.mainEntity.url).toBe(personUrl);
+    expect(schema.mainEntity.jobTitle).toBe(content[lang].about.role);
+    expect(schema.mainEntity).not.toHaveProperty('@context');
+    expect(schema.mainEntity.hasOccupation).not.toHaveProperty('experienceRequirements');
+  });
+
+  it('reuses published Person fields without inventing profile dates or omitted data', () => {
+    const url = 'https://example.test/';
+    const schema = buildProfilePageSchema({ lang: 'en', url, personUrl: url, image: 'image.jpg' });
+    const { '@context': context, ...person } = buildPersonSchema({
+      lang: 'en',
+      url,
+      image: 'image.jpg',
+    });
+    expect(schema['@context']).toBe(context);
+    expect(schema.mainEntity).toEqual(person);
+    expect(schema).not.toHaveProperty('dateCreated');
+    expect(schema).not.toHaveProperty('dateModified');
+    expect(JSON.stringify(schema)).not.toContain(personal.email);
+    expect(JSON.stringify(schema)).not.toContain('birthDate');
   });
 });
 

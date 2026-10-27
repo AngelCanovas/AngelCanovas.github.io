@@ -23,16 +23,16 @@ export const siteMeta: Record<
 > = {
   en: {
     htmlLang: 'en',
-    title: 'Angel Cánovas Mula — CV',
+    title: 'Full-Stack Java Engineer, Spring Boot | Angel Cánovas Mula',
     description:
-      'Full-Stack Java Engineer, 5+ years at Capgemini building secure enterprise apps for the French Ministry of Education. Spring Boot, Angular.',
+      'Java full-stack engineer focused on secure enterprise applications with Spring Boot, Spring Security and Angular. Experience, projects, CV and contact.',
     ogLocale: 'en_US',
   },
   es: {
     htmlLang: 'es',
-    title: 'Angel Cánovas Mula — CV',
+    title: 'Ingeniero Full-Stack Java, Spring Boot | Angel Cánovas Mula',
     description:
-      'Ingeniero Full-Stack Java: 5+ años en Capgemini con aplicaciones seguras para el Ministerio de Educación francés. Spring Boot, Angular.',
+      'Ingeniero Java full-stack centrado en aplicaciones empresariales seguras con Spring Boot, Spring Security y Angular. Experiencia, proyectos, CV y contacto.',
     ogLocale: 'es_ES',
   },
 };
