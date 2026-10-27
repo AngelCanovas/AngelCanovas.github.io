@@ -41,6 +41,22 @@ test('site feeds and canonical URLs share the configured deployment origin', asy
   }
 });
 
+test('sitemap dates match the last GitHub content change to the CV', async ({ request }) => {
+  const response = await request.get('/sitemap.xml');
+  expect(response.ok()).toBe(true);
+  const xml = await response.text();
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(([, entry]) => ({
+    url: entry.match(/<loc>([^<]+)<\/loc>/)?.[1],
+    lastmod: entry.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1],
+  }));
+  expect(entries).toEqual(
+    ['/', '/es/', '/cv/', '/cv/es/'].map((path) => ({
+      url: `${siteUrl}${path}`,
+      lastmod: '2026-10-03',
+    })),
+  );
+});
+
 test('website identifies its owner and retains full third-party notices', async ({
   page,
   request,
