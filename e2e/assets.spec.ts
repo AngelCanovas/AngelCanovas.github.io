@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
 import { expect, test } from '@playwright/test';
 import { personal } from '../src/data/site';
 import packageInfo from '../package.json' with { type: 'json' };
@@ -212,6 +215,27 @@ test('the Open Graph image is served as a 1200x630 JPEG', async ({ page }) => {
       }),
   );
   expect(dimensions).toEqual({ width: 1200, height: 630 });
+});
+
+test('Open Graph generations are identical for the same temporary build', async () => {
+  test.setTimeout(60_000);
+  const directory = mkdtempSync(join(tmpdir(), 'cv-og-image-'));
+  const render = promisify(execFile);
+  try {
+    cpSync('dist', directory, { recursive: true });
+    const hashes = [];
+    for (let run = 0; run < 3; run += 1) {
+      await render(process.execPath, ['scripts/generate-og-image.mjs', directory]);
+      hashes.push(
+        createHash('sha256')
+          .update(readFileSync(join(directory, 'og-image.jpg')))
+          .digest('hex'),
+      );
+    }
+    expect(new Set(hashes).size).toBe(1);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('llms-full.txt is generated at build time from the site content', async ({ request }) => {
