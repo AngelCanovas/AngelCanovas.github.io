@@ -8,7 +8,7 @@ import raleway700 from '@fontsource/raleway/files/raleway-latin-700-normal.woff2
 import robotoVariable from '@fontsource-variable/roboto/files/roboto-latin-wght-normal.woff2?url';
 import { personal } from '../data/site';
 import { getContent, getSiteMeta, type Lang } from '../lib/i18n';
-import { buildPersonSchema } from '../lib/structured-data';
+import { buildProfilePageSchema } from '../lib/structured-data';
 import { safeJson } from '../lib/security';
 import { absoluteUrl } from '../lib/site-url';
 
@@ -20,6 +20,7 @@ interface Props {
   alternateEn?: string;
   alternateEs?: string;
   robots?: string;
+  profile?: boolean;
 }
 
 const { lang = 'en' } = Astro.props;
@@ -37,7 +38,9 @@ const skipLabel = ui.skipLink;
 const isCv = canonicalPath.startsWith('/cv');
 const preloadFonts = isCv ? [robotoVariable] : [raleway700, robotoVariable];
 
-const schema = buildPersonSchema({ lang, url: canonicalURL, image: ogImage });
+const schema = Astro.props.profile
+  ? buildProfilePageSchema({ lang, url: canonicalURL, personUrl: absoluteUrl('/'), image: ogImage })
+  : null;
 const fun = getContent(lang).fun;
 const htmlComment = fun.htmlComment.replace(/--/g, '—');
 ---
@@ -112,7 +115,7 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <meta name="generator" content={Astro.generator} />
 
     <!-- Structured data -->
-    <script type="application/ld+json" is:inline set:html={safeJson(schema)}></script>
+    {schema && <script type="application/ld+json" is:inline set:html={safeJson(schema)}></script>}
     <slot name="head" />
   </head>
 

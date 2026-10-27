@@ -13,7 +13,7 @@ test.describe('hero backdrop', () => {
   }) => {
     await page.goto('/');
     await expect(page.locator(HERO_CANVAS)).toBeVisible();
-    await page.waitForTimeout(1500);
+    await expect(page.locator(HERO_CANVAS)).toHaveAttribute('data-ready', 'true');
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
 
     // No rAF loop while idle: the resting grid is painted once.
@@ -27,7 +27,7 @@ test.describe('hero backdrop', () => {
 
   test('a click sends a pulse through the linework', async ({ page }) => {
     await page.goto('/');
-    await page.waitForTimeout(1500);
+    await expect(page.locator(HERO_CANVAS)).toHaveAttribute('data-ready', 'true');
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
     const resting = await canvasChecksum(page);
 
@@ -102,7 +102,7 @@ test.describe('original blue hero backdrop', () => {
     await expect(page.locator('#hero')).toHaveAttribute('data-hero-backdrop-mode', 'code');
     await expect(page.locator(HERO_CANVAS)).toBeVisible();
     // The restored renderer defers its intentionally heavy first label layout until idle.
-    await page.waitForTimeout(3500);
+    await expect(page.locator(HERO_CANVAS)).toHaveAttribute('data-ready', 'true');
     await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
 
     const lowerBandInk = await page.evaluate(() => {

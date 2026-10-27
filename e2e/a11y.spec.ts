@@ -1,6 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+function luminance(rgb: number[]) {
+  const linear = rgb.map((value) => {
+    const channel = value / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+}
+
 const pages = [
   { path: '/', name: 'portfolio EN' },
   { path: '/es/', name: 'portfolio ES' },
@@ -71,6 +79,86 @@ test('the skip link is the first stop for keyboard users and is not covered', as
     return top === element || element.contains(top);
   });
   expect(visibleUnderPointer).toBe(true);
+});
+
+test.describe('progress control keyboard focus', () => {
+  test.use({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+
+  for (const route of ['/', '/es/']) {
+    for (const theme of ['light', 'dark']) {
+      for (const [index, style] of ['original', 'editorial', 'technical', 'noir'].entries()) {
+        test(`rendered focus contrast ${style} ${theme} ${route}`, async ({ page }) => {
+          await page.addInitScript(
+            ({ index, theme, lang }) => {
+              Math.random = () => (index + 0.1) / 4;
+              localStorage.setItem('theme', theme);
+              localStorage.setItem('lang', lang);
+            },
+            { index, theme, lang: route === '/' ? 'en' : 'es' },
+          );
+          await page.goto(route);
+          await expect(page.locator('html')).toHaveAttribute('data-style', style);
+          await page.evaluate(() => {
+            const hero = document.querySelector('#hero')!;
+            window.scrollTo(0, hero.getBoundingClientRect().bottom + window.scrollY + 100);
+          });
+          await expect(page.locator('[data-style-progress-backdrop]')).toHaveAttribute(
+            'data-hero-visible',
+            'false',
+          );
+          await page
+            .locator('#main-content')
+            .evaluate((element) => element.focus({ preventScroll: true }));
+          await page.keyboard.press('Tab');
+          const control = page.locator('[data-style-progress-control]');
+          await expect(control).toBeFocused();
+          expect(await control.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
+          await expect(control).toHaveCSS('outline-width', '2px');
+          for (const warning of [false, true]) {
+            if (warning) {
+              await page.emulateMedia({ reducedMotion: 'no-preference' });
+              await page
+                .locator('[data-style-progress-backdrop]')
+                .evaluate((element) => element.classList.add('style-progress--warning'));
+              await page.locator('[data-style-progress-tube]').evaluate((element) => {
+                for (const animation of element.getAnimations()) {
+                  animation.pause();
+                  animation.currentTime = 525;
+                }
+              });
+            }
+            const box = await control.boundingBox();
+            if (!box) throw new Error('Focused progress control has no rendered box');
+            const png = await page.screenshot({
+              clip: {
+                x: Math.floor(box.x) - 6,
+                y: Math.floor(box.y + box.height / 2),
+                width: 8,
+                height: 1,
+              },
+            });
+            const [background, outline] = await page.evaluate(async (base64) => {
+              const image = new Image();
+              image.src = `data:image/png;base64,${base64}`;
+              await image.decode();
+              const canvas = document.createElement('canvas');
+              canvas.width = image.width;
+              canvas.height = image.height;
+              const context = canvas.getContext('2d')!;
+              context.drawImage(image, 0, 0);
+              return [1, 3].map((x) => [...context.getImageData(x, 0, 1, 1).data].slice(0, 3));
+            }, png.toString('base64'));
+            const values = [luminance(background), luminance(outline)];
+            const contrast = (Math.max(...values) + 0.05) / (Math.min(...values) + 0.05);
+            expect(
+              contrast,
+              `${style} ${theme} warning=${warning} rendered outline/background contrast`,
+            ).toBeGreaterThanOrEqual(3);
+          }
+        });
+      }
+    }
+  }
 });
 
 test('the mobile navigation is keyboard operable and exposes ARIA state', async ({ page }) => {

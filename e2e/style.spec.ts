@@ -1,23 +1,89 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+
+type NameBounds = { left: number; right: number; top: number; bottom: number };
+
+async function nameBounds(name: Locator): Promise<NameBounds[]> {
+  return name.locator(':scope > span').evaluateAll((elements) =>
+    elements.map((element) => {
+      const { left, right, top, bottom } = element.getBoundingClientRect();
+      return { left, right, top, bottom };
+    }),
+  );
+}
+
+function nameHasSeparation(bounds: NameBounds[], stacked: boolean) {
+  return (
+    bounds.length === 3 &&
+    bounds.every((box) => box.right > box.left && box.bottom > box.top) &&
+    bounds.slice(1).every((box, index) => {
+      const previous = bounds[index];
+      return stacked
+        ? box.left === previous.left && box.top >= previous.bottom
+        : box.top === previous.top && box.left > previous.right;
+    })
+  );
+}
 
 for (const route of ['/', '/es/']) {
   test(`preserves Hero name separators in every style ${route}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript(() => {
       Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
     });
     await page.goto(route);
+    await page.evaluate(() => document.fonts.ready);
     const name = page.locator('.hero-name');
+    const spans = name.locator(':scope > span');
     for (const mode of ['technical', 'noir', 'original', 'editorial']) {
       await expect(page.locator('html')).toHaveAttribute('data-style', mode);
       await expect(name).toHaveAttribute('aria-label', 'Angel Cánovas Mula');
-      await expect(name.locator(':scope > span')).toHaveCount(3);
-      await expect(name.locator(':scope > span').first()).toHaveCSS(
-        'display',
-        mode === 'noir' ? 'block' : 'inline',
+      await expect(spans).toHaveCount(3);
+      const stacked = mode === 'noir';
+      await expect(spans.first()).toHaveCSS('display', stacked ? 'block' : 'inline');
+      const property = stacked ? 'transform' : 'margin-inline-end';
+      const maxWidth = await name.evaluate((element) => (element as HTMLElement).style.maxWidth);
+      const values = await spans.evaluateAll(
+        (elements, property) =>
+          elements.map((element) => {
+            const style = (element as HTMLElement).style;
+            return [style.getPropertyValue(property), style.getPropertyPriority(property)];
+          }),
+        property,
       );
-      if (mode !== 'noir') {
-        await expect(name.locator(':scope > span').first()).toHaveCSS('margin-inline-end', /.+/);
+      try {
+        if (!stacked) {
+          await name.evaluate((element) => ((element as HTMLElement).style.maxWidth = 'none'));
+        }
+        const bounds = await nameBounds(name);
+        expect(nameHasSeparation(bounds, stacked), JSON.stringify({ mode, bounds })).toBe(true);
+        await spans.evaluateAll((elements, stacked) => {
+          elements.forEach((element, index) => {
+            const style = (element as HTMLElement).style;
+            if (stacked) style.transform = `translateY(-${index * 100}%)`;
+            else style.marginInlineEnd = '0';
+          });
+        }, stacked);
+        await expect(spans.first()).toHaveCSS('display', stacked ? 'block' : 'inline');
+        expect(
+          nameHasSeparation(await nameBounds(name), stacked),
+          `${mode} geometry mutation must be rejected`,
+        ).toBe(false);
+      } finally {
+        await spans.evaluateAll(
+          (elements, { property, values }) => {
+            elements.forEach((element, index) => {
+              const [value, priority] = values[index];
+              (element as HTMLElement).style.setProperty(property, value, priority);
+            });
+          },
+          { property, values },
+        );
+        await name.evaluate(
+          (element, value) => ((element as HTMLElement).style.maxWidth = value),
+          maxWidth,
+        );
       }
       await page.locator('[data-style-toggle]').click();
     }
@@ -114,7 +180,8 @@ test('restores the reading position when the viewport moves while a style change
 test('automatically cycles styles and the progress control pauses and resumes the remaining time', async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:01:00Z'));
   await page.addInitScript(() => {
     Object.defineProperty(Math, 'random', { value: () => 0.51, configurable: true });
   });
@@ -126,6 +193,7 @@ test('automatically cycles styles and the progress control pauses and resumes th
 
   await expect(root).toHaveAttribute('data-style', 'technical');
   await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
+  await page.clock.fastForward(1_000);
   await expect
     .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 4_000 })
     .toBeGreaterThan(0);
@@ -133,25 +201,39 @@ test('automatically cycles styles and the progress control pauses and resumes th
   await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
   await expect(progressControl).toHaveAttribute('aria-pressed', 'true');
   const pausedValue = await track.getAttribute('aria-valuenow');
-  await page.waitForTimeout(1_000);
+  await page.clock.fastForward(30_000);
   await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
   await expect(root).toHaveAttribute('data-style', 'technical');
 
-  await page.waitForTimeout(1_000);
+  await page.clock.fastForward(30_000);
   await expect(progress).toHaveCount(1);
+  await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
+  await expect(root).toHaveAttribute('data-style', 'technical');
   await page.evaluate(() => window.scrollTo({ top: 4_000, behavior: 'instant' }));
+  await page.clock.runFor(32);
   await expect(progress).toBeVisible();
   const scrollBeforeChange = await page.evaluate(() => Math.round(window.scrollY));
   await progressControl.evaluate((element) => (element as HTMLButtonElement).click());
   await expect(progressControl).toHaveAttribute('aria-pressed', 'false');
+  await expect(track).toHaveAttribute('aria-valuenow', pausedValue ?? '0');
 
-  // The indicator warns during the last five seconds and never steals the scroll.
+  await page.clock.fastForward(23_000);
+  await expect(track).toHaveAttribute('aria-valuenow', '80');
+  await expect(progress).not.toHaveClass(/style-progress--warning/);
+  await expect(root).toHaveAttribute('data-style', 'technical');
+  await page.clock.fastForward(1_000);
   await expect
-    .poll(async () => Number(await track.getAttribute('aria-valuenow')), { timeout: 32_000 })
+    .poll(async () => Number(await track.getAttribute('aria-valuenow')))
     .toBeGreaterThanOrEqual(83);
   await expect(progress).toHaveClass(/style-progress--warning/);
-  await expect.poll(() => root.getAttribute('data-style'), { timeout: 10_000 }).toBe('noir');
+  await page.clock.fastForward(4_000);
+  await expect(root).toHaveAttribute('data-style', 'technical');
+  await expect(progress).toHaveClass(/style-progress--warning/);
+  await page.clock.fastForward(1_000);
+  await expect.poll(() => root.getAttribute('data-style')).toBe('noir');
+  await expect(track).toHaveAttribute('aria-valuenow', '0');
   await expect(progress).not.toHaveClass(/style-progress--warning/);
+  await page.clock.runFor(1_000);
   await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(scrollBeforeChange);
 });
 

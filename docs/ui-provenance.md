@@ -12,14 +12,14 @@ Preserve DOM contracts: `#header`, `.header-toggle`, `#navmenu`,
 language links, theme attributes and hero canvas colour tokens. Client modules
 depend on these for focus, navigation, scroll, theme and animation behavior.
 
-Linux visual references compare with zero differing pixels for stable surfaces. The noir
-hero and hosted 768px About crops use the bounded allowances documented in
-`docs/verification.md`.
-The 158 reference
-images cover both languages, themes, navigation states, filters, CV and print.
-The editorial redesign intentionally updates the reviewed presentation references;
-behaviour assertions remain unchanged and zero-pixel tolerances apply to stable surfaces.
-Windows browser tests capture review images and validate geometry and behavior.
+There are 166 Linux reference PNGs: 158 in `visual.spec.ts` and 8 in `style.spec.ts`.
+They cover both languages, themes, navigation states, filters, CV, print and the
+four visual styles. Comparisons use `threshold: 0` with explicit `maxDiffPixels`
+allowances of 0, 32, 8000 or 25000; see `docs/verification.md` for their exact scope.
+Zero differing pixels is not a universal contract. Reference changes require
+review, and behavior assertions remain in force.
+Windows browser tests capture review images without comparing these Linux PNGs;
+they still validate geometry, accessibility and behavior.
 Neither visual agreement nor a new Git history establishes resource ownership.
 
 The hero is original contour linework on canvas with CSS halftone printing plates.
