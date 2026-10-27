@@ -7,8 +7,11 @@ Astro `site` and `base`, `src/lib/base-path.ts`, SEO and feeds preserve this dis
 It installs the pinned Node runtime and lockfile dependencies, validates source,
 unit tests, canonical PDFs, browser behavior/accessibility, visual references,
 both Lighthouse budgets, report privacy and the production build's root URLs.
-The security job scans the snapshot and new Git history with checksum-verified
-Gitleaks and ShellCheck; CodeQL checks JavaScript/TypeScript and Actions separately.
+The security job uses checksum-verified Gitleaks to scan the committed `HEAD`
+snapshot and all Git history reachable from the available local refs (`--all`).
+CI checks out full history with `fetch-depth: 0`; the scan is not limited to new
+commits and does not inspect uncommitted working-tree changes. ShellCheck checks
+the scan script; CodeQL checks JavaScript/TypeScript and Actions separately.
 
 Only the validated `dist/` is uploaded as the short-lived Pages artifact, including
 the origin `.well-known` endpoint. No QA HTML, traces or workspace caches are uploaded.

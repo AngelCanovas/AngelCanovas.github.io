@@ -51,12 +51,14 @@ The committed PDF files are canonical: do not regenerate them without the owner'
 explicit request. Hidden technical notes contain no unpublished articles.
 
 Before committing, run `npm run check`, `npm run lint`, `npm run format:check`,
-`npm test`, `npm run build`, `npm run test:e2e`, `npm run lighthouse`,
-`npm run lighthouse:mobile` and `npm audit --audit-level=high`.
-For local browser tests, build first: `npm run build && npm run test:e2e`.
-The test server mounts `dist/` at `/`. Linux captures use zero pixel tolerance for stable
-surfaces; the noir hero and hosted 768px About crops use the bounded allowances documented
-in [verification](docs/verification.md). Windows captures supplement geometry checks.
+`npm test`, `npm run build`, `npm run test:e2e`,
+`node scripts/check-report-privacy.mjs`, `node --test scripts/serve-dist.test.mjs`,
+`npm run lighthouse`, `npm run lighthouse:mobile` and `npm audit --audit-level=high`.
+Build before browser tests and run the report privacy check after E2E.
+The test server mounts `dist/` at `/`. Linux reference comparisons use `threshold: 0`
+with explicit differing-pixel allowances of 0, 32, 8000 or 25000, as detailed in
+[verification](docs/verification.md). Windows captures review images without comparing
+these references; geometry, accessibility and behavior assertions still run.
 
 ## Deployment and security
 
