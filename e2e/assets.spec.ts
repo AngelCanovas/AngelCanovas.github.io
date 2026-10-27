@@ -81,7 +81,7 @@ for (const page of [
     }
   });
 
-  test(`every inline style is embedded in the CSP of ${page}`, () => {
+  test(`every inline style is embedded in the CSP of ${page}`, async ({ page: browserPage }) => {
     const html = readFileSync(join(process.cwd(), 'dist', page), 'utf8');
     const csp =
       html.match(/<meta[^>]*http-equiv="content-security-policy"[^>]*content="([^"]*)"/i)?.[1] ??
@@ -97,8 +97,12 @@ for (const page of [
     }
     // Nothing may rely on an inline style or event attribute: the policy blocks
     // them, and the build-time guard rejects them before they get this far.
-    expect(html).not.toMatch(/<[a-z][^>]*\sstyle="/i);
-    expect(html).not.toMatch(/<[a-z][^>]*\son[a-z]+="/i);
+    const attributes = await browserPage.evaluate((source) => {
+      const document = new DOMParser().parseFromString(source, 'text/html');
+      return [...document.querySelectorAll('*')].flatMap((element) => element.getAttributeNames());
+    }, html);
+    expect(attributes).not.toContain('style');
+    expect(attributes.filter((name) => name.toLowerCase().startsWith('on'))).toEqual([]);
   });
 
   test(`the CSP is delivered before any script in ${page}`, () => {
