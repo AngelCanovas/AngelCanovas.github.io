@@ -15,7 +15,17 @@ async function main() {
   const browser = await chromium.launch();
 
   try {
-    const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+    const page = await browser.newPage({
+      viewport: { width: 1200, height: 630 },
+      locale: 'en-US',
+      colorScheme: 'light',
+      reducedMotion: 'reduce',
+    });
+    await page.addInitScript(() => {
+      Math.random = () => 0.3;
+      localStorage.setItem('lang', 'en');
+      localStorage.setItem('theme', 'light');
+    });
     await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
     await page.evaluate(() => {
       const hide = (selector) => {
@@ -35,9 +45,7 @@ async function main() {
     // Wait for the real paint signals instead of a fixed delay: the fonts, the
     // first hero backdrop paint (deferred to an idle slot, so the canvas
     // announces itself with `data-ready`) and two animation frames.
-    await page
-      .waitForSelector('#hero-canvas[data-ready]', { timeout: 5_000 })
-      .catch(() => undefined);
+    await page.waitForSelector('#hero-canvas[data-ready]', { timeout: 5_000 });
     await page.evaluate(
       () =>
         new Promise((resolve) => {
@@ -46,12 +54,30 @@ async function main() {
           );
         }),
     );
+    await page.locator('.typed').evaluate((element) => {
+      const role = JSON.parse(element.getAttribute('data-typed-items') ?? '[]')[0];
+      if (!role || element.textContent?.trim() !== role) {
+        throw new Error('Open Graph role is missing or incomplete');
+      }
+      const box = element.getBoundingClientRect();
+      if (
+        box.width <= 0 ||
+        box.height <= 0 ||
+        box.left < 0 ||
+        box.top < 0 ||
+        box.right > 1200 ||
+        box.bottom > 630
+      ) {
+        throw new Error('Open Graph role is outside the captured card');
+      }
+    });
 
     const target = join(DIST, 'og-image.jpg');
     await page.screenshot({
       path: target,
       type: 'jpeg',
       quality: 85,
+      animations: 'disabled',
       clip: { x: 0, y: 0, width: 1200, height: 630 },
     });
 

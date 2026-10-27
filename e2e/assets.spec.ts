@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
 import { expect, test } from '@playwright/test';
 import { personal } from '../src/data/site';
 import packageInfo from '../package.json' with { type: 'json' };
@@ -36,6 +39,22 @@ test('site feeds and canonical URLs share the configured deployment origin', asy
     expect(response.ok(), path).toBe(true);
     expect(await response.text(), path).toContain(expected);
   }
+});
+
+test('sitemap dates match the last GitHub content change to the CV', async ({ request }) => {
+  const response = await request.get('/sitemap.xml');
+  expect(response.ok()).toBe(true);
+  const xml = await response.text();
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(([, entry]) => ({
+    url: entry.match(/<loc>([^<]+)<\/loc>/)?.[1],
+    lastmod: entry.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1],
+  }));
+  expect(entries).toEqual(
+    ['/', '/es/', '/cv/', '/cv/es/'].map((path) => ({
+      url: `${siteUrl}${path}`,
+      lastmod: '2026-10-03',
+    })),
+  );
 });
 
 test('website identifies its owner and retains full third-party notices', async ({
@@ -81,7 +100,7 @@ for (const page of [
     }
   });
 
-  test(`every inline style is embedded in the CSP of ${page}`, () => {
+  test(`every inline style is embedded in the CSP of ${page}`, async ({ page: browserPage }) => {
     const html = readFileSync(join(process.cwd(), 'dist', page), 'utf8');
     const csp =
       html.match(/<meta[^>]*http-equiv="content-security-policy"[^>]*content="([^"]*)"/i)?.[1] ??
@@ -97,8 +116,12 @@ for (const page of [
     }
     // Nothing may rely on an inline style or event attribute: the policy blocks
     // them, and the build-time guard rejects them before they get this far.
-    expect(html).not.toMatch(/<[a-z][^>]*\sstyle="/i);
-    expect(html).not.toMatch(/<[a-z][^>]*\son[a-z]+="/i);
+    const attributes = await browserPage.evaluate((source) => {
+      const document = new DOMParser().parseFromString(source, 'text/html');
+      return [...document.querySelectorAll('*')].flatMap((element) => element.getAttributeNames());
+    }, html);
+    expect(attributes).not.toContain('style');
+    expect(attributes.filter((name) => name.toLowerCase().startsWith('on'))).toEqual([]);
   });
 
   test(`the CSP is delivered before any script in ${page}`, () => {
@@ -208,6 +231,27 @@ test('the Open Graph image is served as a 1200x630 JPEG', async ({ page }) => {
       }),
   );
   expect(dimensions).toEqual({ width: 1200, height: 630 });
+});
+
+test('Open Graph generations are identical for the same temporary build', async () => {
+  test.setTimeout(60_000);
+  const directory = mkdtempSync(join(tmpdir(), 'cv-og-image-'));
+  const render = promisify(execFile);
+  try {
+    cpSync('dist', directory, { recursive: true });
+    const hashes = [];
+    for (let run = 0; run < 3; run += 1) {
+      await render(process.execPath, ['scripts/generate-og-image.mjs', directory]);
+      hashes.push(
+        createHash('sha256')
+          .update(readFileSync(join(directory, 'og-image.jpg')))
+          .digest('hex'),
+      );
+    }
+    expect(new Set(hashes).size).toBe(1);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('llms-full.txt is generated at build time from the site content', async ({ request }) => {

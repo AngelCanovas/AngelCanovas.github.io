@@ -27,6 +27,13 @@ The dependency bot temporarily excludes incompatible TypeScript releases and
 Node-type major bumps; review these exclusions when upstream support or the
 runtime major changes.
 
-Lighthouse CI remains on its latest stable CLI (0.15.1). Playwright and its browser
-version follow the lockfile. Update the browser and review visual changes together;
-never relax screenshot thresholds to make a dependency update pass.
+Lighthouse 13.5.0 and chrome-launcher 1.2.2 are exact development dependencies.
+The budget commands use their local public APIs through `scripts/lighthouse.mjs`,
+not an untracked `npx` download of Lighthouse CI. The two existing configuration
+files remain the source of device settings, URLs, run counts and budgets; see
+[verification](verification.md#lighthouse-budgets) for aggregation and reports.
+Changing the measurement engine can change scores without changing the site.
+
+Playwright and its browser version follow the lockfile. Update the browser and
+review visual changes together; never relax screenshot thresholds to make a
+dependency update pass.

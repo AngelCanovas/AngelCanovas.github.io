@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { JSDOM } from 'jsdom';
 
 /**
  * @param {string} dir
@@ -49,13 +50,20 @@ function assertInlineCoverage(html, meta, file) {
     }
   }
 
-  const inlineAttribute = html.match(/<[a-z][^>]*\s(style|on[a-z]+)="/i)?.[1];
-  if (inlineAttribute) {
-    throw new Error(
-      `inline-script-csp-hashes: ${file} uses an inline "${inlineAttribute}" attribute, which ` +
-        'the policy blocks. Use a class or a data attribute and let the client module set it ' +
-        'through the CSSOM (see the Open Graph script for the sidebar trick).',
-    );
+  const dom = new JSDOM(html);
+  try {
+    for (const element of dom.window.document.querySelectorAll('*')) {
+      const inlineAttribute = element.getAttributeNames().find((name) => /^style$|^on/i.test(name));
+      if (inlineAttribute) {
+        throw new Error(
+          `inline-script-csp-hashes: ${file} uses an inline "${inlineAttribute}" attribute, which ` +
+            'the policy blocks. Use a class or a data attribute and let the client module set it ' +
+            'through the CSSOM (see the Open Graph script for the sidebar trick).',
+        );
+      }
+    }
+  } finally {
+    dom.window.close();
   }
 }
 
@@ -82,8 +90,6 @@ function inlineScriptCspHashes() {
             const digest = createHash('sha256').update(match[1], 'utf8').digest('base64');
             hashes.add(`'sha256-${digest}'`);
           }
-          if (hashes.size === 0) continue;
-
           const metaPattern = /<meta[^>]*http-equiv="content-security-policy"[^>]*>/i;
           const meta = html.match(metaPattern)?.[0];
           if (!meta) {
@@ -92,11 +98,11 @@ function inlineScriptCspHashes() {
                 'Astro may have changed its CSP format; fix the integration instead of shipping a blocked script.',
             );
           }
-          const hashedMeta = meta.replace(
-            /(content="[^"]*?script-src )/i,
-            `$1${[...hashes].join(' ')} `,
-          );
-          if (hashedMeta === meta) {
+          const hashedMeta =
+            hashes.size > 0
+              ? meta.replace(/(content="[^"]*?script-src )/i, `$1${[...hashes].join(' ')} `)
+              : meta;
+          if (hashes.size > 0 && hashedMeta === meta) {
             throw new Error(
               `inline-script-csp-hashes: no CSP script-src found in ${file} to append the inline hashes. ` +
                 'Astro may have changed its CSP format; fix the integration instead of shipping a blocked script.',

@@ -5,6 +5,8 @@ Use `main`, independent Git history and a publication identity. Inspect `git sta
 `git log --oneline -10` and `git diff` before each change. Commit logical changes
 with Conventional Commits after running check, lint, format:check, test, build,
 test:e2e, both Lighthouse budgets and npm audit. Do not publish without authorization.
+Run `node scripts/check-report-privacy.mjs` after E2E and
+`node --test scripts/serve-dist.test.mjs` as CI does.
 
 Source content is `src/data/site.ts`; preserve visible EN/ES content, DOM contracts,
 design, CSP and accessibility. Canonical PDFs in `public/cv/` must never be edited
@@ -20,8 +22,11 @@ CSSOM; keep same-origin fonts/icons, semantic headings, contrast tokens and focu
 Retain `vendor/` forks, licenses, hashes, root file dependencies and install-links.
 See docs/dependency-security.md before changing them; npm audit does not scan forks.
 
-Build before browser tests. Linux snapshots use zero pixel tolerance and lockfile
-Chromium; review deliberate changes only. Disable Playwright Git metadata capture.
+Build before browser tests. Linux compares references with lockfile Chromium and
+`e2e/fontconfig.conf`. Keep `threshold: 0` and the existing per-assertion differing-pixel
+allowances (0, 32, 8000 or 25000), detailed in docs/verification.md; zero tolerance
+is not universal. Windows captures review images without comparing Linux references.
+Review deliberate changes only. Disable Playwright Git metadata capture.
 Never commit or upload QA reports/traces, caches, secrets or build output as source.
 Pages publishes only the tested dist from this repository, with minimal token/OIDC
 permissions and no cross-repository checkout. See docs/deployment.md.

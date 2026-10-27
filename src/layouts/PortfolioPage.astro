@@ -27,7 +27,7 @@ const ui = getContent(lang).ui;
 const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fullName });
 ---
 
-<Layout lang={lang}>
+<Layout lang={lang} profile>
   <script
     slot="head"
     type="application/ld+json"
@@ -36,8 +36,11 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
   ></script>
   <script>
     import { initLanguageDetection } from '../scripts/language-detection';
+    import { initPortfolio } from '../scripts/portfolio';
+    import { safeInit } from '../scripts/safe-init';
 
-    initLanguageDetection();
+    safeInit(initLanguageDetection);
+    initPortfolio();
   </script>
   <Header lang={lang} />
   <div id="mobile-nav-overlay" class="mobile-nav-overlay d-xl-none" aria-hidden="true"></div>

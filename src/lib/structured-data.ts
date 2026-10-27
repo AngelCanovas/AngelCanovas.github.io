@@ -5,12 +5,13 @@ import type { Lang } from './types';
 
 export interface PersonSchemaInput {
   lang: Lang;
-  /** Canonical URL of the page the schema is embedded in. */
   url: string;
   /** Absolute URL of the profile image. */
   image: string;
-  /** Injectable clock, so the experience length stays deterministic in tests. */
-  now?: Date;
+}
+
+interface ProfilePageSchemaInput extends PersonSchemaInput {
+  personUrl: string;
 }
 
 interface PersonLanguage {
@@ -32,12 +33,6 @@ const LANGUAGE_CODES: Record<string, string> = {
   Francés: 'fr',
 };
 
-function parseStart(period: string): { year: number; month: number } | null {
-  const [year, month] = splitPeriod(period).startIso.split('-');
-  if (!year) return null;
-  return { year: Number(year), month: Math.max(0, Number(month ?? '1') - 1) };
-}
-
 /**
  * The current employer is the job with an open-ended period ("present"), not
  * simply the first entry: reordering the CV must not declare a past employer.
@@ -55,11 +50,7 @@ export function currentEmployer(
   };
 }
 
-/**
- * Build the `schema.org/Person` JSON-LD used for rich search results. Kept pure
- * so it can be unit tested and reused across pages.
- */
-export function buildPersonSchema({ lang, url, image, now = new Date() }: PersonSchemaInput) {
+export function buildPersonSchema({ lang, url, image }: PersonSchemaInput) {
   const content = getContent(lang);
   const { about, resume, skills } = content;
 
@@ -94,10 +85,6 @@ export function buildPersonSchema({ lang, url, image, now = new Date() }: Person
       name: about.role,
       occupationalCategory: 'Software Development',
       skills: allSkills,
-      experienceRequirements: {
-        '@type': 'OccupationalExperienceRequirements',
-        monthsOfExperience: monthsOfExperience(resume.experience, now),
-      },
     },
     alumniOf: schools.map((name) => ({ '@type': 'EducationalOrganization', name })),
     hasCredential: resume.certifications.map((certification) => {
@@ -113,18 +100,16 @@ export function buildPersonSchema({ lang, url, image, now = new Date() }: Person
   } as const;
 }
 
-function monthsOfExperience(
-  experience: ReadonlyArray<{ readonly period: string }>,
-  now: Date,
-): number {
-  const starts = experience
-    .map((job) => parseStart(job.period))
-    .filter((start): start is { year: number; month: number } => start !== null);
-  if (starts.length === 0) return 0;
-  const earliest = starts.reduce((min, start) =>
-    start.year < min.year || (start.year === min.year && start.month < min.month) ? start : min,
-  );
-  return Math.max(0, (now.getFullYear() - earliest.year) * 12 + (now.getMonth() - earliest.month));
+export function buildProfilePageSchema({ lang, url, personUrl, image }: ProfilePageSchemaInput) {
+  const { '@context': context, ...person } = buildPersonSchema({ lang, url: personUrl, image });
+  return {
+    '@context': context,
+    '@type': 'ProfilePage',
+    '@id': `${url}#profile`,
+    url,
+    inLanguage: lang,
+    mainEntity: person,
+  } as const;
 }
 
 /** `schema.org/WebSite` node for the home page, declared in both site languages. */
