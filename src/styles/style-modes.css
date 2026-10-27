@@ -110,6 +110,10 @@
   animation: style-progress-blink 1.05s ease-in-out infinite;
 }
 
+.style-progress-backdrop.style-progress--warning .style-progress-tube:focus-within {
+  animation: none;
+}
+
 @keyframes style-progress-blink {
   50% {
     opacity: 0.5;
@@ -136,10 +140,10 @@
 }
 
 .style-progress-backdrop-control:focus-visible {
-  opacity: 0.2;
+  opacity: 1;
   outline: 2px solid var(--accent-ink);
   outline-offset: 2px;
-  background: color-mix(in srgb, var(--accent-ink), transparent 80%);
+  background: transparent;
 }
 
 @media (max-width: 400px) {
