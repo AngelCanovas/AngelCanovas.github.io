@@ -27,30 +27,30 @@
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
     "@fontsource/raleway": "^5.3.0",
-    "astro": "^7.3.8",
+    "astro": "^7.4.2",
     "bootstrap": "^5.3.8",
     "http-cache-semantics": "file:vendor/http-cache-semantics"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
-    "@axe-core/playwright": "^4.13.0",
+    "@astrojs/check": "^0.9.12",
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.64.0",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^24.19.2",
-    "astro-purgecss": "^7.0.0",
+    "astro-purgecss": "^7.0.1",
     "braces": "file:vendor/braces",
     "chrome-launcher": "1.2.2",
-    "eslint": "^10.12.0",
+    "eslint": "^10.13.0",
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.13.0",
-    "jsdom": "^30.1.2",
+    "jsdom": "^30.1.3",
     "lighthouse": "13.5.0",
     "playwright": "^1.63.0",
     "prettier": "^3.9.10",
-    "prettier-plugin-astro": "^1.1.1",
+    "prettier-plugin-astro": "^1.1.2",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.71.2",
-    "vitest": "^5.0.4"
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
   },
   "allowScripts": {
     "esbuild@0.28.2": true
