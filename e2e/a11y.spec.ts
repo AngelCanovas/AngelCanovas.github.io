@@ -82,6 +82,82 @@ test('the skip link is the first stop for keyboard users and is not covered', as
   expect(visibleUnderPointer).toBe(true);
 });
 
+test.describe('hero eyebrow contrast', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  for (const route of ['/', '/es/']) {
+    for (const width of [390, 1440]) {
+      for (const theme of ['light', 'dark']) {
+        test(`original ${theme} ${route} at ${width}`, async ({ page }) => {
+          await page.setViewportSize({ width, height: 900 });
+          await page.addInitScript(
+            ({ theme, lang }) => {
+              Math.random = () => 0.01;
+              localStorage.setItem('theme', theme);
+              localStorage.setItem('lang', lang);
+            },
+            { theme, lang: route === '/' ? 'en' : 'es' },
+          );
+          await page.goto(route);
+          await page.evaluate(() => document.fonts.ready);
+          await expect(page.locator('html')).toHaveAttribute('data-style', 'original');
+          await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+          await expect(page.locator('html')).toHaveAttribute('lang', route === '/' ? 'en' : 'es');
+          const eyebrow = page.locator('.hero-eyebrow');
+          await expect(eyebrow).toBeVisible();
+          const { box, foreground, lines } = await eyebrow.evaluate((element) => {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const rect = range.getBoundingClientRect();
+            return {
+              box: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
+              foreground: getComputedStyle(element)
+                .color.match(/[\d.]+/g)!
+                .slice(0, 3)
+                .map(Number),
+              lines: range.getClientRects().length,
+            };
+          });
+          expect(lines).toBe(1);
+          const x = Math.ceil(box.left);
+          const sampleWidth = Math.floor(box.right) - x;
+          expect(sampleWidth).toBeGreaterThan(0);
+          const foregroundLuminance = luminance(foreground);
+
+          for (const y of [Math.floor(box.top) - 2, Math.ceil(box.bottom) + 1]) {
+            const png = await page.screenshot({
+              clip: { x, y, width: sampleWidth, height: 1 },
+              scale: 'css',
+            });
+            const backgrounds = await page.evaluate(async (base64) => {
+              const image = new Image();
+              image.src = `data:image/png;base64,${base64}`;
+              await image.decode();
+              const canvas = document.createElement('canvas');
+              canvas.width = image.width;
+              canvas.height = image.height;
+              const context = canvas.getContext('2d')!;
+              context.drawImage(image, 0, 0);
+              const pixels = context.getImageData(0, 0, image.width, 1).data;
+              return Array.from({ length: image.width }, (_, index) =>
+                Array.from(pixels.slice(index * 4, index * 4 + 3)),
+              );
+            }, png.toString('base64'));
+            const contrasts = backgrounds.map((background) => {
+              const values = [foregroundLuminance, luminance(background)];
+              return (Math.max(...values) + 0.05) / (Math.min(...values) + 0.05);
+            });
+            expect(
+              Math.min(...contrasts),
+              `original ${theme} ${route} at ${width}: eyebrow/background contrast at y=${y}`,
+            ).toBeGreaterThanOrEqual(4.5);
+          }
+        });
+      }
+    }
+  }
+});
+
 test.describe('progress control keyboard focus', () => {
   test.use({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
 

@@ -47,6 +47,9 @@
       radial-gradient(ellipse at 80% 30%, light-dark(#e9e4fb, #1a1030), transparent 60%),
       light-dark(#f2f7fc, #040b14);
   }
+  :root[data-style='original'] .hero-eyebrow {
+    color: light-dark(#0b6590, var(--accent-ink));
+  }
   :root[data-style='original'] .hero-atmosphere {
     display: none;
   }
