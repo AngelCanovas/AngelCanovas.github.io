@@ -9,8 +9,9 @@ Bilingual CV and portfolio of a Full-Stack Java Engineer based in Murcia, Spain.
 - [Online CV](https://angelcanovas.github.io/cv/) · [CV online](https://angelcanovas.github.io/cv/es/)
 - [English PDF](https://angelcanovas.github.io/cv/angel-canovas-cv-en.pdf) · [PDF español](https://angelcanovas.github.io/cv/angel-canovas-cv-es.pdf)
 
-The static Astro site includes accessible navigation, light/dark themes, local
-fonts, an interactive hero, print styles and machine-readable CV feeds.
+The static Astro site includes accessible navigation, a dark theme by default
+with a light toggle, local fonts, an interactive hero, print styles and
+machine-readable CV feeds.
 
 ## Engineering approach
 

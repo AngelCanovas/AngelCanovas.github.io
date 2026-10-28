@@ -561,6 +561,7 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
     test(`style rendering ${mode} ${colorScheme}`, async ({ page }, info) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+      await page.addInitScript((theme) => localStorage.setItem('theme', theme), colorScheme);
       await page.addInitScript((style) => {
         const values = { original: 0.01, editorial: 0.26, technical: 0.51, noir: 0.76 } as const;
         Object.defineProperty(Math, 'random', {

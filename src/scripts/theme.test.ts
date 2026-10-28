@@ -6,8 +6,8 @@ import { initThemeToggle, THEME_KEY } from './theme';
 function setup(): HTMLButtonElement {
   document.documentElement.removeAttribute('data-theme');
   document.head.innerHTML = `
-    <meta name="theme-color" content="#f6f3eb" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#191a18" media="(prefers-color-scheme: dark)">`;
+    <meta name="theme-color" content="#f6f3eb" media="all" data-theme="light">
+    <meta name="theme-color" content="#191a18" media="not all" data-theme="dark">`;
   document.body.innerHTML = `
     <button
       type="button"
@@ -21,6 +21,13 @@ function setup(): HTMLButtonElement {
   return button;
 }
 
+function metaMedia(): string[] {
+  return Array.from(
+    document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
+    (meta) => meta.media,
+  );
+}
+
 beforeEach(() => {
   localStorage.clear();
 });
@@ -31,104 +38,94 @@ afterEach(() => {
 });
 
 describe('initThemeToggle', () => {
-  it('switches to dark, persists it and updates the button state', () => {
+  it('opens in dark by default and toggles to light and back', () => {
     const button = setup();
     initThemeToggle();
 
-    button.click();
     expect(document.documentElement.dataset.theme).toBe('dark');
-    expect(localStorage.getItem(THEME_KEY)).toBe('dark');
     expect(button.getAttribute('aria-pressed')).toBe('true');
     expect(button.getAttribute('aria-label')).toBe('Switch to light');
+    expect(metaMedia()).toEqual(['not all', 'all']);
 
     button.click();
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(localStorage.getItem(THEME_KEY)).toBe('light');
     expect(button.getAttribute('aria-pressed')).toBe('false');
     expect(button.getAttribute('aria-label')).toBe('Switch to dark');
+    expect(metaMedia()).toEqual(['all', 'not all']);
+
+    button.click();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(localStorage.getItem(THEME_KEY)).toBe('dark');
   });
 
-  it('starts from a stored choice', () => {
-    localStorage.setItem(THEME_KEY, 'dark');
+  it('ignores the system preference', () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener: vi.fn() }));
     const button = setup();
     initThemeToggle();
 
+    expect(document.documentElement.dataset.theme).toBe('dark');
     expect(button.getAttribute('aria-pressed')).toBe('true');
-    expect(button.getAttribute('aria-label')).toBe('Switch to light');
+  });
+
+  it.each(['light', 'dark'] as const)('starts from a stored %s choice', (choice) => {
+    localStorage.setItem(THEME_KEY, choice);
+    const button = setup();
+    initThemeToggle();
+
+    expect(document.documentElement.dataset.theme).toBe(choice);
+    expect(button.getAttribute('aria-pressed')).toBe(String(choice === 'dark'));
+    expect(button.getAttribute('aria-label')).toBe(
+      choice === 'dark' ? 'Switch to light' : 'Switch to dark',
+    );
   });
 
   it.each([null, 'light', 'dark'] as const)(
     'keeps browser metadata aligned with the visible theme when storage writes fail (%s)',
     (initial) => {
       const button = setup();
-      if (initial) {
-        localStorage.setItem(THEME_KEY, initial);
-        document.documentElement.dataset.theme = initial;
-      }
+      if (initial) localStorage.setItem(THEME_KEY, initial);
       vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
         throw new Error('storage unavailable');
       });
       initThemeToggle();
       button.click();
-      const next = initial === 'dark' ? 'light' : 'dark';
+      const next = initial === 'light' ? 'dark' : 'light';
       expect(document.documentElement.dataset.theme).toBe(next);
       expect(localStorage.getItem(THEME_KEY)).toBe(initial);
       expect(button.getAttribute('aria-pressed')).toBe(String(next === 'dark'));
-      expect(
-        Array.from(
-          document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
-          (meta) => meta.media,
-        ),
-      ).toEqual(next === 'dark' ? ['not all', 'all'] : ['all', 'not all']);
+      expect(metaMedia()).toEqual(next === 'dark' ? ['not all', 'all'] : ['all', 'not all']);
     },
   );
 
   it('synchronizes a choice from another tab before the next toggle', () => {
     const button = setup();
     initThemeToggle();
-    button.click();
-    localStorage.setItem(THEME_KEY, 'light');
-    window.dispatchEvent(
-      new StorageEvent('storage', { key: THEME_KEY, newValue: 'light', storageArea: localStorage }),
-    );
-    expect(document.documentElement.dataset.theme).toBe('light');
-    expect(button.getAttribute('aria-pressed')).toBe('false');
-    expect(button.getAttribute('aria-label')).toBe('Switch to dark');
-    button.click();
     expect(document.documentElement.dataset.theme).toBe('dark');
-  });
-
-  it.each([THEME_KEY, null])('returns to the system when storage is cleared for %s', (key) => {
-    const button = setup();
-    initThemeToggle();
     button.click();
-    localStorage.clear();
-    window.dispatchEvent(new StorageEvent('storage', { key, storageArea: localStorage }));
-    expect(document.documentElement.dataset.theme).toBeUndefined();
-    expect(button.getAttribute('aria-pressed')).toBe('false');
-    expect(button.getAttribute('aria-label')).toBe('Switch to dark');
+    expect(document.documentElement.dataset.theme).toBe('light');
+    localStorage.setItem(THEME_KEY, 'dark');
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: THEME_KEY, newValue: 'dark', storageArea: localStorage }),
+    );
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    button.click();
+    expect(document.documentElement.dataset.theme).toBe('light');
   });
 
   it.each([THEME_KEY, null])(
-    'immediately restores a dark system when an explicit light choice is cleared for %s',
+    'returns to the dark default when storage is cleared for %s',
     (key) => {
-      vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: vi.fn() }));
       const button = setup();
-      localStorage.setItem(THEME_KEY, 'light');
-      document.documentElement.dataset.theme = 'light';
       initThemeToggle();
-      if (key) localStorage.removeItem(key);
-      else localStorage.clear();
+      button.click();
+      localStorage.clear();
       window.dispatchEvent(new StorageEvent('storage', { key, storageArea: localStorage }));
-      expect(document.documentElement.dataset.theme).toBeUndefined();
+      expect(document.documentElement.dataset.theme).toBe('dark');
       expect(button.getAttribute('aria-pressed')).toBe('true');
       expect(button.getAttribute('aria-label')).toBe('Switch to light');
-      expect(
-        Array.from(
-          document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
-          (meta) => meta.media,
-        ),
-      ).toEqual(['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)']);
+      expect(metaMedia()).toEqual(['not all', 'all']);
     },
   );
 
@@ -138,7 +135,7 @@ describe('initThemeToggle', () => {
       const button = setup();
       initThemeToggle();
       if (explicit) button.click();
-      const next = explicit ? 'light' : 'dark';
+      const next = explicit ? 'dark' : 'light';
       localStorage.setItem(THEME_KEY, next);
       button.click();
       expect(document.documentElement.dataset.theme).toBe(next);
@@ -149,7 +146,7 @@ describe('initThemeToggle', () => {
     localStorage.setItem(THEME_KEY, 'sepia');
     setup();
     initThemeToggle();
-    expect(document.documentElement.dataset.theme).toBeUndefined();
+    expect(document.documentElement.dataset.theme).toBe('dark');
 
     document.body.innerHTML = '';
     expect(() => initThemeToggle()).not.toThrow();

@@ -59,9 +59,14 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <meta name="description" content={description} />
     <meta name="author" content={personal.fullName} />
     <meta name="robots" content={Astro.props.robots ?? 'index, follow'} />
-    <meta name="theme-color" content="#f6f3eb" media="(prefers-color-scheme: light)" />
-    {!isCv && <meta name="theme-color" content="#191a18" media="(prefers-color-scheme: dark)" />}
-    <meta name="color-scheme" content={isCv ? 'light' : 'light dark'} />
+    <meta
+      name="theme-color"
+      content="#f6f3eb"
+      media={isCv ? 'all' : 'not all'}
+      data-theme="light"
+    />
+    {!isCv && <meta name="theme-color" content="#191a18" media="all" data-theme="dark" />}
+    <meta name="color-scheme" content={isCv ? 'light' : 'dark'} />
 
     <!-- Choose a fresh visual style before first paint (the button can cycle it later). -->
     <script is:inline>
