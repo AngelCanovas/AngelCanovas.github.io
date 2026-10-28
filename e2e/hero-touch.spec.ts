@@ -17,6 +17,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
       locale: 'en-US',
     });
 
+    test.beforeEach(async ({ page }) => {
+      await page.addInitScript((theme) => localStorage.setItem('theme', theme), colorScheme);
+    });
+
     for (const path of ['/', '/es/']) {
       test(`hides the dotted atmosphere and keeps usable content on ${path}`, async ({
         page,

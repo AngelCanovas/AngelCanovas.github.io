@@ -19,6 +19,7 @@ const pages = [
 
 for (const { path, name } of pages) {
   test(`no serious or critical accessibility violations on ${name}`, async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('theme', 'light'));
     await page.goto(path, { waitUntil: 'networkidle' });
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
@@ -214,6 +215,7 @@ test.describe('dark colour scheme', () => {
     test(`no serious or critical accessibility violations on ${name} in dark mode`, async ({
       page,
     }) => {
+      await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
       await page.goto(path, { waitUntil: 'networkidle' });
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])

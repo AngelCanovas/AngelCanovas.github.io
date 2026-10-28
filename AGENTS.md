@@ -17,6 +17,10 @@ Use `withBase()` for internal paths and `absoluteUrl()` for canonical URLs. Keep
 the `/` root mount consistent in tools, browser tests, feeds, downloads, sprite
 and language routing. Preserve bot/history redirect guards and query/hash.
 
+Portfolio pages open in the dark theme by default, ignoring the system
+preference; the toggle stores an explicit light or dark choice. The online CV
+(`/cv/`, `/cv/es/`) always keeps its light tokens for reading and print.
+
 Never weaken CSP or inline-code build guards. Use classes/data attributes and the
 CSSOM; keep same-origin fonts/icons, semantic headings, contrast tokens and focus.
 Retain `vendor/` forks, licenses, hashes, root file dependencies and install-links.

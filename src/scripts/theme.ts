@@ -1,11 +1,7 @@
 export const THEME_KEY = 'theme';
+export const DEFAULT_THEME = 'dark';
 
 export type Theme = 'light' | 'dark';
-
-const SYSTEM_MEDIA: Record<Theme, string> = {
-  light: '(prefers-color-scheme: light)',
-  dark: '(prefers-color-scheme: dark)',
-};
 
 function readStoredTheme(): Theme | null {
   try {
@@ -16,29 +12,21 @@ function readStoredTheme(): Theme | null {
   }
 }
 
-function systemTheme(): Theme {
-  return typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-}
-
-/** The theme actually in effect: applied choice, stored choice, then system. */
+/** The theme actually in effect: applied choice, stored choice, then the site default. */
 function currentTheme(): Theme {
   const applied = document.documentElement.dataset.theme;
   if (applied === 'light' || applied === 'dark') return applied;
   const stored = readStoredTheme();
   if (stored) return stored;
-  return systemTheme();
+  return DEFAULT_THEME;
 }
 
 /**
- * Light/dark toggle: the site starts from the system preference and stores an
- * explicit choice in `localStorage`. A tiny inline script in `Layout.astro`
- * applies the stored theme before first paint, so there is no flash; this
- * module only keeps the button state and the theme-color metas in sync. With no
- * explicit choice the metas keep their system media queries, so a live system
- * change still reaches the browser chrome.
+ * Light/dark toggle: the site opens in dark by default, ignoring the system
+ * preference, and stores an explicit choice in `localStorage`. A tiny inline
+ * script in `Layout.astro` applies the stored theme before first paint, so
+ * there is no flash; this module only keeps the button state and the
+ * theme-color metas in sync.
  */
 export function initThemeToggle(): void {
   const button = document.querySelector<HTMLElement>('[data-theme-toggle]');
@@ -48,19 +36,19 @@ export function initThemeToggle(): void {
     document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
   ).map((meta) => ({
     meta,
-    theme: ((meta.getAttribute('media') ?? '').includes('dark') ? 'dark' : 'light') as Theme,
+    theme: (meta.dataset.theme === 'dark' ? 'dark' : 'light') as Theme,
   }));
 
   const syncThemeColorMeta = () => {
-    const applied = document.documentElement.dataset.theme;
-    const choice = applied === 'light' || applied === 'dark' ? applied : readStoredTheme();
+    const choice = currentTheme();
     for (const { meta, theme } of metas) {
-      meta.media = choice ? (theme === choice ? 'all' : 'not all') : SYSTEM_MEDIA[theme];
+      meta.media = theme === choice ? 'all' : 'not all';
     }
   };
 
   const sync = () => {
     const theme = currentTheme();
+    document.documentElement.dataset.theme = theme;
     const next = theme === 'dark' ? 'light' : 'dark';
     button.setAttribute('aria-pressed', String(theme === 'dark'));
     const label = next === 'dark' ? button.dataset.labelDark : button.dataset.labelLight;
@@ -69,9 +57,7 @@ export function initThemeToggle(): void {
   };
 
   button.addEventListener('click', () => {
-    const applied = document.documentElement.dataset.theme;
-    const theme = applied === 'light' || applied === 'dark' ? applied : systemTheme();
-    const next = theme === 'dark' ? 'light' : 'dark';
+    const next = currentTheme() === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem(THEME_KEY, next);
@@ -86,16 +72,9 @@ export function initThemeToggle(): void {
       return;
     }
     const stored = readStoredTheme();
-    if (stored) document.documentElement.dataset.theme = stored;
-    else delete document.documentElement.dataset.theme;
+    document.documentElement.dataset.theme = stored ?? DEFAULT_THEME;
     sync();
   });
-
-  if (typeof window.matchMedia === 'function') {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (!readStoredTheme()) sync();
-    });
-  }
 
   sync();
 }

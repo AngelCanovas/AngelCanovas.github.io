@@ -30,6 +30,7 @@ for (const width of [375, 1440]) {
     test(`editorial presentation at ${width} in ${colorScheme}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+      await page.addInitScript((theme) => localStorage.setItem('theme', theme), colorScheme);
       await page.goto('/');
       await expect(page.locator('#header')).toHaveCSS('transition-duration', '0s');
       await expect(page.locator('.service-number, .section-number')).toHaveCount(0);

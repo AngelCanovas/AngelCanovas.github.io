@@ -88,7 +88,7 @@ test('persisted pageshow event contract tolerates a denied preference write', as
   expect(await page.evaluate(() => localStorage.getItem('lang'))).toBe('es');
   await expect(page).toHaveURL('/');
   await page.locator('[data-theme-toggle]').click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 
 test.describe('denied preference read', () => {
@@ -154,7 +154,7 @@ for (const [method, seed] of [
     await expect.poll(faults).toBeGreaterThan(0);
     await expectSection(page, 'resume');
     await page.locator('[data-theme-toggle]').click();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 }
 
@@ -295,7 +295,7 @@ test('an aborted renderer chunk leaves complete content and shared controls usab
   expect((await page.locator('main').textContent()) === content).toBe(true);
   await expect(page.locator('footer')).toBeAttached();
   await page.locator('[data-theme-toggle]').click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await toggle.click();
   await expect(page.locator('#hero')).toHaveAttribute('data-hero-backdrop-mode', 'waves');
   await expect.poll(() => canvasChecksum(page)).toBeGreaterThan(0);
