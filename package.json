@@ -27,12 +27,12 @@
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
     "@fontsource/raleway": "^5.3.0",
-    "astro": "^7.4.2",
+    "astro": "7.3.8",
     "bootstrap": "^5.3.8",
     "http-cache-semantics": "file:vendor/http-cache-semantics"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.12",
+    "@astrojs/check": "^0.9.11",
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
@@ -47,7 +47,7 @@
     "lighthouse": "13.5.0",
     "playwright": "^1.63.0",
     "prettier": "^3.9.10",
-    "prettier-plugin-astro": "^1.1.2",
+    "prettier-plugin-astro": "^1.1.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.0",
     "vitest": "^5.0.5"
