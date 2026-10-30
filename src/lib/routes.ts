@@ -15,6 +15,11 @@ export function cvPdfHref(lang: Lang): string {
   return withBase(lang === 'es' ? '/cv/angel-canovas-cv-es.pdf' : '/cv/angel-canovas-cv-en.pdf');
 }
 
+/** Plain-text CV for ATS forms and copy/paste; generated from the same content. */
+export function cvTextHref(lang: Lang): string {
+  return withBase(lang === 'es' ? '/cv/angel-canovas-cv-es.txt' : '/cv/angel-canovas-cv-en.txt');
+}
+
 export function localeTag(lang: Lang): string {
   return lang === 'es' ? 'es-ES' : 'en-US';
 }
