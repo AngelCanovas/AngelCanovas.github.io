@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { cvPageHref, cvPdfHref, homeHref, localeTag } from './routes';
+import { cvPageHref, cvPdfHref, cvTextHref, homeHref, localeTag } from './routes';
 
 describe('localized routes', () => {
   it('maps every language to its page and PDF paths', () => {
@@ -10,6 +10,8 @@ describe('localized routes', () => {
     expect(cvPageHref('es')).toBe('/cv/es/');
     expect(cvPdfHref('en')).toBe('/cv/angel-canovas-cv-en.pdf');
     expect(cvPdfHref('es')).toBe('/cv/angel-canovas-cv-es.pdf');
+    expect(cvTextHref('en')).toBe('/cv/angel-canovas-cv-en.txt');
+    expect(cvTextHref('es')).toBe('/cv/angel-canovas-cv-es.txt');
   });
 
   it('maps every language to its number-formatting locale', () => {
