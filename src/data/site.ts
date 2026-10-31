@@ -247,7 +247,7 @@ const en = {
           {
             title: 'API testing & production support · Telia Sweden / Finland',
             details: [
-              'Tested APIs with Postman and the client\'s internal Spock-based tooling.',
+              "Tested APIs with Postman and the client's internal Spock-based tooling.",
               'Monitored production and resolved B2B incidents to keep critical telecom services stable.',
             ],
           },
