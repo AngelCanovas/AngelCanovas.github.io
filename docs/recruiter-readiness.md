@@ -32,6 +32,28 @@ The document title now names the target role instead of the generic `CV` suffix:
 Full-Stack Java` (ES). This is what search results and browser tabs show when a
 recruiter opens the page.
 
+## Recruiter content pass
+
+The CV content was tightened using the channel's recruiter guidance without adding
+new facts:
+
+- summary front-loads role, years, domain and stack; em dashes removed from the
+  prose to avoid a common AI-writing tell;
+- experience bullets now lead with an action and a result, and the security
+  bullet names the areas led (role-based access control, secure cookies/sessions,
+  cryptographic PIN generation);
+- the LPI bullet explains what the platform does and who it serves;
+- the DB2 bullet states the concrete contribution (schema changes, Liquibase
+  changesets, data migration and production incidents);
+- the `Also used` skills block was trimmed to technologies relevant to the Java
+  profile; education years were removed to reduce age bias;
+- the downloadable PDFs were regenerated from the updated master Markdown and
+  remain two pages.
+
+The full research guide and the 543 video cards stay outside this repository, in
+`~/cv/` and in the job-search knowledge base. This repository keeps only the
+changes derived from them.
+
 ## Verification
 
 ```sh

@@ -146,8 +146,13 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
       <div class="cv-entry">
         <h3>{edu.degree}</h3>
         <p class="cv-period">
-          <PeriodRange period={edu.period} />
-          <span class="cv-company"> · {edu.school}</span>
+          {edu.period.start && (
+            <>
+              <PeriodRange period={edu.period} />
+              <span class="cv-company"> · </span>
+            </>
+          )}
+          <span class="cv-company">{edu.school}</span>
         </p>
         {edu.detail && <p>{edu.detail}</p>}
       </div>

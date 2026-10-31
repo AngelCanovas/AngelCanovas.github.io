@@ -69,7 +69,7 @@ const en = {
   stats: {
     items: [
       { value: 5, suffix: '+', label: 'Years of experience', decimals: 0 },
-      { value: 10000, suffix: '+', label: 'Students impacted', decimals: 0 },
+      { value: 10000, suffix: '+', label: 'Students supported', decimals: 0 },
       { value: 4.23, suffix: '/5', label: 'Client satisfaction', decimals: 2 },
       { value: 2, suffix: '', label: 'National platforms', decimals: 0 },
     ],
@@ -77,9 +77,9 @@ const en = {
   about: {
     title: 'About',
     summary:
-      'Full-stack Java engineer with 5+ years at Capgemini on enterprise web applications for the French Ministry of National Education — notably Livret de Parcours Inclusif (LPI) and Faits Établissement — used nationwide by teaching staff and administration. Day to day: Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf and Angular, on IBM DB2, with the full application lifecycle (new features, corrective maintenance, MCO/application support, hotfixes, releases, database migrations, batch processes and document generation).',
+      'Full-stack Java engineer with 5+ years at Capgemini building enterprise web applications for the French Ministry of National Education, including Livret de Parcours Inclusif (LPI) and Faits Établissement. I work across the full lifecycle with Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf and Angular on IBM DB2: new features, corrective maintenance, production support, releases, database migrations and batch processes.',
     secureSummary:
-      'Over the last year I have moved my profile towards secure software development: authentication with SAML2, role-based access control, CSRF protection, secure cookies, session management, code hardening and vulnerability remediation following a technical security audit of an application used by the French Ministry of National Education. In 2025 I completed the official Specialisation Course (Máster de FP) in Cybersecurity for IT Environments, with a grade of 8.83/10.',
+      'Over the last year I have specialised in secure software development. During the remediation of a technical security audit I led role-based access control, secure cookie and session handling, and improved the PIN generation code with a stronger cryptographic algorithm. I also worked on CSRF protection, code hardening and vulnerability remediation. In 2025 I completed the Official Specialisation Course in Cybersecurity for IT Environments with a grade of 8.83/10.',
     languages:
       'I work in English and French on a daily basis (English C1, French B1) and I am looking for a 100 % remote role in backend/full-stack Java or secure enterprise applications, in an international team.',
     meta: {
@@ -148,6 +148,7 @@ const en = {
           'Session management',
           'Code hardening',
           'Vulnerability remediation',
+          'Cryptographic PIN generation',
           'Secure deployment',
           'Network security',
         ],
@@ -190,19 +191,13 @@ const en = {
           'Tomcat',
           'Elasticsearch',
           'Node.js',
-          'PHP',
-          'Laravel',
           'Python',
-          'Vue.js',
           'Liquibase',
           'Microservices',
           'Hexagonal architecture',
           'UML',
           'Unit testing',
-          '.NET / C#',
-          'PowerShell',
           'Bash',
-          'Jenkins',
         ],
       },
     ],
@@ -226,10 +221,10 @@ const en = {
         context:
           'Full-stack Java developer · French Ministry of National Education · Livret de Parcours Inclusif, Faits Établissement',
         highlights: [
-          'Main developer of several features on a key educational platform, one of them directly improving accessibility for students with special needs across France.',
-          'Took part in the migration of the production database from MySQL to IBM DB2, improving efficiency, reliability and scalability, with changes managed through Liquibase.',
-          'Security remediation on findings from a technical audit of a Ministry of National Education application: access control, session management, secure cookies, CSRF and code hardening.',
-          'Helped raise customer satisfaction from 3.5 to 4.23 / 5 in the first year through proactive issue resolution and consistent delivery quality.',
+          'Developed accessibility features for LPI, an internal Ministry platform that digitises support plans and processes for students with special educational needs across France, used by teaching staff nationwide.',
+          'Contributed to the migration of the production database from MySQL to IBM DB2: schema changes and Liquibase changesets, data migration support and resolution of production incidents.',
+          'Led role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm during the remediation of a technical security audit; also worked on CSRF protection, code hardening and vulnerability remediation.',
+          'Contributed to raising customer satisfaction from 3.5 to 4.23 / 5 in the first year through proactive issue resolution and consistent delivery quality.',
           'Onboarded and mentored 2 new team members with functional and technical training and troubleshooting support.',
           'Resolved 1-2 production blockers per month in a team of about 10 people serving thousands of active users.',
         ],
@@ -252,8 +247,8 @@ const en = {
           {
             title: 'API testing & production support · Telia Sweden / Finland',
             details: [
-              "API testing with Postman and with the client's internal Spock-based test tooling.",
-              'Production monitoring and B2B incident troubleshooting to keep critical telecom services running and stable.',
+              "Tested APIs with Postman and the client's internal Spock-based tooling.",
+              'Monitored production and resolved B2B incidents to keep critical telecom services stable.',
             ],
           },
         ],
@@ -275,26 +270,26 @@ const en = {
       {
         degree: 'Specialisation Course in Cybersecurity for IT Environments',
         school: 'IES Ingeniero de la Cierva',
-        period: '2024 — 2025',
+        period: '',
         detail: 'Official vocational-education postgraduate qualification · Grade: 8.83 / 10',
       },
       {
         degree: 'Higher Vocational Diploma in Multiplatform Application Development (EQF 5)',
         school: 'IES Ingeniero de la Cierva',
-        period: '2020 — 2021',
+        period: '',
         detail:
           'First year credited from the Web Development diploma, as both were studied consecutively',
       },
       {
         degree: 'Higher Vocational Diploma in Web Application Development (EQF 5)',
         school: 'IES Ingeniero de la Cierva',
-        period: '2018 — 2020',
+        period: '',
         detail: '',
       },
       {
         degree: 'English C1',
         school: 'EOI Cartagena',
-        period: '2022 — 2023',
+        period: '',
         detail: '',
       },
     ],
@@ -608,7 +603,7 @@ const es = {
   stats: {
     items: [
       { value: 5, suffix: '+', label: 'Años de experiencia', decimals: 0 },
-      { value: 10000, suffix: '+', label: 'Alumnos impactados', decimals: 0 },
+      { value: 10000, suffix: '+', label: 'Alumnado atendido', decimals: 0 },
       { value: 4.23, suffix: '/5', label: 'Satisfacción del cliente', decimals: 2 },
       { value: 2, suffix: '', label: 'Plataformas nacionales', decimals: 0 },
     ],
@@ -616,9 +611,9 @@ const es = {
   about: {
     title: 'Sobre mí',
     summary:
-      'Ingeniero Full-Stack Java con más de 5 años en Capgemini desarrollando aplicaciones web empresariales para el Ministerio de Educación Nacional de Francia — en particular Livret de Parcours Inclusif (LPI) y Faits Établissement — usadas a nivel nacional por personal docente y administrativo. En el día a día: Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf y Angular, sobre IBM DB2, con todo el ciclo de vida de la aplicación (nuevas funcionalidades, mantenimiento correctivo, MCO/soporte, hotfixes, releases, migraciones de base de datos, procesos batch y generación de documentos).',
+      'Ingeniero Full-Stack Java con más de 5 años en Capgemini desarrollando aplicaciones web empresariales para el Ministerio de Educación Nacional de Francia, en particular Livret de Parcours Inclusif (LPI) y Faits Établissement. Cubro todo el ciclo de vida con Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf y Angular sobre IBM DB2: nuevas funcionalidades, mantenimiento correctivo, soporte en producción, releases, migraciones de base de datos y procesos batch.',
     secureSummary:
-      'Durante el último año he orientado mi perfil hacia el desarrollo seguro: autenticación con SAML2, control de acceso basado en roles, protección CSRF, cookies seguras, gestión de sesiones, endurecimiento de código y remediación de vulnerabilidades tras una auditoría técnica de seguridad de una aplicación del Ministerio de Educación Nacional de Francia. En 2025 completé el Curso de Especialización (Máster de FP) oficial en Ciberseguridad en Entornos de las Tecnologías de la Información, con una nota de 8,83/10.',
+      'Durante el último año me he especializado en desarrollo seguro. En la remediación de una auditoría técnica de seguridad lideré el control de acceso basado en roles, la gestión segura de cookies y sesiones, y mejoré el código de generación de PIN con un algoritmo criptográfico más fuerte. También trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades. En 2025 completé el Curso Oficial de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información con una nota de 8,83/10.',
     languages:
       'Trabajo en inglés y francés a diario (inglés C1, francés B1) y busco un puesto 100 % en remoto en backend/full-stack Java o aplicaciones empresariales seguras, en un equipo internacional.',
     meta: {
@@ -687,6 +682,7 @@ const es = {
           'Gestión de sesiones',
           'Endurecimiento de código',
           'Remediación de vulnerabilidades',
+          'Generación criptográfica de PIN',
           'Despliegue seguro',
           'Seguridad de red',
         ],
@@ -729,19 +725,13 @@ const es = {
           'Tomcat',
           'Elasticsearch',
           'Node.js',
-          'PHP',
-          'Laravel',
           'Python',
-          'Vue.js',
           'Liquibase',
           'Microservicios',
           'Arquitectura hexagonal',
           'UML',
           'Testing unitario',
-          '.NET / C#',
-          'PowerShell',
           'Bash',
-          'Jenkins',
         ],
       },
     ],
@@ -765,10 +755,10 @@ const es = {
         context:
           'Desarrollador Full-Stack Java · Ministerio de Educación Nacional de Francia · Livret de Parcours Inclusif, Faits Établissement',
         highlights: [
-          'Desarrollador principal de varias funcionalidades en una plataforma educativa clave, una de ellas mejorando directamente la accesibilidad para alumnado con necesidades especiales en toda Francia.',
-          'Participé en la migración de la base de datos de producción de MySQL a IBM DB2, mejorando eficiencia, fiabilidad y escalabilidad, con cambios gestionados mediante Liquibase.',
-          'Remediación de seguridad sobre los hallazgos de una auditoría técnica de una aplicación del Ministerio de Educación Nacional: control de acceso, gestión de sesiones, cookies seguras, CSRF y endurecimiento de código.',
-          'Contribuí a elevar la satisfacción del cliente de 3,5 a 4,23 / 5 en el primer año mediante una resolución proactiva de incidencias y una entrega constante.',
+          'Desarrollé funcionalidades de accesibilidad para LPI, una plataforma interna del Ministerio que digitaliza los planes y procesos de apoyo al alumnado con necesidades educativas especiales en toda Francia, usada por personal docente a nivel nacional.',
+          'Contribuí a la migración de la base de datos de producción de MySQL a IBM DB2: cambios de esquema y changesets con Liquibase, apoyo a la migración de datos y resolución de incidencias en producción.',
+          'Lideré el control de acceso basado en roles, la gestión segura de cookies y sesiones y la mejora del algoritmo criptográfico de generación de PIN durante la remediación de una auditoría técnica de seguridad; también trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades.',
+          'Contribuí a subir la satisfacción del cliente de 3,5 a 4,23 / 5 en el primer año mediante resolución proactiva de incidencias y una entrega constante.',
           'Incorporé y mentoré a 2 nuevos miembros del equipo con formación funcional y técnica y apoyo en la resolución de problemas.',
           'Resolví 1-2 bloqueos de producción al mes en un equipo de unas 10 personas con miles de usuarios activos.',
         ],
@@ -815,26 +805,26 @@ const es = {
         degree:
           'Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información (Máster de FP)',
         school: 'IES Ingeniero de la Cierva',
-        period: '2024 — 2025',
+        period: '',
         detail: 'Titulación oficial de posgrado de FP · Nota: 8,83 / 10',
       },
       {
         degree: 'Técnico Superior en Desarrollo de Aplicaciones Multiplataforma (EQF 5)',
         school: 'IES Ingeniero de la Cierva',
-        period: '2020 — 2021',
+        period: '',
         detail:
           'Primer curso convalidado desde el ciclo de Desarrollo de Aplicaciones Web, al cursarse de forma consecutiva',
       },
       {
         degree: 'Técnico Superior en Desarrollo de Aplicaciones Web (EQF 5)',
         school: 'IES Ingeniero de la Cierva',
-        period: '2018 — 2020',
+        period: '',
         detail: '',
       },
       {
         degree: 'Inglés C1',
         school: 'EOI Cartagena',
-        period: '2022 — 2023',
+        period: '',
         detail: '',
       },
     ],

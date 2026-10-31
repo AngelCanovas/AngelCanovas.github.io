@@ -42,7 +42,8 @@ export function buildLlmsFullText(lang: Lang = 'en'): string {
   lines.push(`## ${resume.educationTitle}`, '');
   for (const entry of resume.education) {
     const detail = entry.detail ? ` ${entry.detail}.` : '';
-    lines.push(`- ${entry.degree} — ${entry.school} — ${entry.period}.${detail}`);
+    const period = entry.period ? ` — ${entry.period}` : '';
+    lines.push(`- ${entry.degree} — ${entry.school}${period}.${detail}`);
   }
   lines.push('');
 

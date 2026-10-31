@@ -26,6 +26,7 @@ describe('buildAtsText', () => {
     expect(text).not.toContain('\t');
     expect(text).not.toMatch(/[—–]/);
     expect(text).not.toMatch(/^\s*[*+]\s/m);
+    expect(text).not.toContain(' - .');
   });
 
   it('keeps every experience bullet verbatim (normalised dashes only)', () => {

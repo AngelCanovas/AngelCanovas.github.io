@@ -5,6 +5,7 @@ import { content } from '../data/site';
 type Node = Record<string, unknown> | unknown[] | string | number | boolean | null;
 
 const OPTIONAL_EMPTY_KEYS = new Set(['link', 'suffix', 'detail']);
+const OPTIONAL_EMPTY_PATHS = [/^content\.resume\.education\[\d+\]\.period$/];
 
 function walk(en: Node, es: Node, path: string, issues: string[]) {
   if (Array.isArray(en) || Array.isArray(es)) {
@@ -42,7 +43,7 @@ function walk(en: Node, es: Node, path: string, issues: string[]) {
     issues.push(`${path}: type ${typeof en} vs ${typeof es}`);
     return;
   }
-  if (!OPTIONAL_EMPTY_KEYS.has(key)) {
+  if (!OPTIONAL_EMPTY_KEYS.has(key) && !OPTIONAL_EMPTY_PATHS.some((re) => re.test(path))) {
     if (typeof en === 'string' && en.trim() === '') issues.push(`${path}: empty EN string`);
     if (typeof es === 'string' && es.trim() === '') issues.push(`${path}: empty ES string`);
   }

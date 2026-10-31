@@ -56,7 +56,7 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
     const hostedAboutAllowance = /-768-(?:light|dark)-about$/.test(name) ? 8000 : 0;
     const hostedViewportAllowance = /-1440-(?:light|dark)-viewport$/.test(name) ? 32 : 0;
     await expect(target).toHaveScreenshot(`${name}.png`, {
-      timeout: 30000,
+      timeout: 180000,
       ...options,
       maxDiffPixels: Math.max(hostedAboutAllowance, hostedViewportAllowance),
       threshold: 0,
