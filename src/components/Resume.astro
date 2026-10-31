@@ -78,9 +78,11 @@ const studies = r.education.map((edu) => ({ ...edu, period: splitPeriod(edu.peri
         {studies.map((edu) => (
           <TimelineEntry>
             <h4>{edu.degree}</h4>
-            <p class="resume-period">
-              <PeriodRange period={edu.period} />
-            </p>
+            {edu.period.start && (
+              <p class="resume-period">
+                <PeriodRange period={edu.period} />
+              </p>
+            )}
             <p>
               <em>{edu.school}</em>
             </p>

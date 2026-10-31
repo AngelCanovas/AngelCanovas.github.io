@@ -57,7 +57,8 @@ export function buildAtsText(lang: Lang = 'en'): string {
   lines.push('EDUCATION');
   for (const entry of resume.education) {
     const detail = entry.detail ? ` ${clean(entry.detail)}.` : '';
-    lines.push(`- ${clean(entry.degree)} - ${entry.school} - ${entry.period}.${detail}`);
+    const period = entry.period ? ` - ${clean(entry.period)}` : '';
+    lines.push(`- ${clean(entry.degree)} - ${entry.school}${period}.${detail}`);
   }
   lines.push('');
 
