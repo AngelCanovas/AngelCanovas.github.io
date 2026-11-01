@@ -781,8 +781,8 @@ const es = {
           {
             title: 'Pruebas de API y soporte en producción · Telia Suecia / Finlandia',
             details: [
-              'Pruebas de API con Postman y con la herramienta interna de testing basada en Spock del cliente.',
-              'Monitorización en producción y resolución de incidentes B2B para mantener servicios de telecomunicaciones críticos estables.',
+              'Probé APIs con Postman y con la herramienta interna de testing basada en Spock del cliente.',
+              'Monitoricé producción y resolví incidentes B2B para mantener estables los servicios de telecomunicaciones críticos.',
             ],
           },
         ],

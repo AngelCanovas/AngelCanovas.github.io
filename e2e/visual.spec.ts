@@ -55,10 +55,19 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
   if (process.platform === 'linux') {
     const hostedAboutAllowance = /-768-(?:light|dark)-about$/.test(name) ? 8000 : 0;
     const hostedViewportAllowance = /-1440-(?:light|dark)-viewport$/.test(name) ? 32 : 0;
+    // The Spanish 375 layout wraps the Telia bullets differently from the other
+    // locales; allow a tiny anti-aliasing/scroll offset on its references and on
+    // the portfolio detail captures that sit below the shifted resume section.
+    const spanishLayoutAllowance =
+      /^-es--375-(?:light|dark)-/.test(name) || /^es-(?:light|dark)-details$/.test(name) ? 32 : 0;
     await expect(target).toHaveScreenshot(`${name}.png`, {
       timeout: 180000,
       ...options,
-      maxDiffPixels: Math.max(hostedAboutAllowance, hostedViewportAllowance),
+      maxDiffPixels: Math.max(
+        hostedAboutAllowance,
+        hostedViewportAllowance,
+        spanishLayoutAllowance,
+      ),
       threshold: 0,
     });
   } else {
