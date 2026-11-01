@@ -79,7 +79,7 @@ const en = {
     summary:
       'Full-stack Java engineer with 5+ years at Capgemini building enterprise web applications for the French Ministry of National Education, including Livret de Parcours Inclusif (LPI) and Faits Établissement. I work across the full lifecycle with Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf and Angular on IBM DB2: new features, corrective maintenance, production support, releases, database migrations and batch processes.',
     secureSummary:
-      'Over the last year I have specialised in secure software development. During the remediation of a technical security audit I led role-based access control, secure cookie and session handling, and improved the PIN generation code with a stronger cryptographic algorithm. I also worked on CSRF protection, code hardening and vulnerability remediation. In 2025 I completed the Official Specialisation Course in Cybersecurity for IT Environments with a grade of 8.83/10.',
+      'Over the last year I have specialised in secure software development. During the remediation of a technical security audit I implemented most of the fixes myself as part of the team: SAML2 authentication, role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm. I also worked on CSRF protection, code hardening and vulnerability remediation. In 2025 I completed the Official Specialisation Course in Cybersecurity for IT Environments with a grade of 8.83/10.',
     languages:
       'I work in English and French on a daily basis (English C1, French B1) and I am looking for a 100 % remote role in backend/full-stack Java or secure enterprise applications, in an international team.',
     meta: {
@@ -126,7 +126,6 @@ const en = {
           'IBM DB2',
           'MySQL',
           'PostgreSQL',
-          'MariaDB',
           'Git',
           'GitLab',
           'Maven',
@@ -186,6 +185,7 @@ const en = {
         description: 'Additional technologies from the CV.',
         skills: [
           'Thymeleaf',
+          'Laravel',
           'JSP',
           'JBoss',
           'Tomcat',
@@ -223,7 +223,7 @@ const en = {
         highlights: [
           'Developed accessibility features for LPI, an internal Ministry platform that digitises support plans and processes for students with special educational needs across France, used by teaching staff nationwide.',
           'Contributed to the migration of the production database from MySQL to IBM DB2: schema changes and Liquibase changesets, data migration support and resolution of production incidents.',
-          'Led role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm during the remediation of a technical security audit; also worked on CSRF protection, code hardening and vulnerability remediation.',
+          'Implemented most of the security audit remediation myself as part of the team: SAML2 authentication, role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm; also worked on CSRF protection, code hardening and vulnerability remediation.',
           'Contributed to raising customer satisfaction from 3.5 to 4.23 / 5 in the first year through proactive issue resolution and consistent delivery quality.',
           'Onboarded and mentored 2 new team members with functional and technical training and troubleshooting support.',
           'Resolved 1-2 production blockers per month in a team of about 10 people serving thousands of active users.',
@@ -613,7 +613,7 @@ const es = {
     summary:
       'Ingeniero Full-Stack Java con más de 5 años en Capgemini desarrollando aplicaciones web empresariales para el Ministerio de Educación Nacional de Francia, en particular Livret de Parcours Inclusif (LPI) y Faits Établissement. Cubro todo el ciclo de vida con Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf y Angular sobre IBM DB2: nuevas funcionalidades, mantenimiento correctivo, soporte en producción, releases, migraciones de base de datos y procesos batch.',
     secureSummary:
-      'Durante el último año me he especializado en desarrollo seguro. En la remediación de una auditoría técnica de seguridad lideré el control de acceso basado en roles, la gestión segura de cookies y sesiones, y mejoré el código de generación de PIN con un algoritmo criptográfico más fuerte. También trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades. En 2025 completé el Curso Oficial de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información con una nota de 8,83/10.',
+      'Durante el último año me he especializado en desarrollo seguro. En la remediación de una auditoría técnica de seguridad implementé personalmente la mayor parte de las correcciones dentro del equipo: autenticación SAML2, control de acceso basado en roles, gestión segura de cookies y sesiones y un algoritmo criptográfico más fuerte de generación de PIN. También trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades. En 2025 completé el Curso Oficial de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información con una nota de 8,83/10.',
     languages:
       'Trabajo en inglés y francés a diario (inglés C1, francés B1) y busco un puesto 100 % en remoto en backend/full-stack Java o aplicaciones empresariales seguras, en un equipo internacional.',
     meta: {
@@ -660,7 +660,6 @@ const es = {
           'IBM DB2',
           'MySQL',
           'PostgreSQL',
-          'MariaDB',
           'Git',
           'GitLab',
           'Maven',
@@ -720,6 +719,7 @@ const es = {
         description: 'Tecnologías adicionales del CV.',
         skills: [
           'Thymeleaf',
+          'Laravel',
           'JSP',
           'JBoss',
           'Tomcat',
@@ -757,7 +757,7 @@ const es = {
         highlights: [
           'Desarrollé funcionalidades de accesibilidad para LPI, una plataforma interna del Ministerio que digitaliza los planes y procesos de apoyo al alumnado con necesidades educativas especiales en toda Francia, usada por personal docente a nivel nacional.',
           'Contribuí a la migración de la base de datos de producción de MySQL a IBM DB2: cambios de esquema y changesets con Liquibase, apoyo a la migración de datos y resolución de incidencias en producción.',
-          'Lideré el control de acceso basado en roles, la gestión segura de cookies y sesiones y la mejora del algoritmo criptográfico de generación de PIN durante la remediación de una auditoría técnica de seguridad; también trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades.',
+          'Implementé personalmente la mayor parte de las correcciones de la auditoría de seguridad dentro del equipo: autenticación SAML2, control de acceso basado en roles, gestión segura de cookies y sesiones y un algoritmo criptográfico más fuerte de generación de PIN; también trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades.',
           'Contribuí a subir la satisfacción del cliente de 3,5 a 4,23 / 5 en el primer año mediante resolución proactiva de incidencias y una entrega constante.',
           'Incorporé y mentoré a 2 nuevos miembros del equipo con formación funcional y técnica y apoyo en la resolución de problemas.',
           'Resolví 1-2 bloqueos de producción al mes en un equipo de unas 10 personas con miles de usuarios activos.',

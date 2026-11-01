@@ -40,13 +40,15 @@ new facts:
 - summary front-loads role, years, domain and stack; em dashes removed from the
   prose to avoid a common AI-writing tell;
 - experience bullets now lead with an action and a result, and the security
-  bullet names the areas led (role-based access control, secure cookies/sessions,
+  bullet states that most of the remediation was implemented by Angel as part of
+  the team (SAML2, role-based access control, secure cookies/sessions,
   cryptographic PIN generation);
 - the LPI bullet explains what the platform does and who it serves;
 - the DB2 bullet states the concrete contribution (schema changes, Liquibase
   changesets, data migration and production incidents);
-- the `Also used` skills block was trimmed to technologies relevant to the Java
-  profile; education years were removed to reduce age bias;
+- the `Also used` skills block keeps the technologies Angel uses at work or in
+  his cybersecurity training (Laravel, JSP, JBoss, Tomcat, Elasticsearch,
+  Node.js, Python, Bash); education years were removed to reduce age bias;
 - the downloadable PDFs were regenerated from the updated master Markdown and
   remain two pages.
 
