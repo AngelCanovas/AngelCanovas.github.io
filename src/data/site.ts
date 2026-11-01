@@ -260,7 +260,7 @@ const en = {
         period: 'Mar 2021 — May 2021',
         context: 'French Ministry of Culture',
         highlights: [
-          "Delivered enhancements to the ministry's cultural-events reporting application, improving data accuracy and report generation.",
+          "Supported the ministry's cultural-events reporting application, improving data accuracy and report generation.",
         ],
         stack: [],
         assignments: [],
@@ -794,7 +794,7 @@ const es = {
         period: 'Mar 2021 — May 2021',
         context: 'Ministerio de Cultura de Francia',
         highlights: [
-          'Entregué mejoras en la aplicación de informes de eventos culturales del ministerio, mejorando la precisión de los datos y la generación de informes.',
+          'Presté soporte a la aplicación de informes de eventos culturales del ministerio, mejorando la precisión de los datos y la generación de informes.',
         ],
         stack: [],
         assignments: [],
