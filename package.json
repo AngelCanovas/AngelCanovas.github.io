@@ -27,7 +27,7 @@
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
     "@fontsource/raleway": "^5.3.0",
-    "astro": "7.3.8",
+    "astro": "7.4.5",
     "bootstrap": "^5.3.8",
     "http-cache-semantics": "file:vendor/http-cache-semantics"
   },
@@ -40,17 +40,17 @@
     "astro-purgecss": "^7.0.1",
     "braces": "file:vendor/braces",
     "chrome-launcher": "1.2.2",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "eslint-plugin-astro": "^3.2.1",
-    "globals": "^17.13.0",
+    "globals": "^17.14.0",
     "jsdom": "^30.1.3",
-    "lighthouse": "13.5.0",
+    "lighthouse": "13.6.0",
     "playwright": "^1.63.0",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "allowScripts": {
     "esbuild@0.28.2": true
