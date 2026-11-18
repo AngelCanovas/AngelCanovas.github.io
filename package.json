@@ -40,7 +40,7 @@
     "astro-purgecss": "^7.0.2",
     "braces": "file:vendor/braces",
     "chrome-launcher": "1.2.3",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.14.0",
     "jsdom": "^31.0.0",
