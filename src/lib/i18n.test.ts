@@ -8,10 +8,11 @@ describe('isLang', () => {
   it('accepts the supported locales', () => {
     expect(isLang('en')).toBe(true);
     expect(isLang('es')).toBe(true);
+    expect(isLang('fr')).toBe(true);
   });
 
   it('rejects everything else', () => {
-    expect(isLang('fr')).toBe(false);
+    expect(isLang('de')).toBe(false);
     expect(isLang(null)).toBe(false);
     expect(isLang(42)).toBe(false);
   });
@@ -25,13 +26,15 @@ describe('resolveLang', () => {
 });
 
 describe('content', () => {
-  it('keeps both locales structurally in sync', () => {
+  it('keeps every locale structurally in sync with English', () => {
     expect(Object.keys(content.en).sort()).toEqual(Object.keys(content.es).sort());
+    expect(Object.keys(content.en).sort()).toEqual(Object.keys(content.fr).sort());
   });
 
   it('exposes the same number of projects per locale', () => {
     expect(content.en.portfolio.projects).toHaveLength(6);
     expect(content.es.portfolio.projects).toHaveLength(6);
+    expect(content.fr.portfolio.projects).toHaveLength(6);
   });
 });
 

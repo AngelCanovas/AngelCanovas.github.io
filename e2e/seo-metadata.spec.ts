@@ -27,6 +27,7 @@ const routes = [
     ...getSiteMeta('en'),
     alternateEn: '/',
     alternateEs: '/es/',
+    alternateFr: '/fr/',
     types: ['ProfilePage', 'WebSite'],
     profiles: 1,
     robots: 'index, follow',
@@ -37,6 +38,18 @@ const routes = [
     ...getSiteMeta('es'),
     alternateEn: '/',
     alternateEs: '/es/',
+    alternateFr: '/fr/',
+    types: ['ProfilePage', 'WebSite'],
+    profiles: 1,
+    robots: 'index, follow',
+  },
+  {
+    path: '/fr/',
+    lang: 'fr',
+    ...getSiteMeta('fr'),
+    alternateEn: '/',
+    alternateEs: '/es/',
+    alternateFr: '/fr/',
     types: ['ProfilePage', 'WebSite'],
     profiles: 1,
     robots: 'index, follow',
@@ -49,6 +62,7 @@ const routes = [
       'Machine-readable online CV of Angel Cánovas Mula, Full-Stack Java Engineer: experience, skills, education, certifications and languages.',
     alternateEn: '/cv/',
     alternateEs: '/cv/es/',
+    alternateFr: '/cv/fr/',
     types: ['ProfilePage'],
     profiles: 1,
     robots: 'index, follow',
@@ -61,6 +75,20 @@ const routes = [
       'CV online legible por máquinas de Angel Cánovas Mula, Ingeniero Full-Stack Java: experiencia, habilidades, formación, certificaciones e idiomas.',
     alternateEn: '/cv/',
     alternateEs: '/cv/es/',
+    alternateFr: '/cv/fr/',
+    types: ['ProfilePage'],
+    profiles: 1,
+    robots: 'index, follow',
+  },
+  {
+    path: '/cv/fr/',
+    lang: 'fr',
+    title: 'Angel Cánovas Mula — CV en ligne',
+    description:
+      "CV en ligne lisible par les machines d'Angel Cánovas Mula, ingénieur Full-Stack Java : expérience, compétences, formation, certifications et langues.",
+    alternateEn: '/cv/',
+    alternateEs: '/cv/es/',
+    alternateFr: '/cv/fr/',
     types: ['ProfilePage'],
     profiles: 1,
     robots: 'index, follow',
@@ -72,6 +100,7 @@ const routes = [
     description: 'Page not found. La página que buscas no existe o se ha movido.',
     alternateEn: '/',
     alternateEs: '/es/',
+    alternateFr: '/fr/',
     types: [],
     profiles: 0,
     robots: 'noindex, follow',
@@ -83,6 +112,7 @@ const routes = [
   description: string;
   alternateEn: string;
   alternateEs: string;
+  alternateFr: string;
   types: string[];
   profiles: number;
   robots: string;
@@ -113,10 +143,11 @@ for (const route of routes) {
       expect(content('meta[name="description"]')).toBe(route.description);
       expect(content('meta[name="robots"]')).toBe(route.robots);
       expect(attribute('link[rel="canonical"]', 'href')).toBe(canonical);
-      expect(document.head.querySelectorAll('link[hreflang]').length).toBe(3);
+      expect(document.head.querySelectorAll('link[hreflang]').length).toBe(4);
       for (const [lang, path] of [
         ['en', route.alternateEn],
         ['es', route.alternateEs],
+        ['fr', route.alternateFr],
         ['x-default', route.alternateEn],
       ]) {
         expect(attribute(`link[rel="alternate"][hreflang="${lang}"]`, 'href')).toBe(
@@ -167,7 +198,7 @@ for (const route of routes) {
         expect(website['@context']).toBe('https://schema.org');
         expect(website.url).toBe(`${siteUrl}/`);
         expect(website.name).toBe(personal.fullName);
-        expect(website.inLanguage).toEqual(['en', 'es']);
+        expect(website.inLanguage).toEqual(['en', 'es', 'fr']);
       }
 
       for (const key of [

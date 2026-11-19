@@ -161,7 +161,7 @@ describe('currentEmployer', () => {
 });
 
 describe('buildWebSiteSchema', () => {
-  it('builds a WebSite node declared in both site languages', () => {
+  it('builds a WebSite node declared in every site language', () => {
     const site = buildWebSiteSchema({
       url: 'https://angelcanovas.github.io/',
       name: 'Angel Cánovas Mula',
@@ -169,6 +169,6 @@ describe('buildWebSiteSchema', () => {
     expect(site['@context']).toBe('https://schema.org');
     expect(site['@type']).toBe('WebSite');
     expect(site.url).toBe('https://angelcanovas.github.io/');
-    expect(site.inLanguage).toEqual(['en', 'es']);
+    expect(site.inLanguage).toEqual(['en', 'es', 'fr']);
   });
 });

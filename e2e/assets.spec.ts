@@ -50,9 +50,9 @@ test('sitemap dates match the last GitHub content change to the CV', async ({ re
     lastmod: entry.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1],
   }));
   expect(entries).toEqual(
-    ['/', '/es/', '/cv/', '/cv/es/'].map((path) => ({
+    ['/', '/es/', '/fr/', '/cv/', '/cv/es/', '/cv/fr/'].map((path) => ({
       url: `${siteUrl}${path}`,
-      lastmod: '2026-10-03',
+      lastmod: '2026-11-19',
     })),
   );
 });

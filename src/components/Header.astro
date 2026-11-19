@@ -5,6 +5,7 @@ import Icon from './Icon.astro';
 import myProfileImg from '../assets/my-profile-img.webp';
 import { personal } from '../data/site';
 import { getContent, type Lang } from '../lib/i18n';
+import { getStyleLabels } from '../lib/style-labels';
 import { cvPdfHref, homeHref } from '../lib/routes';
 
 interface Props {
@@ -26,6 +27,7 @@ const allNavItems = [
 ] as const;
 
 const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.enabled);
+const styleLabels = getStyleLabels(lang);
 ---
 
 <header id="header" class="header">
@@ -110,6 +112,16 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       >
         ES
       </a>
+      <a
+        href={withBase('/fr/')}
+        class:list={['lang-option', { active: lang === 'fr' }]}
+        data-set-lang="fr"
+        data-astro-prefetch
+        hreflang="fr"
+        aria-current={lang === 'fr' ? 'page' : undefined}
+      >
+        FR
+      </a>
     </div>
     <button
       type="button"
@@ -127,20 +139,12 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       type="button"
       class="style-toggle"
       data-style-toggle
-      data-label-technical={lang === 'es' ? 'Estilo azul y verde' : 'Blue and green style'}
-      data-label-original={lang === 'es' ? 'Estilo azul original' : 'Original blue style'}
-      data-label-editorial={lang === 'es' ? 'Estilo naranja' : 'Orange style'}
-      data-label-noir={lang === 'es' ? 'Estilo tinta monocroma' : 'Monochrome ink style'}
-      aria-label={
-        lang === 'es'
-          ? 'Estilo azul y verde. Estilo azul original'
-          : 'Blue and green style. Original blue style'
-      }
-      title={
-        lang === 'es'
-          ? 'Estilo azul y verde. Estilo azul original'
-          : 'Blue and green style. Original blue style'
-      }
+      data-label-technical={styleLabels.technical}
+      data-label-original={styleLabels.original}
+      data-label-editorial={styleLabels.editorial}
+      data-label-noir={styleLabels.noir}
+      aria-label={`${styleLabels.technical}. ${styleLabels.original}`}
+      title={`${styleLabels.technical}. ${styleLabels.original}`}
     >
       <Icon name="images" />
     </button>
@@ -149,22 +153,16 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
       class="style-progress"
       data-style-progress
       data-style-progress-mobile
-      data-label-running={
-        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
-      }
-      data-label-paused={
-        lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'
-      }
-      aria-label={
-        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
-      }
+      data-label-running={styleLabels.running}
+      data-label-paused={styleLabels.paused}
+      aria-label={styleLabels.running}
       aria-pressed="false"
     >
       <span
         class="style-progress-track"
         data-style-progress-track
         role="progressbar"
-        aria-label={lang === 'es' ? 'Progreso hasta el siguiente estilo' : 'Progress to next style'}
+        aria-label={styleLabels.progress}
         aria-valuemin="0"
         aria-valuemax="100"
         aria-valuenow="0"
@@ -193,6 +191,19 @@ const navItems = allNavItems.filter((item) => item.key !== 'notes' || t.notes.en
 
   safeInit(initLanguageSwitch);
   safeInit(initScrollRestore);
+
+  // ClientRouter replaces the header markup on navigation, so the new language
+  // links need their listeners again. Install the hook once; the module-level
+  // functions stay alive for the whole document.
+  const routerKey = '__angelHeaderRouterHook';
+  const globalWindow = window as unknown as Record<string, unknown>;
+  if (!globalWindow[routerKey]) {
+    globalWindow[routerKey] = true;
+    document.addEventListener('astro:after-swap', () => {
+      safeInit(initLanguageSwitch);
+      safeInit(initScrollRestore);
+    });
+  }
 </script>
 
 <style>

@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+test.use({ locale: 'en-US' });
+
 test.describe('automatic language routing', () => {
   test('a stored preference wins over everything else', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('lang', 'es'));

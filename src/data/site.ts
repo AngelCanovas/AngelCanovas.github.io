@@ -35,6 +35,13 @@ export const siteMeta: Record<
       'Ingeniero Java full-stack centrado en aplicaciones empresariales seguras con Spring Boot, Spring Security y Angular. Experiencia, proyectos, CV y contacto.',
     ogLocale: 'es_ES',
   },
+  fr: {
+    htmlLang: 'fr',
+    title: 'Ingénieur Full-Stack Java, Spring Boot | Angel Cánovas Mula',
+    description:
+      "Ingénieur Java full-stack spécialisé dans les applications d'entreprise sécurisées avec Spring Boot, Spring Security et Angular. Expérience, projets, CV et contact.",
+    ogLocale: 'fr_FR',
+  },
 };
 
 const en = {
@@ -62,8 +69,11 @@ const en = {
     ],
     headline:
       'Spring Boot · Spring Security · Angular · Secure enterprise applications · Cybersecurity-trained',
-    ctaContact: 'Get in touch',
+    valueProp:
+      'I build secure enterprise applications for the French Ministry of Education — 10,000+ students supported and most of a security audit remediated.',
+    ctaContact: 'Email me',
     ctaResume: 'View resume',
+    ctaWork: 'See selected work',
     ctaCv: 'Download CV',
   },
   stats: {
@@ -71,7 +81,7 @@ const en = {
       { value: 5, suffix: '+', label: 'Years of experience', decimals: 0 },
       { value: 10000, suffix: '+', label: 'Students supported', decimals: 0 },
       { value: 4.23, suffix: '/5', label: 'Client satisfaction', decimals: 2 },
-      { value: 2, suffix: '', label: 'National platforms', decimals: 0 },
+      { value: 8.83, suffix: '/10', label: 'Cybersecurity grade', decimals: 2 },
     ],
   },
   about: {
@@ -438,6 +448,14 @@ const en = {
       },
     ],
   },
+  selectedWork: {
+    title: 'Selected work',
+    subtitle:
+      'Three projects that show the responsibility, security work and delivery I bring to a team.',
+    cta: 'View full portfolio',
+    badgeLpi: 'Most responsibility',
+    badgeSecurity: 'Security & cybersecurity',
+  },
   quote: {
     ariaLabel: 'Quote of the moment',
     heading: 'Quote of the moment',
@@ -462,6 +480,14 @@ const en = {
     updated: 'Generated from the live portfolio',
     stack: 'Stack',
     assignment: 'Assignment',
+    copy: 'Copy CV text',
+    copied: 'CV copied to clipboard',
+    copyFailed: 'Could not copy the CV',
+    highlightsTitle: 'Selected highlights',
+    highlights: [
+      'LPI: delivered accessibility features used by teaching staff across France, supporting 10,000+ students.',
+      'Security audit: implemented most of the remediation myself — SAML2, role-based access control, secure sessions and cookies, cryptographic PIN generation.',
+    ],
   },
   services: {
     title: 'Services',
@@ -596,8 +622,11 @@ const es = {
     ],
     headline:
       'Spring Boot · Spring Security · Angular · Aplicaciones empresariales seguras · Formación en ciberseguridad',
-    ctaContact: 'Contacta conmigo',
+    valueProp:
+      'Construyo aplicaciones empresariales seguras para el Ministerio de Educación francés: más de 10.000 alumnos atendidos y la mayor parte de una auditoría de seguridad corregida.',
+    ctaContact: 'Escríbeme',
     ctaResume: 'Ver currículum',
+    ctaWork: 'Ver proyectos destacados',
     ctaCv: 'Descargar CV',
   },
   stats: {
@@ -605,7 +634,7 @@ const es = {
       { value: 5, suffix: '+', label: 'Años de experiencia', decimals: 0 },
       { value: 10000, suffix: '+', label: 'Alumnado atendido', decimals: 0 },
       { value: 4.23, suffix: '/5', label: 'Satisfacción del cliente', decimals: 2 },
-      { value: 2, suffix: '', label: 'Plataformas nacionales', decimals: 0 },
+      { value: 8.83, suffix: '/10', label: 'Nota en ciberseguridad', decimals: 2 },
     ],
   },
   about: {
@@ -975,6 +1004,14 @@ const es = {
       },
     ],
   },
+  selectedWork: {
+    title: 'Proyectos destacados',
+    subtitle:
+      'Tres proyectos que muestran la responsabilidad, el trabajo de seguridad y la entrega que aporto a un equipo.',
+    cta: 'Ver portfolio completo',
+    badgeLpi: 'Más responsabilidad',
+    badgeSecurity: 'Seguridad y ciberseguridad',
+  },
   quote: {
     ariaLabel: 'Cita del momento',
     heading: 'Cita del momento',
@@ -999,6 +1036,14 @@ const es = {
     updated: 'Documento generado desde el portfolio',
     stack: 'Tecnologías',
     assignment: 'Asignación',
+    copy: 'Copiar texto del CV',
+    copied: 'CV copiado al portapapeles',
+    copyFailed: 'No se pudo copiar el CV',
+    highlightsTitle: 'Aspectos destacados',
+    highlights: [
+      'LPI: funcionalidades de accesibilidad usadas por profesorado de toda Francia, con más de 10.000 alumnos atendidos.',
+      'Auditoría de seguridad: implementé personalmente la mayor parte de la remediación — SAML2, control de acceso por roles, sesiones y cookies seguras, generación criptográfica de PIN.',
+    ],
   },
   services: {
     title: 'Servicios',
@@ -1111,13 +1156,574 @@ const es = {
   },
 } as const satisfies DeepWiden<typeof en>;
 
-export const content = { en, es } as const;
+const fr = {
+  nav: {
+    home: 'Accueil',
+    about: 'À propos',
+    skills: 'Compétences',
+    resume: 'CV',
+    portfolio: 'Portfolio',
+    services: 'Services',
+    notes: 'Notes',
+    contact: 'Contact',
+    toggleLabel: 'Ouvrir la navigation',
+    languageLabel: 'Langue',
+    themeToLight: 'Passer au thème clair',
+    themeToDark: 'Passer au thème sombre',
+  },
+  hero: {
+    eyebrow: 'Bonjour, je suis',
+    availability: 'Disponible pour des postes en télétravail',
+    roles: [
+      'Ingénieur Full-Stack Java',
+      'Ingénieur logiciel sécurisé',
+      'Développeur formé à la cybersécurité',
+    ],
+    headline:
+      "Spring Boot · Spring Security · Angular · Applications d'entreprise sécurisées · Cybersécurité",
+    valueProp:
+      "Je construis des applications d'entreprise sécurisées pour le ministère français de l'Éducation — plus de 10 000 élèves accompagnés et l'essentiel d'un audit de sécurité corrigé.",
+    ctaContact: 'M’écrire',
+    ctaResume: 'Voir le CV',
+    ctaWork: 'Voir les projets phares',
+    ctaCv: 'Télécharger le CV',
+  },
+  stats: {
+    items: [
+      { value: 5, suffix: '+', label: "Années d'expérience", decimals: 0 },
+      { value: 10000, suffix: '+', label: 'Étudiants accompagnés', decimals: 0 },
+      { value: 4.23, suffix: '/5', label: 'Satisfaction client', decimals: 2 },
+      { value: 8.83, suffix: '/10', label: 'Note en cybersécurité', decimals: 2 },
+    ],
+  },
+  about: {
+    title: 'À propos',
+    summary:
+      "Ingénieur Full-Stack Java avec plus de 5 ans d'expérience chez Capgemini, où je développe des applications web d'entreprise pour le ministère français de l'Éducation nationale, notamment Livret de Parcours Inclusif (LPI) et Faits Établissement. J'interviens sur tout le cycle de vie avec Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf et Angular sur IBM DB2 : nouvelles fonctionnalités, maintenance corrective, support de production, mises en production, migrations de bases de données et traitements batch.",
+    secureSummary:
+      "Depuis un an, je me suis spécialisé dans le développement logiciel sécurisé. Lors de la remédiation d'un audit de sécurité technique, j'ai implémenté moi-même la plupart des correctifs au sein de l'équipe : authentification SAML2, contrôle d'accès basé sur les rôles, gestion sécurisée des cookies et des sessions, et algorithme de génération de PIN cryptographique plus robuste. J'ai également travaillé sur la protection CSRF, le durcissement du code et la remédiation des vulnérabilités. En 2025, j'ai obtenu le cours officiel de spécialisation en cybersécurité pour les environnements informatiques avec une note de 8,83/10.",
+    languages:
+      "Je travaille quotidiennement en anglais et en français (anglais C1, français B1) et je recherche un poste 100 % en télétravail en Java backend/full-stack ou en applications d'entreprise sécurisées, au sein d'une équipe internationale.",
+    meta: {
+      location: 'Localisation',
+      workModel: 'Mode de travail',
+      email: 'E-mail',
+      github: 'GitHub',
+      linkedin: 'LinkedIn',
+      linkedinValue: 'Angel Cánovas Mula sur LinkedIn',
+    },
+    role: 'Ingénieur Full-Stack Java',
+    location: 'Murcie, Espagne',
+    workModel: '100 % télétravail (CET)',
+    homeLab: {
+      title: 'Laboratoire domestique / systèmes auto-hébergés',
+      intro:
+        'Je mets aussi en pratique sur ma propre infrastructure ce que je ne touche pas au travail :',
+      points: [
+        "Je provisionne et j'exploite mes propres serveurs Linux — instances cloud et matériel à domicile — avec des conteneurs, un VPN, des tunnels SSH, du durcissement de sécurité et de l'optimisation de ressources sur des machines volontairement limitées.",
+        "J'exploite des services réseau auto-hébergés et j'ai expérimenté des modèles de langage locaux, ce qui m'a donné un jugement pratique sur l'exploitation et pas seulement sur le développement.",
+        "Je peux entrer dans les détails lors d'un entretien.",
+      ],
+    },
+  },
+  skills: {
+    title: 'Compétences',
+    subtitle: 'Compétences et technologies issues du CV, regroupées par domaine d’expertise.',
+    groups: [
+      {
+        icon: 'code-slash',
+        title: 'Cœur',
+        description: 'Langages, frameworks et outils que j’utilise au quotidien.',
+        skills: [
+          'Java',
+          'Spring Boot',
+          'Spring Security',
+          'JPA/Hibernate',
+          'REST APIs',
+          'Angular',
+          'TypeScript',
+          'JavaScript',
+          'HTML5',
+          'CSS3',
+          'SQL',
+          'IBM DB2',
+          'MySQL',
+          'PostgreSQL',
+          'Git',
+          'GitLab',
+          'Maven',
+          'Docker',
+          'Linux',
+          'Scrum',
+          'SAFe',
+        ],
+      },
+      {
+        icon: 'shield-lock',
+        title: 'Développement sécurisé',
+        description: 'Durcir les applications d’entreprise face aux menaces réelles.',
+        skills: [
+          'SAML2',
+          'Contrôle d’accès',
+          'CSRF',
+          'Cookies sécurisés',
+          'Gestion de session',
+          'Durcissement du code',
+          'Remédiation des vulnérabilités',
+          'Génération cryptographique de PIN',
+          'Déploiement sécurisé',
+          'Sécurité réseau',
+        ],
+      },
+      {
+        icon: 'headset',
+        title: 'Tests et support',
+        description: 'Maintenir la stabilité des systèmes critiques en production.',
+        skills: [
+          'Postman',
+          'Tests API',
+          'Outils Spock',
+          'Surveillance de production',
+          'Résolution d’incidents',
+          'Jira',
+          'Confluence',
+        ],
+      },
+      {
+        icon: 'robot',
+        title: 'Ingénierie assistée par IA',
+        description: 'Des outils IA qui accélèrent la livraison, toujours revus à la main.',
+        skills: [
+          'OpenCode',
+          'GitHub Copilot',
+          'Analyse de code',
+          'Documentation',
+          'Préparation de tests',
+          'Revue manuelle',
+        ],
+      },
+      {
+        icon: 'tools',
+        title: 'Également utilisé',
+        description: 'Technologies complémentaires issues du CV.',
+        skills: [
+          'Thymeleaf',
+          'Laravel',
+          'JSP',
+          'JBoss',
+          'Tomcat',
+          'Elasticsearch',
+          'Node.js',
+          'Python',
+          'Liquibase',
+          'Microservices',
+          'Architecture hexagonale',
+          'UML',
+          'Tests unitaires',
+          'Bash',
+        ],
+      },
+    ],
+  },
+  resume: {
+    title: 'CV',
+    subtitle:
+      "Ingénieur Full-Stack Java avec une spécialisation récente en cybersécurité, orienté applications d'entreprise sécurisées et delivery international.",
+    experienceTitle: 'Expérience professionnelle',
+    educationTitle: 'Formation',
+    certificationsTitle: 'Certifications',
+    languagesTitle: 'Langues',
+    downloadCv: 'Télécharger le CV (PDF)',
+    onlineCv: 'CV en ligne',
+    experience: [
+      {
+        title: 'Ingénieur logiciel',
+        company: 'Capgemini',
+        location: 'Murcie, Espagne',
+        period: 'Juin 2021 — aujourd’hui',
+        context:
+          "Développeur Full-Stack Java · Ministère français de l'Éducation nationale · Livret de Parcours Inclusif, Faits Établissement",
+        highlights: [
+          "Développement de fonctionnalités d'accessibilité pour LPI, une plateforme interne du ministère qui numérise les plans et processus d'accompagnement des élèves à besoins éducatifs particuliers partout en France, utilisée par les enseignants au niveau national.",
+          "Participation à la migration de la base de données de production de MySQL vers IBM DB2 : modifications de schéma et changesets Liquibase, support à la migration des données et résolution d'incidents de production.",
+          "J'ai implémenté moi-même la plupart des correctifs de l'audit de sécurité au sein de l'équipe : authentification SAML2, contrôle d'accès basé sur les rôles, gestion sécurisée des cookies et sessions, et algorithme de génération de PIN cryptographique plus robuste ; travail également sur la protection CSRF, le durcissement du code et la remédiation des vulnérabilités.",
+          "Contribution à l'augmentation de la satisfaction client de 3,5 à 4,23/5 la première année, grâce à une résolution proactive des incidents et une qualité de livraison constante.",
+          "Accompagnement et mentorat de 2 nouveaux membres de l'équipe, avec formation fonctionnelle et technique et support au dépannage.",
+          "Résolution de 1 à 2 blocages de production par mois dans une équipe d'environ 10 personnes servant des milliers d'utilisateurs actifs.",
+        ],
+        stack: [
+          'Java',
+          'Spring Boot',
+          'Spring Security',
+          'JPA/Hibernate',
+          'Thymeleaf',
+          'Angular',
+          'TypeScript',
+          'IBM DB2',
+          'MySQL',
+          'Liquibase',
+          'GitLab',
+          'Jira/Confluence',
+          'Scrum / SAFe',
+        ],
+        assignments: [
+          {
+            title: 'Tests API et support de production · Telia Suède / Finlande',
+            details: [
+              "Tests d'API avec Postman et les outils internes du client basés sur Spock.",
+              'Surveillance de la production et résolution d’incidents B2B pour maintenir la stabilité des services télécom critiques.',
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Développeur Java junior (stage)',
+        company: 'Capgemini',
+        location: 'Murcie, Espagne',
+        period: 'Mars 2021 — Mai 2021',
+        context: 'Ministère français de la Culture',
+        highlights: [
+          "Support de l'application de reporting des événements culturels du ministère, amélioration de la précision des données et de la génération de rapports.",
+        ],
+        stack: [],
+        assignments: [],
+      },
+    ],
+    education: [
+      {
+        degree: 'Cours de spécialisation en cybersécurité pour les environnements informatiques',
+        school: 'IES Ingeniero de la Cierva',
+        period: '',
+        detail: 'Diplôme officiel de l’enseignement professionnel supérieur · Note : 8,83 / 10',
+      },
+      {
+        degree: 'Diplôme supérieur en développement d’applications multiplateformes (EQF 5)',
+        school: 'IES Ingeniero de la Cierva',
+        period: '',
+        detail:
+          'Première année validée depuis le diplôme de développement web, les deux formations ayant été suivies consécutivement',
+      },
+      {
+        degree: 'Diplôme supérieur en développement d’applications web (EQF 5)',
+        school: 'IES Ingeniero de la Cierva',
+        period: '',
+        detail: '',
+      },
+      {
+        degree: 'Anglais C1',
+        school: 'EOI Cartagena',
+        period: '',
+        detail: '',
+      },
+    ],
+    certifications: [
+      'AWS Academy Cloud Foundations — Amazon Web Services',
+      'Generative AI on AWS Essentials (Discover IaaS Products) — AWS / Capgemini',
+      'ACTIVATE AI Foundation Badge — Capgemini',
+    ],
+    languages: [
+      { language: 'Espagnol', level: 'Langue maternelle' },
+      {
+        language: 'Anglais',
+        level: 'C1 — langue de travail quotidienne depuis 5 ans ; entretiens en anglais',
+      },
+      {
+        language: 'Français',
+        level: 'B1 — travail écrit et oral quotidien avec des clients du secteur public français',
+      },
+    ],
+  },
+  portfolio: {
+    title: 'Portfolio',
+    subtitle:
+      "Une sélection de projets et d'initiatives auxquels j'ai contribué : plateformes publiques, durcissement de la sécurité et apprentissage personnel.",
+    filtersLabel: 'Filtrer les projets',
+    allLabel: 'Tous',
+    categories: [
+      { key: 'app', label: 'Applications' },
+      { key: 'security', label: 'Sécurité' },
+      { key: 'infra', label: 'Infrastructure' },
+      { key: 'web', label: 'Web' },
+    ],
+    categoryLabels: {
+      app: 'Application',
+      security: 'Sécurité',
+      infra: 'Infrastructure',
+      web: 'Web',
+    } as Record<string, string>,
+    featuredLabel: 'À la une',
+    viewProject: 'Voir le projet',
+    empty: 'Aucun projet dans cette catégorie pour le moment.',
+    filterStatus: '{shown} projets affichés sur {total}',
+    caseStudyLabel: 'Étude de cas',
+    caseStudyProblem: 'Problème',
+    caseStudyApproach: 'Approche',
+    caseStudyImpact: 'Impact',
+    projects: [
+      {
+        title: 'Livret de Parcours Inclusif (LPI)',
+        category: 'app',
+        featured: true,
+        description:
+          "Application du ministère français de l'Éducation nationale utilisée au niveau national par les enseignants pour accompagner les élèves à besoins particuliers.",
+        tags: ['Java', 'Spring Boot', 'Thymeleaf', 'IBM DB2'],
+        caseStudy: {
+          problem:
+            "Les enseignants avaient besoin d'un moyen plus rapide et homogène de documenter et partager les plans d'accompagnement des élèves à besoins particuliers.",
+          approach:
+            'Développement de nouvelles fonctionnalités Spring Boot et Thymeleaf sur la plateforme nationale, à partir des spécifications fonctionnelles du ministère et de l’équipe produit.',
+          impact:
+            "La fonctionnalité principale que j'ai livrée a amélioré l'accessibilité pour les élèves à besoins particuliers partout en France.",
+        },
+        link: '',
+      },
+      {
+        title: 'Faits Établissement',
+        category: 'app',
+        featured: false,
+        description:
+          "Plateforme nationale de signalement d'incidents pour les écoles et l'administration françaises.",
+        tags: ['Java', 'Spring Boot', 'Angular'],
+        caseStudy: {
+          problem:
+            "Les écoles et l'administration avaient besoin d'un canal national fiable pour signaler et suivre les incidents.",
+          approach:
+            'Développement Full-Stack Java et Angular, maintenance corrective et support de production sur une application à portée nationale.',
+          impact:
+            'Le signalement des incidents est devenu cohérent, traçable et stable pour les écoles dans toute la France.',
+        },
+        link: '',
+      },
+      {
+        title: 'Migration MySQL vers IBM DB2',
+        category: 'infra',
+        featured: true,
+        description:
+          "Migration de la base de données de production d'une application du ministère, avec des changements gérés par Liquibase pour améliorer l'efficacité, la fiabilité et l'évolutivité.",
+        tags: ['IBM DB2', 'MySQL', 'Liquibase'],
+        caseStudy: {
+          problem:
+            'Migrer un service national en production de MySQL vers IBM DB2 sans interrompre ses utilisateurs.',
+          approach:
+            'Migration du schéma et des données avec des changements gérés par Liquibase, adaptation des requêtes et vérification du comportement sur DB2.',
+          impact:
+            'Meilleure efficacité, fiabilité et évolutivité, avec des changements de base versionnés et reproductibles.',
+        },
+        link: '',
+      },
+      {
+        title: 'Remédiation d’audit de sécurité',
+        category: 'security',
+        featured: true,
+        description:
+          "Remédiation des vulnérabilités après un audit de sécurité technique : contrôle d'accès, gestion de session, cookies sécurisés, CSRF et durcissement du code.",
+        tags: ['Spring Security', 'SAML2', 'CSRF'],
+        caseStudy: {
+          problem:
+            'Un audit de sécurité technique a signalé des faiblesses dans une application en production.',
+          approach:
+            "Correction du contrôle d'accès, de la gestion de session, des cookies sécurisés et des problèmes CSRF, et durcissement du code avec l'équipe.",
+          impact:
+            "Constats corrigés et bonnes pratiques de sécurité appliquées sur toute l'application.",
+        },
+        link: '',
+      },
+      {
+        title: 'Home lab auto-hébergé',
+        category: 'infra',
+        featured: false,
+        description:
+          'Serveurs Linux, conteneurs, VPN, tunnels SSH, durcissement de sécurité et modèles de langage locaux pour apprendre en continu.',
+        tags: ['Linux', 'Docker', 'VPN'],
+        caseStudy: {
+          problem:
+            "Je voulais une expérience pratique de l'exploitation au-delà du développement quotidien.",
+          approach:
+            'Provisionner et exploiter des serveurs Linux sur cloud et matériel domestique, avec conteneurs, VPN, tunnels SSH et durcissement de sécurité.',
+          impact:
+            "Jugement pratique sur l'exploitation, la supervision et la sécurité sur des machines volontairement contraintes.",
+        },
+        link: personal.github,
+      },
+      {
+        title: 'Site portfolio',
+        category: 'web',
+        featured: false,
+        description:
+          'Ce portfolio personnel construit avec Astro : rapide, statique, SEO-friendly et accessible.',
+        tags: ['Astro', 'TypeScript', 'Bootstrap'],
+        caseStudy: {
+          problem:
+            'Construire un portfolio statique qui reste rapide et accessible sans surcharge de framework.',
+          approach:
+            'Astro avec une architecture en couches (bibliothèque pure + modules client typés), CSP hachée, contraste WCAG AA et tests unitaires/E2E automatisés.',
+          impact: 'Lighthouse 100 en accessibilité, bonnes pratiques et SEO, sans violation CSP.',
+        },
+        link: `${personal.github}/AngelCanovas.github.io`,
+      },
+    ],
+  },
+  selectedWork: {
+    title: 'Projets phares',
+    subtitle:
+      'Trois projets qui montrent la responsabilité, le travail de sécurité et la livraison que j’apporte à une équipe.',
+    cta: 'Voir le portfolio complet',
+    badgeLpi: 'Plus de responsabilité',
+    badgeSecurity: 'Sécurité et cybersécurité',
+  },
+  quote: {
+    ariaLabel: 'Citation du moment',
+    heading: 'Citation du moment',
+    pause: 'Mettre en pause la rotation des citations',
+    resume: 'Reprendre la rotation des citations',
+  },
+  ui: {
+    skipLink: 'Aller au contenu principal',
+    scrollTop: 'Remonter en haut',
+    photoAlt: 'photo professionnelle',
+    avatarAlt: 'photo de profil',
+    ogImageAlt: 'portrait et rôle professionnel en carte d’aperçu',
+    toastCopied: 'E-mail copié : {email}',
+    newTab: '(s’ouvre dans un nouvel onglet)',
+  },
+  cv: {
+    summary: 'Résumé professionnel',
+    download: 'Télécharger le CV (PDF)',
+    generate: 'Imprimer / Enregistrer en PDF',
+    back: 'Retour au portfolio',
+    switchLabel: 'Voir en anglais',
+    updated: 'Généré depuis le portfolio en ligne',
+    stack: 'Stack',
+    assignment: 'Mission',
+    copy: 'Copier le texte du CV',
+    copied: 'CV copié dans le presse-papiers',
+    copyFailed: 'Impossible de copier le CV',
+    highlightsTitle: 'Points forts',
+    highlights: [
+      "LPI : fonctionnalités d'accessibilité utilisées par les enseignants partout en France, avec plus de 10 000 élèves accompagnés.",
+      "Audit de sécurité : j'ai implémenté moi-même l'essentiel de la remédiation — SAML2, contrôle d'accès par rôles, sessions et cookies sécurisés, génération cryptographique de PIN.",
+    ],
+  },
+  services: {
+    title: 'Services',
+    subtitle:
+      'Différentes façons d’aider votre équipe à livrer des logiciels sécurisés et maintenables, et à maintenir les systèmes critiques en fonctionnement.',
+    items: [
+      {
+        icon: 'code-slash',
+        number: '01',
+        title: 'Développement Full-Stack Java',
+        description:
+          'Applications web d’entreprise avec Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf et Angular.',
+        points: [
+          'Applications Java & Spring Boot',
+          'Front-ends Angular + API REST',
+          'JPA/Hibernate et bases relationnelles',
+        ],
+      },
+      {
+        icon: 'shield-check',
+        number: '02',
+        title: 'Ingénierie logicielle sécurisée',
+        description:
+          'Intégrer la sécurité dans tout le cycle de vie, de l’authentification au déploiement.',
+        points: [
+          'SAML2 et contrôle d’accès basé sur les rôles',
+          'CSRF, cookies et sessions sécurisés',
+          'Remédiation des vulnérabilités et durcissement',
+        ],
+      },
+      {
+        icon: 'life-preserver',
+        number: '03',
+        title: 'Support applicatif & MCO',
+        description:
+          'Maintenir les systèmes critiques en fonctionnement avec une maintenance fiable et une résolution rapide des incidents.',
+        points: [
+          'Surveillance de production et hotfixes',
+          'Mises en production et migrations de bases',
+          'Traitements batch et génération de documents',
+        ],
+      },
+      {
+        icon: 'cloud',
+        number: '04',
+        title: 'DevOps, cloud & home lab',
+        description:
+          'Expérience opérationnelle avec conteneurs, CI/CD, fondamentaux cloud et systèmes auto-hébergés.',
+        points: [
+          'Docker, Linux et CI/CD',
+          'AWS Cloud Foundations',
+          'Infrastructure auto-hébergée et durcissement',
+        ],
+      },
+      {
+        icon: 'robot',
+        number: '05',
+        title: 'Ingénierie assistée par IA',
+        description:
+          'Utiliser des outils IA pour aller plus vite sans sacrifier la qualité, la sécurité ou la maîtrise du code.',
+        points: [
+          'OpenCode et GitHub Copilot',
+          'Analyse de code et documentation',
+          'Revue manuelle et sensibilisation à la sécurité',
+        ],
+      },
+      {
+        icon: 'translate',
+        number: '06',
+        title: 'Collaboration internationale',
+        description:
+          'À l’aise dans des équipes distribuées et des environnements multilingues du secteur public.',
+        points: [
+          'Anglais C1 · Français B1',
+          'Équipes Agile Scrum / SAFe',
+          'Clients du secteur public français',
+        ],
+      },
+    ],
+  },
+  notes: {
+    enabled: false,
+    title: 'Notes techniques',
+    subtitle: 'Notes occasionnelles sur le développement sécurisé et l’ingénierie d’entreprise.',
+    readingTimeLabel: 'min de lecture',
+    items: [] as readonly { title: string; tags: readonly string[]; body: readonly string[] }[],
+  },
+  contact: {
+    title: 'Contact',
+    subtitle: 'Premier contact par LinkedIn ou e-mail. Références disponibles sur demande.',
+    cta: 'M’écrire',
+    copyEmail: 'Copier l’adresse e-mail',
+    channels: {
+      email: 'E-mail',
+      linkedin: 'LinkedIn',
+      github: 'GitHub',
+      location: 'Localisation',
+      locationValue: 'Murcie, Espagne · 100 % télétravail (CET)',
+    },
+  },
+  footer: {
+    rights: 'Tous droits réservés.',
+    creditsPrefix: 'Construit avec',
+    noticesLabel: 'Licences tierces',
+  },
+  fun: {
+    htmlComment:
+      "Psst — tu lis le code source ? On s'entendrait probablement. Il y a un message caché dans la console et un code Konami qui attend : ↑ ↑ ↓ ↓ ← → ← → B A",
+    consoleMessage:
+      "Salut, développeur curieux ! Tu as trouvé le message caché. Si tu lis du code source pour le plaisir, tu es exactement le genre de personne avec qui j'aime travailler.",
+  },
+} as const satisfies DeepWiden<typeof en>;
+
+export const content = { en, es, fr } as const;
 
 export const quotes = [
   {
     text: {
       en: 'The important thing is not to stop questioning. Curiosity has its own reason for existing.',
       es: 'Lo importante es no dejar de hacerse preguntas. La curiosidad tiene su propia razón de ser.',
+      fr: "L'important est de ne pas cesser de se poser des questions. La curiosité a sa raison d'être.",
     },
     author: 'Albert Einstein',
   },
@@ -1125,6 +1731,7 @@ export const quotes = [
     text: {
       en: 'Somewhere, something incredible is waiting to be known.',
       es: 'En algún lugar, algo increíble está esperando a ser descubierto.',
+      fr: "Quelque part, quelque chose d'incroyable attend d'être connu.",
     },
     author: 'Carl Sagan',
   },
@@ -1132,6 +1739,7 @@ export const quotes = [
     text: {
       en: 'We are a way for the cosmos to know itself.',
       es: 'Somos una forma que tiene el cosmos de conocerse a sí mismo.',
+      fr: 'Nous sommes une façon pour le cosmos de se connaître lui-même.',
     },
     author: 'Carl Sagan',
   },
@@ -1139,6 +1747,7 @@ export const quotes = [
     text: {
       en: 'Any sufficiently advanced technology is indistinguishable from magic.',
       es: 'Cualquier tecnología lo suficientemente avanzada es indistinguible de la magia.',
+      fr: 'Toute technologie suffisamment avancée est indiscernable de la magie.',
     },
     author: 'Arthur C. Clarke',
   },
@@ -1146,6 +1755,7 @@ export const quotes = [
     text: {
       en: 'Security is not a product, but a process.',
       es: 'La seguridad no es un producto, sino un proceso.',
+      fr: "La sécurité n'est pas un produit, mais un processus.",
     },
     author: 'Bruce Schneier',
   },
@@ -1153,6 +1763,7 @@ export const quotes = [
     text: {
       en: "The good thing about science is that it's true whether or not you believe in it.",
       es: 'Lo bueno de la ciencia es que es verdad tanto si crees en ella como si no.',
+      fr: "Ce qui est bien avec la science, c'est qu'elle est vraie que vous y croyiez ou non.",
     },
     author: 'Neil deGrasse Tyson',
   },
@@ -1160,6 +1771,7 @@ export const quotes = [
     text: {
       en: 'Programs must be written for people to read, and only incidentally for machines to execute.',
       es: 'Los programas deben escribirse para que las personas los lean, y solo de forma circunstancial para que las máquinas los ejecuten.',
+      fr: 'Les programmes doivent être écrits pour être lus par des personnes, et seulement accessoirement pour être exécutés par des machines.',
     },
     author: 'Harold Abelson',
   },
@@ -1167,6 +1779,7 @@ export const quotes = [
     text: {
       en: 'Nothing in life is to be feared, it is only to be understood.',
       es: 'En la vida nada debe temerse, solo debe comprenderse.',
+      fr: 'Rien dans la vie ne doit être craint, il faut seulement le comprendre.',
     },
     author: 'Marie Curie',
   },
@@ -1174,6 +1787,7 @@ export const quotes = [
     text: {
       en: 'What I cannot create, I do not understand.',
       es: 'Lo que no puedo crear, no lo entiendo.',
+      fr: 'Ce que je ne peux pas créer, je ne le comprends pas.',
     },
     author: 'Richard Feynman',
   },
@@ -1181,6 +1795,7 @@ export const quotes = [
     text: {
       en: "The most exciting phrase to hear in science is not 'Eureka!' but 'That's funny...'",
       es: 'La frase más emocionante que se puede oír en la ciencia no es «¡Eureka!», sino «Qué curioso...».',
+      fr: "La phrase la plus excitante à entendre en science n'est pas « Eurêka ! » mais « C'est curieux... »",
     },
     author: 'Isaac Asimov',
   },

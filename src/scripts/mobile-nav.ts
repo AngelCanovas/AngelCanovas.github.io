@@ -6,6 +6,8 @@
 export function initMobileNav(): void {
   const header = document.querySelector<HTMLElement>('#header');
   const toggle = document.querySelector<HTMLElement>('.header-toggle');
+  if (!header || !toggle || header.dataset.mobileNavInitialized) return;
+  header.dataset.mobileNavInitialized = 'true';
   const overlay = document.querySelector<HTMLElement>('#mobile-nav-overlay');
   const background = ['#main-content', '#footer', '#scroll-top', '.skip-link']
     .map((selector) => document.querySelector<HTMLElement>(selector))

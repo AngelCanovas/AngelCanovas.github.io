@@ -119,6 +119,6 @@ export function buildWebSiteSchema({ url, name }: { url: string; name: string })
     '@type': 'WebSite',
     name,
     url,
-    inLanguage: ['en', 'es'],
+    inLanguage: ['en', 'es', 'fr'],
   } as const;
 }

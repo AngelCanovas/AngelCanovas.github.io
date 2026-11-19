@@ -1,0 +1,146 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Icon from './Icon.astro';
+import { getContent, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const content = getContent(lang);
+const t = content.selectedWork;
+const projects = content.portfolio.projects;
+
+/** The three cases that best show responsibility, security work and delivery. */
+const selected = [
+  { project: projects[0], badge: t.badgeLpi, icon: 'window-stack' as const },
+  { project: projects[3], badge: t.badgeSecurity, icon: 'shield-lock' as const },
+  { project: projects[2], badge: '', icon: 'hdd-network' as const },
+];
+---
+
+<section id="selected-work" class="selected-work section">
+  <SectionHeading title={t.title} summary={t.subtitle} />
+
+  <div class="container">
+    <div class="row gy-4">
+      {selected.map(({ project, badge, icon }) => (
+        <div class="col-lg-4">
+          <article class="selected-card h-100">
+            <div class="selected-card-top">
+              <span class="selected-icon" aria-hidden="true">
+                <Icon name={icon} />
+              </span>
+              {badge && <span class="selected-badge">{badge}</span>}
+            </div>
+            <h3 class="selected-title">{project.title}</h3>
+            <p class="selected-desc">{project.description}</p>
+            <ul class="selected-tags" role="list">
+              {project.tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+            <a class="selected-link" href="#portfolio">
+              {content.portfolio.caseStudyLabel}
+              <span class="visually-hidden">: {project.title}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </div>
+      ))}
+    </div>
+    <p class="selected-cta">
+      <a href="#portfolio">
+        {t.cta}
+        <span aria-hidden="true">→</span>
+      </a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .selected-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border: 1px solid var(--rule-color);
+    border-left: 3px solid var(--accent-ink);
+    border-radius: var(--radius-card);
+    background: var(--surface-color);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .selected-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent-ink), transparent 45%);
+  }
+  .selected-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .selected-icon {
+    display: inline-flex;
+    color: var(--accent-ink);
+    font-size: 1.35rem;
+  }
+  .selected-badge {
+    padding: 0.2rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--accent-ink), transparent 55%);
+    border-radius: 999px;
+    color: var(--accent-ink);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .selected-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .selected-desc {
+    flex: 1;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+  }
+  .selected-tags li {
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: var(--panel-color);
+    color: var(--default-color);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .selected-link,
+  .selected-cta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--accent-ink);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor, transparent 55%);
+    text-underline-offset: 3px;
+  }
+  .selected-link:hover,
+  .selected-cta a:hover {
+    text-decoration-color: currentColor;
+  }
+  .selected-cta {
+    margin: 2rem 0 0;
+    text-align: center;
+  }
+</style>

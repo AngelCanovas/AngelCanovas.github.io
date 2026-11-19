@@ -4,7 +4,7 @@ import Icon from '../components/Icon.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
-import Stats from '../components/Stats.astro';
+import SelectedWork from '../components/SelectedWork.astro';
 import Skills from '../components/Skills.astro';
 import Resume from '../components/Resume.astro';
 import Portfolio from '../components/Portfolio.astro';
@@ -18,12 +18,14 @@ import { buildWebSiteSchema } from '../lib/structured-data';
 import { safeJson } from '../lib/security';
 import { siteUrl } from '../lib/site-url';
 import { getContent, type Lang } from '../lib/i18n';
+import { getStyleLabels } from '../lib/style-labels';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const ui = getContent(lang).ui;
+const styleLabels = getStyleLabels(lang);
 const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fullName });
 ---
 
@@ -37,10 +39,26 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
   <script>
     import { initLanguageDetection } from '../scripts/language-detection';
     import { initPortfolio } from '../scripts/portfolio';
+    import { initMobileNav } from '../scripts/mobile-nav';
+    import { initStyleToggle } from '../scripts/style';
+    import { initThemeToggle } from '../scripts/theme';
     import { safeInit } from '../scripts/safe-init';
 
     safeInit(initLanguageDetection);
     initPortfolio();
+
+    // ClientRouter swaps the page body; re-arm the controls that live in the
+    // new DOM. Each initializer is guarded so the first page is unaffected.
+    const routerKey = '__angelPortfolioRouterHook';
+    const globalWindow = window as unknown as Record<string, unknown>;
+    if (!globalWindow[routerKey]) {
+      globalWindow[routerKey] = true;
+      document.addEventListener('astro:after-swap', () => {
+        safeInit(initThemeToggle);
+        safeInit(initStyleToggle);
+        safeInit(initMobileNav);
+      });
+    }
   </script>
   <Header lang={lang} />
   <div id="mobile-nav-overlay" class="mobile-nav-overlay d-xl-none" aria-hidden="true"></div>
@@ -50,12 +68,8 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
       data-style-progress
       data-style-progress-backdrop
       data-hero-visible="true"
-      data-label-running={
-        lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
-      }
-      data-label-paused={
-        lang === 'es' ? 'Reanudar cambio automático de estilo' : 'Resume automatic style changes'
-      }
+      data-label-running={styleLabels.running}
+      data-label-paused={styleLabels.paused}
     >
       <canvas class="style-progress-canvas" data-style-progress-canvas aria-hidden="true"></canvas>
       <div class="style-progress-tube" data-style-progress-tube>
@@ -64,23 +78,17 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
           type="button"
           class="style-progress-backdrop-control"
           data-style-progress-control
-          aria-label={
-            lang === 'es' ? 'Pausar cambio automático de estilo' : 'Pause automatic style changes'
-          }
+          aria-label={styleLabels.running}
           aria-pressed="false"
         >
-          <span class="visually-hidden">
-            {lang === 'es'
-              ? 'Pausar o reanudar el cambio automático de estilo'
-              : 'Pause or resume automatic style changes'}
-          </span>
+          <span class="visually-hidden">{styleLabels.running}</span>
         </button>
       </div>
       <span
         class="visually-hidden"
         data-style-progress-track
         role="progressbar"
-        aria-label={lang === 'es' ? 'Progreso hasta el siguiente estilo' : 'Progress to next style'}
+        aria-label={styleLabels.progress}
         aria-valuemin="0"
         aria-valuemax="100"
         aria-valuenow="0"
@@ -88,7 +96,7 @@ const websiteSchema = buildWebSiteSchema({ url: `${siteUrl}/`, name: personal.fu
     </div>
     <Hero lang={lang} />
     <About lang={lang} />
-    <Stats lang={lang} />
+    <SelectedWork lang={lang} />
     <Skills lang={lang} />
     <Resume lang={lang} />
     <Portfolio lang={lang} />

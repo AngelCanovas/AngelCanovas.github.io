@@ -4,20 +4,23 @@ import { content, personal } from '../data/site';
 import { buildAtsText } from './ats-text';
 
 describe('buildAtsText', () => {
-  it.each(['en', 'es'] as const)('builds a plain-text CV with standard headings (%s)', (lang) => {
-    const text = buildAtsText(lang);
-    const c = content[lang];
+  it.each(['en', 'es', 'fr'] as const)(
+    'builds a plain-text CV with standard headings (%s)',
+    (lang: 'en' | 'es' | 'fr') => {
+      const text = buildAtsText(lang);
+      const c = content[lang];
 
-    expect(text).toContain(personal.fullName.toUpperCase());
-    expect(text).toContain(personal.email);
-    expect(text).toContain('PROFESSIONAL SUMMARY');
-    expect(text).toContain('SKILLS');
-    expect(text).toContain('EXPERIENCE');
-    expect(text).toContain('EDUCATION');
-    expect(text).toContain('CERTIFICATIONS');
-    expect(text).toContain('LANGUAGES');
-    expect(text).toContain(c.resume.experience[0].highlights[0]);
-  });
+      expect(text).toContain(personal.fullName.toUpperCase());
+      expect(text).toContain(personal.email);
+      expect(text).toContain(c.cv.summary.toUpperCase());
+      expect(text).toContain(c.skills.title.toUpperCase());
+      expect(text).toContain(c.resume.experienceTitle.toUpperCase());
+      expect(text).toContain(c.resume.educationTitle.toUpperCase());
+      expect(text).toContain(c.resume.certificationsTitle.toUpperCase());
+      expect(text).toContain(c.resume.languagesTitle.toUpperCase());
+      expect(text).toContain(c.resume.experience[0].highlights[0]);
+    },
+  );
 
   it('contains no Markdown, tables, tabs or smart dashes', () => {
     const text = buildAtsText('en');
