@@ -81,7 +81,7 @@
 .hero {
   min-block-size: 100vh;
   position: relative;
-  padding-block: 80px;
+  padding-block: clamp(48px, 7vh, 80px);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;

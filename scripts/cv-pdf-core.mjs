@@ -4,6 +4,7 @@ import { statSync } from 'node:fs';
 export const CV_PAGES = [
   { lang: 'en', route: '/cv/', file: 'angel-canovas-cv-en.pdf' },
   { lang: 'es', route: '/cv/es/', file: 'angel-canovas-cv-es.pdf' },
+  { lang: 'fr', route: '/cv/fr/', file: 'angel-canovas-cv-fr.pdf' },
 ];
 
 export const PDF_OPTIONS = {

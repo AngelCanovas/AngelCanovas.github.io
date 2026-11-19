@@ -18,6 +18,31 @@ const SPANISH_PATH = homeHref('es');
 export function initLanguageDetection(): void {
   if (isBotUserAgent(navigator.userAgent ?? '')) return;
 
+  // ClientRouter navigations do not trigger `pageshow`, but they do change the
+  // document language. Keep the stored preference aligned with the page the
+  // visitor is actually seeing so Back/Forward survives a reload.
+  const routerHookKey = '__angelLanguageRouterHook';
+  const globalWindow = window as unknown as Record<string, unknown>;
+  if (!globalWindow[routerHookKey]) {
+    globalWindow[routerHookKey] = true;
+    document.addEventListener('astro:after-swap', () => {
+      realignPreference(resolveLang(document.documentElement.lang));
+    });
+    // ClientRouter handles Back/Forward with the History API instead of a
+    // document load, so `performance.navigation` no longer identifies it.
+    window.addEventListener('popstate', () => {
+      const path = window.location.pathname;
+      const pathLang =
+        path.includes('/fr/') || path.endsWith('/fr')
+          ? 'fr'
+          : path.includes('/es/') || path.endsWith('/es')
+            ? 'es'
+            : 'en';
+      realignPreference(pathLang);
+      if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
+    });
+  }
+
   const lang: Lang = resolveLang(document.documentElement.lang);
   if (lang !== 'en') return;
 

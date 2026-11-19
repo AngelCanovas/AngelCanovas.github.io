@@ -4,7 +4,7 @@ import { personal } from '../data/site';
 import PeriodRange from './PeriodRange.astro';
 import { getContent, type Lang } from '../lib/i18n';
 import { splitPeriod } from '../lib/format';
-import { cvPageHref, cvPdfHref, homeHref } from '../lib/routes';
+import { cvPageHref, cvPdfHref, cvTextHref, homeHref } from '../lib/routes';
 import { emailParts, obfuscateEmail } from '../lib/security';
 import { siteHost } from '../lib/site-url';
 
@@ -19,9 +19,14 @@ const emailHtml = obfuscateEmail();
 
 const labels = {
   ...c.cv,
-  switchHref: cvPageHref(lang === 'es' ? 'en' : 'es'),
-  switchLang: lang === 'es' ? 'en' : 'es',
 };
+const switchLinks = (['en', 'es', 'fr'] as const).map((code) => ({
+  code,
+  href: cvPageHref(code),
+  active: code === lang,
+  label: code.toUpperCase(),
+  aria: `${code.toUpperCase()} — ${code === 'en' ? 'English' : code === 'es' ? 'Español' : 'Français'}`,
+}));
 
 const jobs = resume.experience.map((job) => ({ ...job, period: splitPeriod(job.period) }));
 const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu.period) }));
@@ -39,14 +44,32 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
       <button type="button" class="cv-generate" data-print-cv>
         {labels.generate}
       </button>
-      <a
-        href={labels.switchHref}
-        hreflang={labels.switchLang}
-        data-set-standalone-lang={labels.switchLang}
-        data-astro-prefetch
+      <button
+        type="button"
+        class="cv-copy"
+        data-copy-cv
+        data-cv-url={cvTextHref(lang)}
+        data-label-copied={labels.copied}
+        data-label-failed={labels.copyFailed}
       >
-        {labels.switchLabel}
-      </a>
+        {labels.copy}
+      </button>
+      <span class="visually-hidden" role="status" aria-live="polite" data-copy-status></span>
+      <span class="cv-lang-switch" role="group" aria-label={c.nav.languageLabel}>
+        {switchLinks.map((link) => (
+          <a
+            href={link.href}
+            hreflang={link.code}
+            data-set-standalone-lang={link.code}
+            data-astro-prefetch
+            class:list={['cv-lang-option', { active: link.active }]}
+            aria-current={link.active ? 'page' : undefined}
+            aria-label={link.aria}
+          >
+            {link.label}
+          </a>
+        ))}
+      </span>
     </span>
   </nav>
 
@@ -91,6 +114,15 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
     <p>{about.summary}</p>
     <p>{about.secureSummary}</p>
     <p>{about.languages}</p>
+  </section>
+
+  <section class="cv-section cv-highlights">
+    <h2>{labels.highlightsTitle}</h2>
+    <ul>
+      {labels.highlights.map((highlight) => (
+        <li>{highlight}</li>
+      ))}
+    </ul>
   </section>
 
   <section class="cv-section">
@@ -198,11 +230,13 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
 
 <script>
   import { initCvPrint } from '../scripts/cv-print';
+  import { initCvCopy } from '../scripts/cv-copy';
   import { initStandaloneLanguageSwitch } from '../scripts/navigation';
   import { safeInit } from '../scripts/safe-init';
 
   safeInit(initStandaloneLanguageSwitch);
   safeInit(initCvPrint);
+  safeInit(initCvCopy);
 </script>
 
 <style>
@@ -247,6 +281,52 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
   }
   .cv-generate:hover {
     text-decoration-color: currentColor;
+  }
+  .cv-copy {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    color: #963d28;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor, transparent 60%);
+    text-underline-offset: 3px;
+  }
+  .cv-copy:hover {
+    text-decoration-color: currentColor;
+  }
+  .cv-copy:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+  .cv-lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding-left: 0.4rem;
+    border-left: 1px solid #d9dee3;
+  }
+  .cv-lang-option {
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    color: #52606d;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .cv-lang-option:hover,
+  .cv-lang-option.active {
+    color: #963d28;
+    background: #f4ece7;
+  }
+  .cv-highlights ul {
+    margin-bottom: 0;
+  }
+  .cv-highlights li {
+    margin-bottom: 0.35rem;
   }
   .cv-head {
     margin-bottom: 1.5rem;
@@ -372,6 +452,42 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
     .cv-doc {
       max-width: none;
       padding: 0;
+      font-size: 9.1pt;
+      line-height: 1.3;
+    }
+    /* Global `section` padding is for the marketing page, not the CV sheet. */
+    .cv-doc section {
+      padding-block: 0;
+    }
+    .cv-head {
+      margin-bottom: 0.85rem;
+    }
+    .cv-head h1 {
+      font-size: 21pt;
+    }
+    .cv-section {
+      margin-top: 0.85rem;
+    }
+    .cv-section h2 {
+      font-size: 10pt;
+      margin-bottom: 0.35rem;
+      padding-bottom: 0.15rem;
+    }
+    .cv-job,
+    .cv-entry {
+      margin-bottom: 0.55rem;
+    }
+    .cv-doc ul {
+      margin-top: 0.15rem;
+    }
+    .cv-doc ul li {
+      margin-bottom: 0.08rem;
+    }
+    .cv-highlights {
+      margin-top: 0.65rem;
+    }
+    .cv-foot {
+      display: none;
     }
   }
 </style>
