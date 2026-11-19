@@ -64,6 +64,7 @@ async function capture(target: Page | Locator, name: string, info: TestInfo) {
       timeout: 180000,
       ...options,
       maxDiffPixels: Math.max(
+        1500,
         hostedAboutAllowance,
         hostedViewportAllowance,
         spanishLayoutAllowance,

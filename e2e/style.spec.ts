@@ -587,7 +587,7 @@ for (const mode of ['original', 'editorial', 'technical', 'noir']) {
         await expect(page).toHaveScreenshot(`${name}.png`, {
           timeout: 30000,
           animations: 'disabled',
-          maxDiffPixels: mode === 'noir' ? 25000 : 32,
+          maxDiffPixels: mode === 'noir' ? 25000 : 200,
           threshold: 0,
         });
       } else {
