@@ -33,18 +33,24 @@ export function initCvCopy(): void {
 
 async function writeClipboard(text: string): Promise<void> {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Permission denied or a non-secure context: fall through to execCommand.
+    }
   }
 
-  // Fallback for non-secure contexts and older browser engines.
+  // Fallback for non-secure contexts, permission denials and older engines.
   const textarea = document.createElement('textarea');
   textarea.value = text;
   textarea.setAttribute('readonly', '');
   textarea.style.position = 'fixed';
   textarea.style.opacity = '0';
   document.body.appendChild(textarea);
+  textarea.focus();
   textarea.select();
+  textarea.setSelectionRange(0, text.length);
   const copied = document.execCommand('copy');
   textarea.remove();
   if (!copied) throw new Error('copy command failed');
