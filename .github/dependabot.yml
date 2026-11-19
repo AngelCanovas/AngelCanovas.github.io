@@ -14,11 +14,17 @@ updates:
     open-pull-requests-limit: 5
     # Astro check and typescript-eslint currently support TypeScript through 6.0.
     # Node types follow the runtime major in .nvmrc. Revisit with an LTS migration.
+    # Astro 7.4.x nests its own http-cache-semantics and bypasses the vendored
+    # security patch (GHSA-ch52-4w7c-c8xp); the dependency-security regressions
+    # fail CI. Unignore only after an upstream release is verified compatible
+    # with the protected fork. See docs/dependency-security.md.
     ignore:
       - dependency-name: typescript
         versions: ['>=6.1.0']
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      - dependency-name: astro
+        versions: ['>=7.3.9']
     groups:
       npm-minor-and-patch:
         applies-to: version-updates
