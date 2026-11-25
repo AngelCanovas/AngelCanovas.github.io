@@ -1,6 +1,6 @@
 # AGENTS.md — AngelCanovas.github.io
 
-Static bilingual Astro CV hosted at https://angelcanovas.github.io/.
+Static trilingual (EN/ES/FR) Astro CV hosted at https://angelcanovas.github.io/.
 Use `main`, independent Git history and a publication identity. Inspect `git status`,
 `git log --oneline -10` and `git diff` before each change. Commit logical changes
 with Conventional Commits after running check, lint, format:check, test, build,

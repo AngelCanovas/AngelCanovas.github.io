@@ -1,14 +1,13 @@
 # Angel Cánovas Mula — CV
 
-Bilingual CV and portfolio of a Full-Stack Java Engineer based in Murcia, Spain.
+Trilingual (EN/ES/FR) CV and portfolio of a Full-Stack Java Engineer based in Murcia, Spain.
 
 [![CI](https://github.com/AngelCanovas/AngelCanovas.github.io/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AngelCanovas/AngelCanovas.github.io/actions/workflows/ci.yml)
 
-- [English portfolio](https://angelcanovas.github.io/)
-- [Portfolio en español](https://angelcanovas.github.io/es/)
-- [Online CV](https://angelcanovas.github.io/cv/) · [CV online](https://angelcanovas.github.io/cv/es/)
-- [English PDF](https://angelcanovas.github.io/cv/angel-canovas-cv-en.pdf) · [PDF español](https://angelcanovas.github.io/cv/angel-canovas-cv-es.pdf)
-- [Plain-text CV for ATS](https://angelcanovas.github.io/cv/angel-canovas-cv-en.txt) · [CV en texto plano para ATS](https://angelcanovas.github.io/cv/angel-canovas-cv-es.txt)
+- [English portfolio](https://angelcanovas.github.io/) · [Portfolio en español](https://angelcanovas.github.io/es/) · [Portfolio en français](https://angelcanovas.github.io/fr/)
+- [Online CV](https://angelcanovas.github.io/cv/) · [CV online](https://angelcanovas.github.io/cv/es/) · [CV en ligne](https://angelcanovas.github.io/cv/fr/)
+- [English PDF](https://angelcanovas.github.io/cv/angel-canovas-cv-en.pdf) · [PDF español](https://angelcanovas.github.io/cv/angel-canovas-cv-es.pdf) · [PDF français](https://angelcanovas.github.io/cv/angel-canovas-cv-fr.pdf)
+- [Plain-text CV for ATS](https://angelcanovas.github.io/cv/angel-canovas-cv-en.txt) · [CV en texto plano para ATS](https://angelcanovas.github.io/cv/angel-canovas-cv-es.txt) · [CV en texte brut pour ATS](https://angelcanovas.github.io/cv/angel-canovas-cv-fr.txt)
 
 The static Astro site includes accessible navigation, a dark theme by default
 with a light toggle, local fonts, an interactive hero, print styles and

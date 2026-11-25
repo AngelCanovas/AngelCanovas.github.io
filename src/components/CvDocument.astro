@@ -118,6 +118,7 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
 
   <section class="cv-section cv-highlights">
     <h2>{labels.highlightsTitle}</h2>
+    <p class="cv-impact">{labels.impactLine}</p>
     <ul>
       {labels.highlights.map((highlight) => (
         <li>{highlight}</li>
@@ -325,6 +326,16 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
   .cv-highlights ul {
     margin-bottom: 0;
   }
+  .cv-impact {
+    margin: 0 0 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border-left: 3px solid var(--accent-color);
+    background: var(--panel-color);
+    color: var(--heading-color);
+    font-weight: 600;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
   .cv-highlights li {
     margin-bottom: 0.35rem;
   }
@@ -485,6 +496,13 @@ const studies = resume.education.map((edu) => ({ ...edu, period: splitPeriod(edu
     }
     .cv-highlights {
       margin-top: 0.65rem;
+    }
+    .cv-impact {
+      margin-bottom: 0.3rem;
+      padding: 0.3rem 0.45rem;
+      font-size: 8.5pt;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
     .cv-foot {
       display: none;

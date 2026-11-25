@@ -31,9 +31,9 @@ test('root-hosted pages and assets do not retain the former project mount', asyn
 
 test('canonical PDF bytes retain their approved hashes', async ({ request }) => {
   for (const [lang, hash] of [
-    ['en', '08b7d34a7ebcc468c2e7e44c80d76ea57cde6fd8299d465d6a47607634077fb6'],
-    ['es', 'ec6c8ff6b6299bbc2390f099fde3d897a881c35a850dd6a9e1c9b74070b567cf'],
-    ['fr', '4eeb53509e4a6c3d2e3818cbdecfc35e1059a9692a18649ae9909d786f167007'],
+    ['en', '54f8f28da5b60a7b313a14b34eb4d7ecea1f518785ab3d8a85eb4dcd2fe65dec'],
+    ['es', 'de486b7a82ca983a5dac303996ff5afd3bf5a39d395b655d2285323c4cc8beeb'],
+    ['fr', 'd18dccca2b570d80bac93fdd1f852f458c6d93fbb16e8eb2a818f7ab77d10e26'],
   ]) {
     const response = await request.get(`/cv/angel-canovas-cv-${lang}.pdf`);
     expect(response.ok()).toBe(true);
