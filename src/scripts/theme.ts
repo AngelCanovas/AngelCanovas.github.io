@@ -30,7 +30,8 @@ function currentTheme(): Theme {
  */
 export function initThemeToggle(): void {
   const button = document.querySelector<HTMLElement>('[data-theme-toggle]');
-  if (!button) return;
+  if (!button || button.dataset.themeInitialized) return;
+  button.dataset.themeInitialized = 'true';
 
   const metas = Array.from(
     document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),

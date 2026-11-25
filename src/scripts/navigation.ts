@@ -76,8 +76,23 @@ export function initLanguageSwitch(): void {
 
 /** Restore the saved section on load, overriding the browser's own restore. */
 export function initScrollRestore(): void {
+  // ClientRouter keeps the document alive: `load` never fires again. Restore
+  // the saved section after each client-side swap and hand scroll restoration
+  // back to the browser, exactly as the full-page path does.
+  const routerHookKey = '__angelScrollRestoreRouterHook';
+  const globalWindow = window as unknown as Record<string, unknown>;
+  if (!globalWindow[routerHookKey]) {
+    globalWindow[routerHookKey] = true;
+    document.addEventListener('astro:after-swap', () => {
+      if (!readStoredSection()) return;
+      window.requestAnimationFrame(() => {
+        restoreScroll();
+        if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
+      });
+    });
+  }
+
   if (!readStoredSection()) return;
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
   window.addEventListener(
     'load',

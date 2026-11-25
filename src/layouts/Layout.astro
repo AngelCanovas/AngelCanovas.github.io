@@ -1,5 +1,6 @@
 ---
 import { withBase } from '../lib/base-path';
+import { ClientRouter } from 'astro:transitions';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fontsource/raleway/latin-700.css';
 import '../styles/fonts.css';
@@ -19,6 +20,7 @@ interface Props {
   path?: string;
   alternateEn?: string;
   alternateEs?: string;
+  alternateFr?: string;
   robots?: string;
   profile?: boolean;
 }
@@ -29,10 +31,14 @@ const ui = getContent(lang).ui;
 const title = Astro.props.title ?? meta.title;
 const description = Astro.props.description ?? meta.description;
 
-const canonicalPath = Astro.props.path ?? (lang === 'es' ? '/es/' : '/');
+const canonicalPath = Astro.props.path ?? (lang === 'fr' ? '/fr/' : lang === 'es' ? '/es/' : '/');
 const canonicalURL = absoluteUrl(canonicalPath);
 const enURL = absoluteUrl(Astro.props.alternateEn ?? '/');
 const esURL = absoluteUrl(Astro.props.alternateEs ?? '/es/');
+const frURL = absoluteUrl(Astro.props.alternateFr ?? '/fr/');
+const otherLocales = (['en_US', 'es_ES', 'fr_FR'] as const).filter(
+  (locale) => locale !== meta.ogLocale,
+);
 const ogImage = absoluteUrl('/og-image.jpg');
 const skipLabel = ui.skipLink;
 const isCv = canonicalPath.startsWith('/cv');
@@ -92,13 +98,16 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" hreflang="en" href={enURL} />
     <link rel="alternate" hreflang="es" href={esURL} />
+    <link rel="alternate" hreflang="fr" href={frURL} />
     <link rel="alternate" hreflang="x-default" href={enURL} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={personal.fullName} />
     <meta property="og:locale" content={meta.ogLocale} />
-    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
+    {otherLocales.map((locale) => (
+      <meta property="og:locale:alternate" content={locale} />
+    ))}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
@@ -121,6 +130,7 @@ const htmlComment = fun.htmlComment.replace(/--/g, '—');
 
     <!-- Structured data -->
     {schema && <script type="application/ld+json" is:inline set:html={safeJson(schema)}></script>}
+    <ClientRouter />
     <slot name="head" />
   </head>
 

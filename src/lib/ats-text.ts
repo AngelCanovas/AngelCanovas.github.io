@@ -22,19 +22,25 @@ export function buildAtsText(lang: Lang = 'en'): string {
   lines.push(`GitHub: ${personal.github}`);
   lines.push('');
 
-  lines.push('PROFESSIONAL SUMMARY');
+  lines.push(clean(c.cv.summary).toUpperCase());
   lines.push(clean(about.summary));
   lines.push(clean(about.secureSummary));
   lines.push(clean(about.languages));
   lines.push('');
 
-  lines.push('SKILLS');
+  lines.push(clean(c.cv.highlightsTitle).toUpperCase());
+  for (const highlight of c.cv.highlights) {
+    lines.push(`- ${clean(highlight)}`);
+  }
+  lines.push('');
+
+  lines.push(clean(skills.title).toUpperCase());
   for (const group of skills.groups) {
     lines.push(`${clean(group.title)}: ${group.skills.join(', ')}`);
   }
   lines.push('');
 
-  lines.push('EXPERIENCE');
+  lines.push(clean(resume.experienceTitle).toUpperCase());
   for (const job of resume.experience) {
     lines.push(`${clean(job.title)} - ${job.company}, ${job.location} - ${job.period}`);
     if (job.context) lines.push(clean(job.context));
@@ -42,11 +48,11 @@ export function buildAtsText(lang: Lang = 'en'): string {
       lines.push(`- ${clean(highlight)}`);
     }
     if (job.stack.length > 0) {
-      lines.push(`Stack: ${job.stack.join(', ')}`);
+      lines.push(`${clean(c.cv.stack)}: ${job.stack.join(', ')}`);
     }
     for (const assignment of job.assignments) {
       lines.push('');
-      lines.push(`Assignment: ${clean(assignment.title)}`);
+      lines.push(`${clean(c.cv.assignment)}: ${clean(assignment.title)}`);
       for (const detail of assignment.details) {
         lines.push(`- ${clean(detail)}`);
       }
@@ -54,7 +60,7 @@ export function buildAtsText(lang: Lang = 'en'): string {
     lines.push('');
   }
 
-  lines.push('EDUCATION');
+  lines.push(clean(resume.educationTitle).toUpperCase());
   for (const entry of resume.education) {
     const detail = entry.detail ? ` ${clean(entry.detail)}.` : '';
     const period = entry.period ? ` - ${clean(entry.period)}` : '';
@@ -62,19 +68,19 @@ export function buildAtsText(lang: Lang = 'en'): string {
   }
   lines.push('');
 
-  lines.push('CERTIFICATIONS');
+  lines.push(clean(resume.certificationsTitle).toUpperCase());
   for (const certification of resume.certifications) {
     lines.push(`- ${clean(certification)}`);
   }
   lines.push('');
 
-  lines.push('LANGUAGES');
+  lines.push(clean(resume.languagesTitle).toUpperCase());
   for (const { language, level } of resume.languages) {
     lines.push(`- ${language}: ${clean(level)}`);
   }
   lines.push('');
 
-  lines.push('ADDITIONAL');
+  lines.push(clean(about.homeLab.title).toUpperCase());
   lines.push(clean(about.homeLab.intro));
   for (const point of about.homeLab.points) {
     lines.push(`- ${clean(point)}`);

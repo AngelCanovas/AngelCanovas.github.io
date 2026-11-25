@@ -26,7 +26,11 @@ export function initHashScroll(): void {
 
   if (document.readyState === 'complete') {
     run();
-    return;
+  } else {
+    window.addEventListener('load', run, { once: true });
   }
-  window.addEventListener('load', run, { once: true });
+  // Fonts and late images can move the section after the first paint; re-apply
+  // the hash target once they settle so the heading is not left off by a few
+  // dozen pixels.
+  document.fonts?.ready.then(run).catch(() => {});
 }

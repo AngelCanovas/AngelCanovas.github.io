@@ -85,6 +85,7 @@ export function buildLlmsFullText(lang: Lang = 'en'): string {
     `- GitHub: ${personal.github}`,
     `- Online CV: ${siteUrl}/cv/`,
     `- Online CV (Spanish): ${siteUrl}/cv/es/`,
+    `- Online CV (French): ${siteUrl}/cv/fr/`,
     `- Website: ${siteUrl}`,
     '',
   );

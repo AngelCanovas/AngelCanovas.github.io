@@ -1,4 +1,4 @@
-const LANGS = ['en', 'es'] as const;
+const LANGS = ['en', 'es', 'fr'] as const;
 
 export type Lang = (typeof LANGS)[number];
 

@@ -77,6 +77,24 @@
     font-weight: 400;
     letter-spacing: 0;
   }
+  /* The hero proof strip reuses the stats data but must sit on the hero, not
+     on the editorial light band. */
+  .main .stats.stats--proof {
+    background: transparent;
+    border-color: transparent;
+    padding-block: 2rem 0;
+  }
+  .main .stats.stats--proof .stat-value {
+    color: var(--heading-color);
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+  }
+  .main .stats.stats--proof .stat-suffix {
+    color: var(--accent-ink);
+  }
+  .main .stats.stats--proof .stat-label {
+    color: var(--default-color);
+    opacity: 0.9;
+  }
   .main .section .skill-group {
     border-width: 1px 0 0;
     background: transparent;

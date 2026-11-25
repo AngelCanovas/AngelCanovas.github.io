@@ -2,6 +2,7 @@
 import Icon from './Icon.astro';
 import TechnicalGraph from './TechnicalGraph.astro';
 import NoirBonfire from './NoirBonfire.astro';
+import Stats from './Stats.astro';
 import { personal } from '../data/site';
 import { getContent, type Lang } from '../lib/i18n';
 import { cvPdfHref } from '../lib/routes';
@@ -57,18 +58,20 @@ const t = getContent(lang);
       <span class="visually-hidden">{t.hero.roles.join(' · ')}</span>
     </p>
     <p class="hero-subtitle mt-3">{t.hero.headline}</p>
+    <p class="hero-value">{t.hero.valueProp}</p>
     <div class="hero-actions mt-4">
-      <a href="#contact" class="hero-btn hero-btn--primary me-2 mb-2">
-        {t.hero.ctaContact}
-      </a>
-      <a href="#resume" class="hero-btn hero-btn--ghost me-2 mb-2">
-        {t.hero.ctaResume}
-      </a>
-      <a href={cvPdfHref(lang)} class="hero-btn hero-btn--ghost mb-2" download>
+      <a href={cvPdfHref(lang)} class="hero-btn hero-btn--primary me-2 mb-2" download>
         <Icon name="download" class="me-1" />
         {t.hero.ctaCv}
       </a>
+      <a href="#contact" class="hero-btn hero-btn--ghost me-2 mb-2">
+        {t.hero.ctaContact}
+      </a>
+      <a href="#portfolio" class="hero-work-link mb-2">
+        {t.hero.ctaWork} <span aria-hidden="true">→</span>
+      </a>
     </div>
+    <Stats lang={lang} variant="proof" />
   </div>
 </section>
 
@@ -209,7 +212,7 @@ const t = getContent(lang);
     font-size: 0.85rem;
     color: var(--default-color);
     padding-bottom: 1rem;
-    margin-bottom: clamp(2rem, 6vh, 4rem);
+    margin-bottom: clamp(1.25rem, 3.5vh, 2.5rem);
     border-bottom: 1px solid var(--rule-color);
     max-width: 30rem;
   }
@@ -227,10 +230,10 @@ const t = getContent(lang);
   .hero-name {
     max-width: 9ch;
     margin: 0;
-    font-size: clamp(3.8rem, 7.6vw, 7.2rem);
+    font-size: clamp(3.4rem, 6.6vw, 6.1rem);
     font-weight: 700;
-    line-height: 0.98;
-    letter-spacing: -0.065em;
+    line-height: 0.96;
+    letter-spacing: -0.06em;
     text-wrap: balance;
   }
   .hero-name > span {
@@ -242,7 +245,7 @@ const t = getContent(lang);
   }
   .hero-role {
     font-size: clamp(1.2rem, 2vw, 1.6rem);
-    margin: 2rem 0 0;
+    margin: 1.25rem 0 0;
     max-width: 33rem;
     font-weight: 500;
   }
@@ -270,10 +273,35 @@ const t = getContent(lang);
     line-height: 1.75;
     margin-bottom: 0;
   }
+  .hero-value {
+    max-width: 40rem;
+    margin: 1rem 0 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent-ink);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--heading-color);
+  }
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
-    max-width: 36rem;
+    align-items: center;
+    max-width: 40rem;
+  }
+  .hero-work-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.2rem;
+    color: var(--accent-ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor, transparent 55%);
+    text-underline-offset: 3px;
+  }
+  .hero-work-link:hover {
+    text-decoration-color: currentColor;
   }
   .hero-btn {
     display: inline-flex;

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
 
 test('root-hosted pages and assets do not retain the former project mount', async ({ page }) => {
-  for (const path of ['/', '/es/', '/cv/', '/cv/es/', '/404.html']) {
+  for (const path of ['/', '/es/', '/fr/', '/cv/', '/cv/es/', '/cv/fr/', '/404.html']) {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(path);
@@ -31,8 +31,9 @@ test('root-hosted pages and assets do not retain the former project mount', asyn
 
 test('canonical PDF bytes retain their approved hashes', async ({ request }) => {
   for (const [lang, hash] of [
-    ['en', '0f2692ed9c273fe0061ef1b33409df8f7396cb2774716b0917fc8c5f6568738b'],
-    ['es', '12d8b810362c246955b4791ead106f4b1b6e83f540ce273a446f260928e3d0a1'],
+    ['en', '08b7d34a7ebcc468c2e7e44c80d76ea57cde6fd8299d465d6a47607634077fb6'],
+    ['es', 'ec6c8ff6b6299bbc2390f099fde3d897a881c35a850dd6a9e1c9b74070b567cf'],
+    ['fr', '4eeb53509e4a6c3d2e3818cbdecfc35e1059a9692a18649ae9909d786f167007'],
   ]) {
     const response = await request.get(`/cv/angel-canovas-cv-${lang}.pdf`);
     expect(response.ok()).toBe(true);
