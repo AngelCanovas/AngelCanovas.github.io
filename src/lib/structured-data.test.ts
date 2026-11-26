@@ -53,7 +53,7 @@ describe('buildPersonSchema', () => {
     expect(base.hasOccupation.skills.length).toBeGreaterThan(0);
   });
 
-  it.each(['en', 'es'] as const)(
+  it.each(['en', 'es', 'fr'] as const)(
     'does not model personal tenure as job requirements in %s',
     (lang) => {
       const schema = buildPersonSchema({
@@ -105,6 +105,8 @@ describe('buildProfilePageSchema', () => {
     ['es', '/es/'],
     ['en', '/cv/'],
     ['es', '/cv/es/'],
+    ['fr', '/fr/'],
+    ['fr', '/cv/fr/'],
   ] as const)('keeps a common Person identity on the %s profile %s', (lang, path) => {
     const personUrl = 'https://example.test/';
     const url = new URL(path, personUrl).href;
@@ -153,10 +155,11 @@ describe('currentEmployer', () => {
     expect(currentEmployer([past])).toBeUndefined();
   });
 
-  it('accepts the Spanish "actualidad" wording', () => {
-    expect(currentEmployer([{ company: 'Capgemini', period: 'Jun 2021 — actualidad' }])?.name).toBe(
-      'Capgemini',
-    );
+  it.each([
+    ['Spanish', 'Jun 2021 — actualidad'],
+    ['French', 'Juin 2021 — aujourd’hui'],
+  ] as const)('accepts the %s open-ended wording', (_label, period) => {
+    expect(currentEmployer([{ company: 'Capgemini', period }])?.name).toBe('Capgemini');
   });
 });
 

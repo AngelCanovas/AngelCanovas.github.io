@@ -19,7 +19,7 @@ and language routing. Preserve bot/history redirect guards and query/hash.
 
 Portfolio pages open in the dark theme by default, ignoring the system
 preference; the toggle stores an explicit light or dark choice. The online CV
-(`/cv/`, `/cv/es/`) always keeps its light tokens for reading and print.
+(`/cv/`, `/cv/es/`, `/cv/fr/`) always keeps its light tokens for reading and print.
 
 Never weaken CSP or inline-code build guards. Use classes/data attributes and the
 CSSOM; keep same-origin fonts/icons, semantic headings, contrast tokens and focus.

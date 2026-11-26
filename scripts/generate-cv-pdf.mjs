@@ -4,8 +4,8 @@
  * This is a manual maintenance command (`npm run cv:pdf`), not part of the
  * build: the ready-made PDFs in `public/cv/` are the default download, and the
  * online CV page offers printing itself as the "generate from the web" option.
- * Serves ./dist over HTTP, renders /cv/ and /cv/es/ with headless Chromium in
- * print media and writes public/cv/angel-canovas-cv-{en,es}.pdf.
+ * Serves ./dist over HTTP, renders /cv/, /cv/es/ and /cv/fr/ with headless
+ * Chromium in print media and writes public/cv/angel-canovas-cv-{en,es,fr}.pdf.
  */
 import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
