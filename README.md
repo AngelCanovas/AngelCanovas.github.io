@@ -21,7 +21,7 @@ distributed here. The website project card links directly to this repository.
 
 | Area          | Implementation and purpose                                                                                        |
 | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Content       | `src/data/site.ts` holds both locales; type and parity checks keep their structure aligned.                       |
+| Content       | `src/data/site.ts` holds three locales; type and parity checks keep their structure aligned.                      |
 | Rendering     | Astro emits static HTML. Shared layouts and components keep the portfolio and printable CV consistent.            |
 | Behavior      | Typed client modules handle navigation, theme and interactions. Pure logic lives in `src/lib` with focused tests. |
 | Accessibility | Semantic headings, keyboard focus, no-JavaScript content and reduced motion are checked against the built site.   |
@@ -47,7 +47,7 @@ On Linux, `npx playwright install --with-deps chromium` also installs the browse
 system dependencies. See [toolchain](docs/toolchain.md) before upgrading the compiler
 or runtime major.
 The development URL is `http://localhost:4321/`.
-Content lives in `src/data/site.ts`; maintain both locales together.
+Content lives in `src/data/site.ts`; maintain the three locales together.
 The committed PDF files are canonical: do not regenerate them without the owner's
 explicit request. Hidden technical notes contain no unpublished articles.
 

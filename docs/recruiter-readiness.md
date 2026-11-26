@@ -12,8 +12,9 @@ for keyword matching. The site therefore emits:
 
 - `/cv/angel-canovas-cv-en.txt`
 - `/cv/angel-canovas-cv-es.txt`
+- `/cv/angel-canovas-cv-fr.txt`
 
-Both are generated at build time from the same `src/data/site.ts` content used
+All three are generated at build time from the same `src/data/site.ts` content used
 by the HTML CV and the PDF. `src/lib/ats-text.ts` renders a single-column
 document with standard section headings (`PROFESSIONAL SUMMARY`, `SKILLS`,
 `EXPERIENCE`, `EDUCATION`, `CERTIFICATIONS`, `LANGUAGES`, `ADDITIONAL`), no
@@ -21,7 +22,7 @@ tables, no Markdown, no tabs, no smart dashes, and no contact details hidden
 behind scripts. Every experience bullet is copied verbatim; only typographic
 characters are normalised.
 
-The Astro endpoints live in `src/pages/cv/angel-canovas-cv-{en,es}.txt.ts`.
+The Astro endpoints live in `src/pages/cv/angel-canovas-cv-{en,es,fr}.txt.ts`.
 `src/lib/routes.ts` exposes `cvTextHref(lang)` so other surfaces can link to the
 files without hard-coding the base path.
 

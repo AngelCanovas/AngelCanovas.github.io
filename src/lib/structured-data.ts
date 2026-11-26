@@ -34,13 +34,16 @@ const LANGUAGE_CODES: Record<string, string> = {
 };
 
 /**
- * The current employer is the job with an open-ended period ("present"), not
- * simply the first entry: reordering the CV must not declare a past employer.
+ * The current employer is the job with an open-ended period ("present",
+ * "actualidad" or "aujourd'hui"), not simply the first entry: reordering the
+ * CV must not declare a past employer.
  */
 export function currentEmployer(
   experience: ReadonlyArray<{ readonly company: string; readonly period: string }>,
 ): { '@type': 'Organization'; name: string; url?: string } | undefined {
-  const job = experience.find((entry) => /present|actual/i.test(splitPeriod(entry.period).end));
+  const job = experience.find((entry) =>
+    /present|actual|aujourd/i.test(splitPeriod(entry.period).end),
+  );
   if (!job) return undefined;
   const url = personal.companyUrls[job.company as keyof typeof personal.companyUrls];
   return {

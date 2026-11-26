@@ -27,7 +27,7 @@ The dependency bot temporarily excludes incompatible TypeScript releases and
 Node-type major bumps; review these exclusions when upstream support or the
 runtime major changes.
 
-Lighthouse 13.5.0 and chrome-launcher 1.2.2 are exact development dependencies.
+Lighthouse 13.6.0 and chrome-launcher 1.2.3 are exact development dependencies.
 The budget commands use their local public APIs through `scripts/lighthouse.mjs`,
 not an untracked `npx` download of Lighthouse CI. The two existing configuration
 files remain the source of device settings, URLs, run counts and budgets; see

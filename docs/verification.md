@@ -63,15 +63,19 @@ with `https://angelcanovas.github.io`. Allow for host/CDN propagation before
 concluding that an older response indicates a deployment failure.
 
 Verify HTTP responses for the four main routes, sprite, optimized assets, fonts,
-Open Graph JPEG, sitemap, text feeds, origin security contact and both PDFs.
+Open Graph JPEG, sitemap, text feeds, origin security contact and the three PDFs.
 Check canonical/hreflang/JSON-LD URLs, local links and unknown routes. Use a browser
 to check language switching, query/hash and Back, theme, icons, downloads, focus
 and the absence of CSP errors. A successful root request alone is insufficient.
 
 Canonical PDF SHA-256 values:
 
-- English: `01c37925218bc103349690994f7278fb26cbdd10046aad8484780f936674bed1`
-- Spanish: `fd692f0f39cd630a19f5dacbd2f78cc701393d7c8cff645959e61178107f2b80`
+- English: `4f44bce959d8f8887458bd189e9ef590fe374ee749f136f3e044618a109fc998`
+- Spanish: `4817ddc9a11e40e633880766ae20f7f31ea4efb5dc76f76117abfa45fffb76e1`
+- French: `457f3e6b77f5c77af09fd7883ab69a629c990e7050c62d000f2b7d571450dcfa`
+
+These values mirror the approved hashes pinned in `e2e/base-path.spec.ts`; treat
+that test as the authoritative source and keep this list in sync.
 
 The Pages artifact contains only the validated static site and expires after one
 day. Inspect its file list and metadata when changing artifact policy. Do not
@@ -88,6 +92,14 @@ public commits use a noreply identity.
 The repository contains 166 Linux PNG references: 158 for `e2e/visual.spec.ts` and
 8 for `e2e/style.spec.ts`. Both suites compare references on Linux only. On Windows
 they capture review attachments instead; other assertions still run.
+
+The French routes (`/fr/`, `/cv/fr/`) are deliberately outside the pixel-reference
+matrix: they reuse the same layouts, components and tokens already covered by the
+EN/ES captures, and are verified functionally by the i18n, ATS, route and
+structured-data suites (including the French `aujourd'hui` open-ended period).
+Adding a third locale to the full 3-viewport × 2-theme matrix would roughly double
+the reference set without covering new rendering logic. Any French-specific
+layout change must add a targeted reference at that time.
 
 All Linux screenshot comparisons use `threshold: 0`, which makes any color
 difference count as a differing pixel. It does not cancel `maxDiffPixels`:
