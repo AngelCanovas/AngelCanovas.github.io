@@ -70,7 +70,7 @@ const en = {
     headline:
       'Spring Boot · Spring Security · Angular · Secure enterprise applications · Cybersecurity-trained',
     valueProp:
-      'I build secure enterprise applications for the French Ministry of Education — 10,000+ students supported and most of a security audit remediated.',
+      'I build secure enterprise applications for the French Ministry of Education — LPI now serves 1.2M+ livrets and 170,000+ new users since September 2026.',
     ctaContact: 'Email me',
     ctaResume: 'View resume',
     ctaWork: 'See selected work',
@@ -79,7 +79,7 @@ const en = {
   stats: {
     items: [
       { value: 5, suffix: '+', label: 'Years of experience', decimals: 0 },
-      { value: 10000, suffix: '+', label: 'Students supported', decimals: 0 },
+      { value: 1.2, suffix: 'M+', label: 'Livrets created', decimals: 1 },
       { value: 4.23, suffix: '/5', label: 'Client satisfaction', decimals: 2 },
       { value: 8.83, suffix: '/10', label: 'Cybersecurity grade', decimals: 2 },
     ],
@@ -87,7 +87,7 @@ const en = {
   about: {
     title: 'About',
     summary:
-      'Full-stack Java engineer with 5+ years at Capgemini building enterprise web applications for the French Ministry of National Education, including Livret de Parcours Inclusif (LPI) and Faits Établissement. I work across the full lifecycle with Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf and Angular on IBM DB2: new features, corrective maintenance, production support, releases, database migrations and batch processes.',
+      'Full-stack Java engineer with 5+ years at Capgemini building enterprise web applications for the French Ministry of National Education, including Livret de Parcours Inclusif (LPI) and Faits Établissement. I work across the full lifecycle with Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf and Angular on IBM DB2: new features, corrective maintenance, production support, releases, database migrations and batch processes. Since September 2026, LPI has grown to 1.2M+ livrets and 170,000+ new users; the team is now handling urgent production incidents from that growth, including document generation and user login.',
     secureSummary:
       'Over the last year I have specialised in secure software development. During the remediation of a technical security audit I implemented most of the fixes myself as part of the team: SAML2 authentication, role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm. I also worked on CSRF protection, code hardening and vulnerability remediation. In 2025 I completed the Official Specialisation Course in Cybersecurity for IT Environments with a grade of 8.83/10.',
     languages:
@@ -232,6 +232,7 @@ const en = {
           'Full-stack Java developer · French Ministry of National Education · Livret de Parcours Inclusif, Faits Établissement',
         highlights: [
           'Developed accessibility features for LPI, an internal Ministry platform that digitises support plans and processes for students with special educational needs across France, used by teaching staff nationwide.',
+          'Scaled with LPI as it reached 1.2M+ livrets and 170,000+ new users since September 2026; currently helping resolve urgent production incidents from that growth, including document generation and user login.',
           'Contributed to the migration of the production database from MySQL to IBM DB2: schema changes and Liquibase changesets, data migration support and resolution of production incidents.',
           'Implemented most of the security audit remediation myself as part of the team: SAML2 authentication, role-based access control, secure cookie and session handling and a stronger cryptographic PIN generation algorithm; also worked on CSRF protection, code hardening and vulnerability remediation.',
           'Contributed to raising customer satisfaction from 3.5 to 4.23 / 5 in the first year through proactive issue resolution and consistent delivery quality.',
@@ -352,7 +353,7 @@ const en = {
         category: 'app',
         featured: true,
         description:
-          'French Ministry of National Education application used nationwide by teaching staff to support students with special needs.',
+          'French Ministry of National Education application used nationwide by teaching staff to support students with special needs — 1.2M+ livrets and 170,000+ new users since September 2026.',
         tags: ['Java', 'Spring Boot', 'Thymeleaf', 'IBM DB2'],
         caseStudy: {
           problem:
@@ -360,7 +361,7 @@ const en = {
           approach:
             'Built new Spring Boot and Thymeleaf features on the national platform, working from functional specifications with the ministry and the product team.',
           impact:
-            'The main feature I delivered improved accessibility for students with special needs across France.',
+            'The main feature I delivered improved accessibility for students with special needs across France; the platform now serves 1.2M+ livrets after exponential growth since September 2026.',
         },
         link: '',
       },
@@ -484,8 +485,10 @@ const en = {
     copied: 'CV copied to clipboard',
     copyFailed: 'Could not copy the CV',
     highlightsTitle: 'Selected highlights',
+    impactLine:
+      'Since September 2026: 1,200,000+ livrets created · 170,000+ new users · urgent fixes under way in document generation and login.',
     highlights: [
-      'LPI: delivered accessibility features used by teaching staff across France, supporting 10,000+ students.',
+      'LPI: 1.2M+ livrets and 170,000+ new users since September 2026 — supporting a platform under exponential growth while the team fixes urgent document-generation and login incidents.',
       'Security audit: implemented most of the remediation myself — SAML2, role-based access control, secure sessions and cookies, cryptographic PIN generation.',
     ],
   },
@@ -623,7 +626,7 @@ const es = {
     headline:
       'Spring Boot · Spring Security · Angular · Aplicaciones empresariales seguras · Formación en ciberseguridad',
     valueProp:
-      'Construyo aplicaciones empresariales seguras para el Ministerio de Educación francés: más de 10.000 alumnos atendidos y la mayor parte de una auditoría de seguridad corregida.',
+      'Construyo aplicaciones empresariales seguras para el Ministerio de Educación francés: LPI supera ya 1,2 millones de livrets y 170.000 nuevos usuarios desde septiembre de 2026.',
     ctaContact: 'Escríbeme',
     ctaResume: 'Ver currículum',
     ctaWork: 'Ver proyectos destacados',
@@ -632,7 +635,7 @@ const es = {
   stats: {
     items: [
       { value: 5, suffix: '+', label: 'Años de experiencia', decimals: 0 },
-      { value: 10000, suffix: '+', label: 'Alumnado atendido', decimals: 0 },
+      { value: 1.2, suffix: 'M+', label: 'Livrets creados', decimals: 1 },
       { value: 4.23, suffix: '/5', label: 'Satisfacción del cliente', decimals: 2 },
       { value: 8.83, suffix: '/10', label: 'Nota en ciberseguridad', decimals: 2 },
     ],
@@ -640,7 +643,7 @@ const es = {
   about: {
     title: 'Sobre mí',
     summary:
-      'Ingeniero Full-Stack Java con más de 5 años en Capgemini desarrollando aplicaciones web empresariales para el Ministerio de Educación Nacional de Francia, en particular Livret de Parcours Inclusif (LPI) y Faits Établissement. Cubro todo el ciclo de vida con Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf y Angular sobre IBM DB2: nuevas funcionalidades, mantenimiento correctivo, soporte en producción, releases, migraciones de base de datos y procesos batch.',
+      'Ingeniero Full-Stack Java con más de 5 años en Capgemini desarrollando aplicaciones web empresariales para el Ministerio de Educación Nacional de Francia, en particular Livret de Parcours Inclusif (LPI) y Faits Établissement. Cubro todo el ciclo de vida con Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf y Angular sobre IBM DB2: nuevas funcionalidades, mantenimiento correctivo, soporte en producción, releases, migraciones de base de datos y procesos batch. Desde septiembre de 2026, LPI ha crecido hasta más de 1,2 millones de livrets y 170.000 nuevos usuarios; el equipo atiende ahora incidentes urgentes de producción derivados de ese crecimiento, entre ellos la generación de documentos y el acceso de usuarios.',
     secureSummary:
       'Durante el último año me he especializado en desarrollo seguro. En la remediación de una auditoría técnica de seguridad implementé personalmente la mayor parte de las correcciones dentro del equipo: autenticación SAML2, control de acceso basado en roles, gestión segura de cookies y sesiones y un algoritmo criptográfico más fuerte de generación de PIN. También trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades. En 2025 completé el Curso Oficial de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información con una nota de 8,83/10.',
     languages:
@@ -785,6 +788,7 @@ const es = {
           'Desarrollador Full-Stack Java · Ministerio de Educación Nacional de Francia · Livret de Parcours Inclusif, Faits Établissement',
         highlights: [
           'Desarrollé funcionalidades de accesibilidad para LPI, una plataforma interna del Ministerio que digitaliza los planes y procesos de apoyo al alumnado con necesidades educativas especiales en toda Francia, usada por personal docente a nivel nacional.',
+          'Acompañé el crecimiento de LPI hasta más de 1,2 millones de livrets y 170.000 nuevos usuarios desde septiembre de 2026; actualmente ayudo a resolver los incidentes urgentes de producción derivados, entre ellos la generación de documentos y el acceso de usuarios.',
           'Contribuí a la migración de la base de datos de producción de MySQL a IBM DB2: cambios de esquema y changesets con Liquibase, apoyo a la migración de datos y resolución de incidencias en producción.',
           'Implementé personalmente la mayor parte de las correcciones de la auditoría de seguridad dentro del equipo: autenticación SAML2, control de acceso basado en roles, gestión segura de cookies y sesiones y un algoritmo criptográfico más fuerte de generación de PIN; también trabajé en protección CSRF, hardening de código y corrección de vulnerabilidades.',
           'Contribuí a subir la satisfacción del cliente de 3,5 a 4,23 / 5 en el primer año mediante resolución proactiva de incidencias y una entrega constante.',
@@ -906,7 +910,7 @@ const es = {
         category: 'app',
         featured: true,
         description:
-          'Aplicación del Ministerio de Educación Nacional de Francia usada a nivel nacional por el profesorado para apoyar al alumnado con necesidades especiales.',
+          'Aplicación del Ministerio de Educación Nacional de Francia usada a nivel nacional por el profesorado para apoyar al alumnado con necesidades especiales — más de 1,2 millones de livrets y 170.000 nuevos usuarios desde septiembre de 2026.',
         tags: ['Java', 'Spring Boot', 'Thymeleaf', 'IBM DB2'],
         caseStudy: {
           problem:
@@ -914,7 +918,7 @@ const es = {
           approach:
             'Desarrollé nuevas funcionalidades con Spring Boot y Thymeleaf en la plataforma nacional, a partir de especificaciones funcionales con el ministerio y el equipo de producto.',
           impact:
-            'La funcionalidad principal que entregué mejoró la accesibilidad del alumnado con necesidades especiales en toda Francia.',
+            'La funcionalidad principal que entregué mejoró la accesibilidad del alumnado con necesidades especiales en toda Francia; la plataforma supera ya 1,2 millones de livrets tras un crecimiento exponencial desde septiembre de 2026.',
         },
         link: '',
       },
@@ -1040,8 +1044,10 @@ const es = {
     copied: 'CV copiado al portapapeles',
     copyFailed: 'No se pudo copiar el CV',
     highlightsTitle: 'Aspectos destacados',
+    impactLine:
+      'Desde septiembre de 2026: más de 1.200.000 livrets creados · 170.000 nuevos usuarios · correcciones urgentes en curso en generación de documentos y acceso.',
     highlights: [
-      'LPI: funcionalidades de accesibilidad usadas por profesorado de toda Francia, con más de 10.000 alumnos atendidos.',
+      'LPI: más de 1,2 millones de livrets y 170.000 nuevos usuarios desde septiembre de 2026 — soporte a una plataforma en crecimiento exponencial mientras el equipo corrige incidentes urgentes de generación de documentos y acceso.',
       'Auditoría de seguridad: implementé personalmente la mayor parte de la remediación — SAML2, control de acceso por roles, sesiones y cookies seguras, generación criptográfica de PIN.',
     ],
   },
@@ -1182,7 +1188,7 @@ const fr = {
     headline:
       "Spring Boot · Spring Security · Angular · Applications d'entreprise sécurisées · Cybersécurité",
     valueProp:
-      "Je construis des applications d'entreprise sécurisées pour le ministère français de l'Éducation — plus de 10 000 élèves accompagnés et l'essentiel d'un audit de sécurité corrigé.",
+      "Je construis des applications d'entreprise sécurisées pour le ministère français de l'Éducation — LPI dépasse désormais 1,2 million de livrets et 170 000 nouveaux utilisateurs depuis septembre 2026.",
     ctaContact: 'M’écrire',
     ctaResume: 'Voir le CV',
     ctaWork: 'Voir les projets phares',
@@ -1191,7 +1197,7 @@ const fr = {
   stats: {
     items: [
       { value: 5, suffix: '+', label: "Années d'expérience", decimals: 0 },
-      { value: 10000, suffix: '+', label: 'Étudiants accompagnés', decimals: 0 },
+      { value: 1.2, suffix: 'M+', label: 'Livrets créés', decimals: 1 },
       { value: 4.23, suffix: '/5', label: 'Satisfaction client', decimals: 2 },
       { value: 8.83, suffix: '/10', label: 'Note en cybersécurité', decimals: 2 },
     ],
@@ -1199,7 +1205,7 @@ const fr = {
   about: {
     title: 'À propos',
     summary:
-      "Ingénieur Full-Stack Java avec plus de 5 ans d'expérience chez Capgemini, où je développe des applications web d'entreprise pour le ministère français de l'Éducation nationale, notamment Livret de Parcours Inclusif (LPI) et Faits Établissement. J'interviens sur tout le cycle de vie avec Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf et Angular sur IBM DB2 : nouvelles fonctionnalités, maintenance corrective, support de production, mises en production, migrations de bases de données et traitements batch.",
+      "Ingénieur Full-Stack Java avec plus de 5 ans d'expérience chez Capgemini, où je développe des applications web d'entreprise pour le ministère français de l'Éducation nationale, notamment Livret de Parcours Inclusif (LPI) et Faits Établissement. J'interviens sur tout le cycle de vie avec Java, Spring Boot, Spring Security, JPA/Hibernate, Thymeleaf et Angular sur IBM DB2 : nouvelles fonctionnalités, maintenance corrective, support de production, mises en production, migrations de bases de données et traitements batch. Depuis septembre 2026, LPI a franchi 1,2 million de livrets et 170 000 nouveaux utilisateurs ; l'équipe traite aujourd'hui les incidents de production urgents liés à cette croissance, notamment la génération de documents et la connexion des utilisateurs.",
     secureSummary:
       "Depuis un an, je me suis spécialisé dans le développement logiciel sécurisé. Lors de la remédiation d'un audit de sécurité technique, j'ai implémenté moi-même la plupart des correctifs au sein de l'équipe : authentification SAML2, contrôle d'accès basé sur les rôles, gestion sécurisée des cookies et des sessions, et algorithme de génération de PIN cryptographique plus robuste. J'ai également travaillé sur la protection CSRF, le durcissement du code et la remédiation des vulnérabilités. En 2025, j'ai obtenu le cours officiel de spécialisation en cybersécurité pour les environnements informatiques avec une note de 8,83/10.",
     languages:
@@ -1345,6 +1351,7 @@ const fr = {
           "Développeur Full-Stack Java · Ministère français de l'Éducation nationale · Livret de Parcours Inclusif, Faits Établissement",
         highlights: [
           "Développement de fonctionnalités d'accessibilité pour LPI, une plateforme interne du ministère qui numérise les plans et processus d'accompagnement des élèves à besoins éducatifs particuliers partout en France, utilisée par les enseignants au niveau national.",
+          "J'ai accompagné la croissance de LPI jusqu'à plus de 1,2 million de livrets et 170 000 nouveaux utilisateurs depuis septembre 2026 ; je contribue aujourd'hui à résoudre les incidents de production urgents qui en découlent, notamment la génération de documents et la connexion des utilisateurs.",
           "Participation à la migration de la base de données de production de MySQL vers IBM DB2 : modifications de schéma et changesets Liquibase, support à la migration des données et résolution d'incidents de production.",
           "J'ai implémenté moi-même la plupart des correctifs de l'audit de sécurité au sein de l'équipe : authentification SAML2, contrôle d'accès basé sur les rôles, gestion sécurisée des cookies et sessions, et algorithme de génération de PIN cryptographique plus robuste ; travail également sur la protection CSRF, le durcissement du code et la remédiation des vulnérabilités.",
           "Contribution à l'augmentation de la satisfaction client de 3,5 à 4,23/5 la première année, grâce à une résolution proactive des incidents et une qualité de livraison constante.",
@@ -1465,7 +1472,7 @@ const fr = {
         category: 'app',
         featured: true,
         description:
-          "Application du ministère français de l'Éducation nationale utilisée au niveau national par les enseignants pour accompagner les élèves à besoins particuliers.",
+          "Application du ministère français de l'Éducation nationale utilisée au niveau national par les enseignants pour accompagner les élèves à besoins particuliers — plus de 1,2 million de livrets et 170 000 nouveaux utilisateurs depuis septembre 2026.",
         tags: ['Java', 'Spring Boot', 'Thymeleaf', 'IBM DB2'],
         caseStudy: {
           problem:
@@ -1473,7 +1480,7 @@ const fr = {
           approach:
             'Développement de nouvelles fonctionnalités Spring Boot et Thymeleaf sur la plateforme nationale, à partir des spécifications fonctionnelles du ministère et de l’équipe produit.',
           impact:
-            "La fonctionnalité principale que j'ai livrée a amélioré l'accessibilité pour les élèves à besoins particuliers partout en France.",
+            "La fonctionnalité principale que j'ai livrée a amélioré l'accessibilité pour les élèves à besoins particuliers partout en France ; la plateforme dépasse désormais 1,2 million de livrets après une croissance exponentielle depuis septembre 2026.",
         },
         link: '',
       },
@@ -1599,8 +1606,10 @@ const fr = {
     copied: 'CV copié dans le presse-papiers',
     copyFailed: 'Impossible de copier le CV',
     highlightsTitle: 'Points forts',
+    impactLine:
+      'Depuis septembre 2026 : plus de 1 200 000 livrets créés · 170 000 nouveaux utilisateurs · corrections urgentes en cours sur la génération de documents et la connexion.',
     highlights: [
-      "LPI : fonctionnalités d'accessibilité utilisées par les enseignants partout en France, avec plus de 10 000 élèves accompagnés.",
+      "LPI : plus de 1,2 million de livrets et 170 000 nouveaux utilisateurs depuis septembre 2026 — accompagnement d'une plateforme en croissance exponentielle pendant que l'équipe corrige les incidents urgents de génération de documents et de connexion.",
       "Audit de sécurité : j'ai implémenté moi-même l'essentiel de la remédiation — SAML2, contrôle d'accès par rôles, sessions et cookies sécurisés, génération cryptographique de PIN.",
     ],
   },
